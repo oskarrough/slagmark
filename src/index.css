@@ -18,6 +18,10 @@ body {
 	place-items: center;
 }
 
+menu {
+	padding: 0;
+}
+
 button {
 	font-size: inherit;
 }
@@ -31,20 +35,21 @@ web-rumble {
 	grid-template-columns: 1fr 2fr;
 }
 
-web-rumble > menu {
+web-rumble > nav {
 	grid-area: 1 / 1;
 	grid-column: span 2;
 }
 
 web-rumble > aside {
 	grid-area: 2 / 1;
-
 	display: flex;
 	flex-flow: column nowrap;
+}
 
-	& ul:nth-of-type(2) {
-		/* margin-top: 2rem; */
-	}
+web-rumble > main {
+	grid-area: 2 / 2;
+	display: flex;
+	flex-flow: column nowrap;
 }
 
 web-rumble aside ul,
@@ -52,15 +57,4 @@ web-rumble main ul {
 	flex: 1;
 	padding: 0;
 	list-style: none;
-}
-
-web-rumble > main {
-	grid-area: 2 / 2;
-
-	display: flex;
-	flex-flow: column nowrap;
-
-	& ul:nth-of-type(2) {
-		/* margin-top: 2rem; */
-	}
 }

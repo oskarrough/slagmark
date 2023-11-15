@@ -1,9 +1,11 @@
-import { render, html } from './utils.js'
-import { App } from './gold-purse.js'
+import {render} from './utils.js'
+import {GameLoop} from './nodes.js'
+import {UI} from './ui.js'
 import './index.css'
 
-const game = new App()
+const game = new GameLoop()
 game.element = document.querySelector('web-rumble')
-game.start()
 window.game = game
 
+// Trigger a one-time render for the menu.
+render(game.element, UI(game))

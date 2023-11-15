@@ -1,8 +1,12 @@
-export { render, html } from 'uhtml'
+export {render, html} from 'uhtml'
 
+/**
+ * @param {Array} arr
+ * @returns a random element from the array
+ */
 export function random(arr) {
-  if (!Array.isArray(arr)) throw Error('Must be array')
-  return arr[Math.floor(Math.random() * arr.length)]
+	if (!Array.isArray(arr)) throw Error('Must be array')
+	return arr[Math.floor(Math.random() * arr.length)]
 }
 
 /**
@@ -19,6 +23,12 @@ export function clamp(x, lower, upper) {
 	return Math.max(lower, Math.min(x, upper))
 }
 
+/**
+ *
+ * @param {Number} value
+ * @param {Number} max
+ * @returns {Number} - in percent
+ */
 export function toPercent(value, max) {
 	return Math.round((value / max) * 100)
 }
