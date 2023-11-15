@@ -16,10 +16,13 @@ body {
 	margin: 0;
 	display: flex;
 	place-items: center;
+	overflow: hidden;
 }
 
 menu {
 	padding: 0;
+	display: flex;
+	flex-flow: row wrap;
 }
 
 button {
@@ -59,4 +62,27 @@ web-rumble main ul {
 	list-style: none;
 }
 
-.GoldBar {}
+.GoldBar {
+}
+
+.Board {
+	margin: 1rem;
+	position: relative;
+	border: 5px dotted orange;
+	flex: 1;
+}
+.Board li {
+	position: absolute;
+	transition: top 1000ms linear;
+	transform: translateY(-50%);
+}
+
+.Minion button {
+	border-radius: 50%;
+	background: #4b3636;
+	border: 1px solid black;
+	font-size: 2rem;
+}
+.Minion.ai button {
+	background-color: #522f82;
+}

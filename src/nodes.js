@@ -41,7 +41,7 @@ export class Gold extends Task {
 	}
 }
 
-class RefillMinions extends Task {
+export class RefillMinions extends Task {
 	duration = 0
 	interval = 3000
 
@@ -63,7 +63,7 @@ export class Player extends Task {
 			new Minion(),
 			new Minion(),
 			new Board(),
-			new RefillMinions()
+			new RefillMinions(),
 		]
 	}
 
@@ -72,9 +72,6 @@ export class Player extends Task {
 	}
 
 	tick() {
-		
-
-
 		if (this.health <= 0) {
 			console.log(`${this.constructor.name} lost`)
 			this.root.pause()
@@ -111,7 +108,7 @@ export class Minion extends Task {
 		this.parent.get(Board).add(this)
 	}
 
-	// Returns the losing minion
+	// Returns the losing minion, if draw return a random winner
 	fight(opponent) {
 		const winningCombos = {
 			rock: 'scissors',
@@ -125,14 +122,14 @@ export class Minion extends Task {
 			return this
 		} else {
 			return random([this, opponent])
-			// return null // it's a draw
 		}
 	}
 
 	tick() {
+		// If not deployed, stop.
 		if (!this.parent?.is(Board)) return
 
-		// while on board and not collision -> move
+		// If AI minion
 		if (this.parent.parent?.is(AI)) {
 			const opponentMinion = this.root
 				.find(Player)
@@ -145,11 +142,12 @@ export class Minion extends Task {
 			}
 			if (!this.parent) return
 			this.y = this.y - this.speed
-			if (this.y === 0) {
+			if (this.y === -1) {
 				this.root.find(Player).health--
 				this.disconnect()
 			}
 		} else {
+			// If player minion
 			const opponentMinion = this.root
 				.find(AI)
 				.get(Board)
@@ -171,5 +169,5 @@ export class Minion extends Task {
 
 export class Board extends Node {
 	width = 1
-	height = 4
+	height = 10
 }

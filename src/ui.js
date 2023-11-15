@@ -1,5 +1,5 @@
 import {html, roundOne} from './utils.js'
-import {Player, AI, Gold, Minion, Board} from './nodes.js'
+import {Player, AI, Gold, Minion, Board, RefillMinions} from './nodes.js'
 
 export function UI(game) {
 	if (!game.children?.length) return html`<nav>${Menu(game)}</nav>`
@@ -22,20 +22,34 @@ export function UI(game) {
 			<h2>Player ${player.health} ♥️</h2>
 		</aside>
 		<main>
-			<ul>
-				${ai.get(Board).getAll(Minion).map(minion)}
-			</ul>
-			<ul>
-				${player.get(Board).getAll(Minion).map(minion)}
-			</ul>
+			<div class="Board">
+				<ul>
+					${ai.get(Board).getAll(Minion).map(minion)}
+				</ul>
+				<ul>
+					${player.get(Board).getAll(Minion).map(minion)}
+				</ul>
+			</div>
 		</main>
 	`
 }
 
+function minionTypeToEmoji(type) {
+	if (type === 'rock') return '🪨'
+	if (type === 'paper') return '📄'
+	if (type === 'scissors') return '✂️'
+	return type
+}
+
 const minion = (minion) => {
-	return html`<li>
-		<button onclick=${() => minion.deploy()}>${minion.minionType}</button>
-		${minion.parent?.is(Board) ? minion.y : null}
+	const onBoard = minion.parent?.is(Board)
+	const isAi = minion.parent?.is(AI) || minion.parent.parent.is(AI)
+	const height = minion.parent.height
+	return html`<li class=${`Minion ${isAi ? 'ai' : null}`} style=${`top: ${((height - minion.y) / height) * 100}%`}>
+		<button onclick=${() => minion.deploy()}>
+			${minionTypeToEmoji(minion.minionType)}
+		</button>
+		${onBoard ? minion.y : null}
 		<time hidden
 			>${minion.deployed
 				? roundOne(game.timeSince(minion.deployed) / 1000)
