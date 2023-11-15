@@ -10,7 +10,7 @@ export function UI(game) {
 	return html`
 		<nav>${Menu(game)}</nav>
 		<aside>
-			<h2>AI</h2>
+			<h2>AI ${ai.health} ♥️</h2>
 			${GoldBar(ai.get(Gold))}
 			<ul>
 				${ai.getAll(Minion).map(minion)}
@@ -19,7 +19,7 @@ export function UI(game) {
 				${player.getAll(Minion).map(minion)}
 			</ul>
 			${GoldBar(player.get(Gold))}
-			<h2>Player</h2>
+			<h2>Player ${player.health} ♥️</h2>
 		</aside>
 		<main>
 			<ul>
@@ -32,17 +32,15 @@ export function UI(game) {
 	`
 }
 
-const deployMinion = (minion) => {
-	console.log('deploy', minion)
-	minion.deployed = game.elapsedTime
-	minion.parent.get(Gold).amount--
-	minion.parent.get(Board).add(minion)
-}
-
 const minion = (minion) => {
 	return html`<li>
-		<button onclick=${() => deployMinion(minion)}>${minion.minionType}</button>
-		${minion.deployed ? roundOne(game.timeSince(minion.deployed) / 1000) : null}
+		<button onclick=${() => minion.deploy()}>${minion.minionType}</button>
+		${minion.parent?.is(Board) ? minion.y : null}
+		<time hidden
+			>${minion.deployed
+				? roundOne(game.timeSince(minion.deployed) / 1000)
+				: null}</time
+		>
 	</li>`
 }
 
