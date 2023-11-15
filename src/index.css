@@ -6,10 +6,10 @@
 }
 
 :root {
+	font-size: 1rem;
+	line-height: 1.5;
 	background: #00392c;
 	color: whitesmoke;
-	font-size: 2rem;
-	line-height: 1.5;
 }
 
 body {
@@ -19,10 +19,28 @@ body {
 	overflow: hidden;
 }
 
+ul.GoldBar,
+ul:has(.Minion) {
+	display: inline-flex;
+	flex-flow: row wrap;
+	gap: 0.25rem;
+	background: hsla(0 0% 0% / 0.5);
+	border: 2px solid hsla(0 100% 100% / 0.5);
+	padding: 0.5rem;
+	border-radius: 5px;
+	min-height: 3rem;
+}
+
+ul:has(.Minion) {}
+
 menu {
 	padding: 0;
 	display: flex;
 	flex-flow: row wrap;
+
+	& button:last-of-type {
+		margin-right: auto;
+	}
 }
 
 button {
@@ -35,7 +53,7 @@ web-rumble {
 	margin: auto;
 	display: grid;
 	grid-template-rows: min-content 1fr;
-	grid-template-columns: 1fr 1fr;
+	grid-template-columns: 2fr 3fr;
 }
 
 web-rumble > nav {
@@ -47,6 +65,16 @@ web-rumble > aside {
 	grid-area: 2 / 1;
 	display: flex;
 	flex-flow: column nowrap;
+	align-items: center;
+	gap: 2rem;
+	justify-content: space-between;
+	margin: auto 0 auto 1rem;
+
+	& > div {
+		width: 100%;
+		display: flex;
+		flex-flow: column nowrap;
+	}
 }
 
 web-rumble > main {
@@ -55,14 +83,9 @@ web-rumble > main {
 	flex-flow: column nowrap;
 }
 
-web-rumble aside ul,
-web-rumble main ul {
-	flex: 1;
+web-rumble ul {
 	padding: 0;
 	list-style: none;
-}
-
-.GoldBar {
 }
 
 .Board {
@@ -82,7 +105,9 @@ web-rumble main ul {
 	background: #4b3636;
 	border: 1px solid black;
 	font-size: 2rem;
+	padding: 0;
 }
 .Minion.ai button {
 	background-color: #522f82;
 }
+

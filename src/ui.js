@@ -10,16 +10,20 @@ export function UI(game) {
 	return html`
 		<nav>${Menu(game)}</nav>
 		<aside>
-			<h2>AI ${ai.health} ♥️</h2>
-			${GoldBar(ai.get(Gold))}
-			<ul>
-				${ai.getAll(Minion).map(minion)}
-			</ul>
-			<ul>
-				${player.getAll(Minion).map(minion)}
-			</ul>
-			${GoldBar(player.get(Gold))}
-			<h2>Player ${player.health} ♥️</h2>
+			<div>
+				<h2>AI ${ai.health} ♥️</h2>
+				${GoldBar(ai.get(Gold))}
+				<ul>
+					${ai.getAll(Minion).map(minion)}
+				</ul>
+			</div>
+			<div>
+				<h2>Player ${player.health} ♥️</h2>
+				${GoldBar(player.get(Gold))}
+				<ul>
+					${player.getAll(Minion).map(minion)}
+				</ul>
+			</div>
 		</aside>
 		<main>
 			<div class="Board">
@@ -45,7 +49,10 @@ const minion = (minion) => {
 	const onBoard = minion.parent?.is(Board)
 	const isAi = minion.parent?.is(AI) || minion.parent.parent.is(AI)
 	const height = minion.parent.height
-	return html`<li class=${`Minion ${isAi ? 'ai' : null}`} style=${`top: ${((height - minion.y) / height) * 100}%`}>
+	return html`<li
+		class=${`Minion ${isAi ? 'ai' : null}`}
+		style=${`top: ${((height - minion.y) / height) * 100}%`}
+	>
 		<button onclick=${() => minion.deploy()}>
 			${minionTypeToEmoji(minion.minionType)}
 		</button>
@@ -68,7 +75,7 @@ function Menu(game) {
 				? html`
 						<button onclick=${toggle}>${game.paused ? 'Play' : 'Pause'}</button>
 						<button onclick=${stopGame}>Quit</button>
-						<p>elapsedTime: ${roundOne(game.elapsedTime)}</p>
+						<p>${roundOne(game.elapsedTime / 1000)}</p>
 				  `
 				: html` <button onclick=${newGame}>New Rumble</button> `}
 		</menu>
@@ -76,7 +83,8 @@ function Menu(game) {
 }
 
 function GoldBar(gold) {
-	if (gold.amount < 1) return html`<p>&nbsp;</p>`
 	const nuggets = Array(gold.amount).fill('🪙')
-	return html`<p class="GoldBar">${nuggets.map((n) => html`${n}`)}</p> `
+	return html`<ul class="GoldBar">
+		${nuggets.map((n) => html`<li>${n}</li>`)}
+	</ul>`
 }
