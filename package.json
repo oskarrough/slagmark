@@ -1,0 +1,24 @@
+{
+  "name": "webrumble",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "gsap": "^3.12.2",
+    "prettier": "^3.1.0",
+    "uhtml": "^4.1.19",
+    "vroum": "^0.1.10"
+  },
+  "devDependencies": {
+    "vite": "^4.4.5"
+  },
+	"prettier": {
+		"semi": false,
+		"singleQuote": true
+	}
+}
