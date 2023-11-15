@@ -41,6 +41,17 @@ export class Gold extends Task {
 	}
 }
 
+class RefillMinions extends Task {
+	duration = 0
+	interval = 3000
+
+	tick() {
+		if (this.parent.getAll(Minion).length < 4) {
+			this.parent.add(new Minion())
+		}
+	}
+}
+
 export class Player extends Task {
 	health = 3
 
@@ -52,6 +63,7 @@ export class Player extends Task {
 			new Minion(),
 			new Minion(),
 			new Board(),
+			new RefillMinions()
 		]
 	}
 
@@ -60,6 +72,9 @@ export class Player extends Task {
 	}
 
 	tick() {
+		
+
+
 		if (this.health <= 0) {
 			console.log(`${this.constructor.name} lost`)
 			this.root.pause()
@@ -74,7 +89,6 @@ export class AI extends Player {
 }
 
 const MINION_TYPES = ['rock', 'paper', 'scissors']
-
 export class Minion extends Task {
 	minionType = ''
 	speed = 1
@@ -104,15 +118,14 @@ export class Minion extends Task {
 			paper: 'rock',
 			scissors: 'paper',
 		}
-		console.log(this.minionType, 'vs', opponent.minionType)
+		console.log('fight', this.minionType, 'vs', opponent.minionType)
 		if (winningCombos[this.minionType] === opponent.minionType) {
-			console.log(opponent.minionType, 'lost')
 			return opponent
 		} else if (winningCombos[opponent.minionType] === this.minionType) {
-			console.log(this.minionType, 'lost')
 			return this
 		} else {
-			return null // it's a draw
+			return random([this, opponent])
+			// return null // it's a draw
 		}
 	}
 
@@ -128,8 +141,9 @@ export class Minion extends Task {
 				.find((minion) => minion.y === this.y)
 			if (opponentMinion) {
 				const loser = this.fight(opponentMinion)
-				loser.disconnect()
+				loser?.disconnect()
 			}
+			if (!this.parent) return
 			this.y = this.y - this.speed
 			if (this.y === 0) {
 				this.root.find(Player).health--
@@ -143,8 +157,9 @@ export class Minion extends Task {
 				.find((minion) => minion.y === this.y)
 			if (opponentMinion) {
 				const loser = this.fight(opponentMinion)
-				loser.disconnect()
+				loser?.disconnect()
 			}
+			if (!this.parent) return
 			this.y = this.y + this.speed
 			if (this.y === this.parent.height) {
 				this.root.find(AI).health--
