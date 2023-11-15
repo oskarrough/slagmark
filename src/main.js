@@ -9,3 +9,4 @@ window.game = game
 
 // Trigger a one-time render for the menu.
 render(game.element, UI(game))
+

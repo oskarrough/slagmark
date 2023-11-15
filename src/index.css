@@ -20,7 +20,7 @@ body {
 }
 
 ul.GoldBar,
-ul:has(.Minion) {
+aside ul:has(.Minion) {
 	display: inline-flex;
 	flex-flow: row wrap;
 	gap: 0.25rem;
@@ -30,8 +30,6 @@ ul:has(.Minion) {
 	border-radius: 5px;
 	min-height: 3rem;
 }
-
-ul:has(.Minion) {}
 
 menu {
 	padding: 0;
@@ -111,3 +109,8 @@ web-rumble ul {
 	background-color: #522f82;
 }
 
+.Cursor {
+	position: absolute;
+	z-index: 1;
+	pointer-events: none;
+}

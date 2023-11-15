@@ -1,5 +1,6 @@
 import {html, roundOne} from './utils.js'
-import {Player, AI, Gold, Minion, Board, RefillMinions} from './nodes.js'
+import {Player, AI, Gold, Minion, Board} from './nodes.js'
+import {menu as MultiplayerMenu, CursorUI} from './multiplayer.js'
 
 export function UI(game) {
 	if (!game.children?.length) return html`<nav>${Menu(game)}</nav>`
@@ -8,7 +9,7 @@ export function UI(game) {
 	const ai = game.get(AI)
 
 	return html`
-		<nav>${Menu(game)}</nav>
+		<nav>${Menu(game)} ${MultiplayerMenu()}</nav>
 		<aside>
 			<div>
 				<h2>AI ${ai.health} ♥️</h2>
@@ -35,6 +36,7 @@ export function UI(game) {
 				</ul>
 			</div>
 		</main>
+		<div class="Cursors">${Object.entries(window.remoteCursors).map(cursor => CursorUI(cursor))}</div>
 	`
 }
 
@@ -46,7 +48,6 @@ function minionTypeToEmoji(type) {
 }
 
 const minion = (minion) => {
-	const onBoard = minion.parent?.is(Board)
 	const isAi = minion.parent?.is(AI) || minion.parent.parent.is(AI)
 	const height = minion.parent.height
 	return html`<li
@@ -56,7 +57,7 @@ const minion = (minion) => {
 		<button onclick=${() => minion.deploy()}>
 			${minionTypeToEmoji(minion.minionType)}
 		</button>
-		${onBoard ? minion.y : null}
+		${minion.deployed ? minion.y : null}
 		<time hidden
 			>${minion.deployed
 				? roundOne(game.timeSince(minion.deployed) / 1000)

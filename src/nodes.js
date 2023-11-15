@@ -67,10 +67,6 @@ export class Player extends Task {
 		]
 	}
 
-	mount() {
-		console.log('Player mount', this)
-	}
-
 	tick() {
 		if (this.health <= 0) {
 			console.log(`${this.constructor.name} lost`)
@@ -80,9 +76,6 @@ export class Player extends Task {
 }
 
 export class AI extends Player {
-	mount() {
-		console.log('AI mount', this)
-	}
 }
 
 const MINION_TYPES = ['rock', 'paper', 'scissors']

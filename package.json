@@ -1,25 +1,29 @@
 {
-	"name": "webrumble",
-	"private": true,
-	"version": "0.0.0",
-	"type": "module",
-	"scripts": {
-		"dev": "vite",
-		"build": "vite build",
-		"preview": "vite preview"
-	},
-	"dependencies": {
-		"gsap": "^3.12.2",
-		"prettier": "^3.1.0",
-		"uhtml": "^4.1.19",
-		"vroum": "^0.1.10"
-	},
-	"devDependencies": {
-		"vite": "^4.4.5"
-	},
-	"prettier": {
-		"bracketSpacing": false,
-		"semi": false,
-		"singleQuote": true
-	}
+  "name": "webrumble",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "gsap": "^3.12.2",
+    "lodash": "^4.17.21",
+    "lodash.debounce": "^4.0.8",
+    "partysocket": "0.0.15",
+    "prettier": "^3.1.0",
+    "uhtml": "^4.1.19",
+    "vroum": "^0.1.10"
+  },
+  "devDependencies": {
+    "vite": "^4.4.5",
+    "partykit": "0.0.35"
+  },
+  "prettier": {
+    "bracketSpacing": false,
+    "semi": false,
+    "singleQuote": true
+  }
 }
