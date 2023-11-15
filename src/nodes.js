@@ -8,13 +8,18 @@ export class GameLoop extends Loop {
 	}
 
 	mount() {
-		render(this.element, UI(this))
+		this.loop.subscribe('stop', this.render)
+		this.loop.subscribe('play', this.render)
+		this.loop.subscribe('pause', this.render)
 	}
 
 	tick() {
-		render(this.element, UI(this))
+		this.render()
 	}
 
+	render() {
+		render(this.element, UI(this))
+	}
 }
 
 export class Gold extends Task {
@@ -53,18 +58,7 @@ export class Player extends Node {
 	}
 }
 
-export class AI extends Node {
-	build() {
-		return [
-			new Gold(),
-			new Board(),
-			new Minion(),
-			new Minion(),
-			new Minion(),
-			new Minion(),
-		]
-	}
-
+export class AI extends Player {
 	mount() {
 		console.log('AI mount', this)
 	}
@@ -74,7 +68,7 @@ export class Minion extends Node {
 	minionType = ''
 
 	init() {
-		this.minionType = random(['rock', 'paper', 'scissor'])
+		this.minionType = random(['Rock', 'Paper', 'Scissor'])
 	}
 }
 

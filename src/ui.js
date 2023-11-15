@@ -32,8 +32,8 @@ export function UI(game) {
 	`
 }
 
-const deploy = (minion) => {
-	console.log('deploy', minion, minion.parent)
+const deployMinion = (minion) => {
+	console.log('deploy', minion)
 	minion.deployed = game.elapsedTime
 	minion.parent.get(Gold).amount--
 	minion.parent.get(Board).add(minion)
@@ -41,44 +41,30 @@ const deploy = (minion) => {
 
 const minion = (minion) => {
 	return html`<li>
-		<button onclick=${deploy}>${minion.minionType}</button>
+		<button onclick=${() => deployMinion(minion)}>${minion.minionType}</button>
 		${minion.deployed ? roundOne(game.timeSince(minion.deployed) / 1000) : null}
 	</li>`
 }
 
-function Menu() {
-	const newGame = () => {
-		game.start()
-	}
-	const stopGame = () => {
-		console.log('stop')
-		game.stop()
-		
-	}
-	const toggle = () => {
-		if (game.paused) {
-			game.play()
-		} else {
-			game.pause()
-		}
-	}
+function Menu(game) {
+	const newGame = () => game.start()
+	const stopGame = () => game.stop()
+	const toggle = () => (game.paused ? game.play() : game.pause())
 	return html`
 		<menu>
 			${game.started
 				? html`
 						<button onclick=${toggle}>${game.paused ? 'Play' : 'Pause'}</button>
-						<button onclick=${stopGame}>Stop</button>
+						<button onclick=${stopGame}>Quit</button>
+						<p>elapsedTime: ${roundOne(game.elapsedTime)}</p>
 				  `
-				: html` <button onclick=${newGame}>New Game</button> `}
-			<p>started? ${game.started}</p>
-			<p>paused? ${game.paused}</p>
-			<p>elapsedTime: ${game.elapsedTime}</p>
+				: html` <button onclick=${newGame}>New Rumble</button> `}
 		</menu>
 	`
 }
 
 function GoldBar(gold) {
-	if (!gold.amount) return html`<p>&nbsp;</p>`
+	if (gold.amount < 1) return html`<p>&nbsp;</p>`
 	const nuggets = Array(gold.amount).fill('🪙')
-	return html`<p>${nuggets.map((n) => html`${n}`)}</p> `
+	return html`<p class="GoldBar">${nuggets.map((n) => html`${n}`)}</p> `
 }

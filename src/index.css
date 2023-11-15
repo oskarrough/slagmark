@@ -32,7 +32,7 @@ web-rumble {
 	margin: auto;
 	display: grid;
 	grid-template-rows: min-content 1fr;
-	grid-template-columns: 1fr 2fr;
+	grid-template-columns: 1fr 1fr;
 }
 
 web-rumble > nav {
@@ -58,3 +58,5 @@ web-rumble main ul {
 	padding: 0;
 	list-style: none;
 }
+
+.GoldBar {}
