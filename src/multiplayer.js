@@ -2,7 +2,11 @@ import {html, uuid} from './utils.js'
 import PartySocket from 'partysocket'
 import debounce from 'lodash.debounce'
 
-// const PARTYKIT_URL = 'http://localhost:1999'
+let PARTYKIT_URL = 'http://localhost:1999'
+if (import.meta.env.MODE === 'production') {
+	PARTYKIT_URL = 'https://webrumble-party.oskarrough.partykit.dev'
+}
+
 const id = 'my-room' //uuid()
 
 let localPosition = null
@@ -11,7 +15,7 @@ const remoteCursors = {}
 window.remoteCursors = remoteCursors
 
 const socket = new PartySocket({
-	host: 'localhost:1999',
+	host: PARTYKIT_URL, //'localhost:1999',
 	room: id,
 	// party: ?
 })
@@ -43,7 +47,12 @@ export function CursorUI([_, cursor], fill = '#000') {
 	const top = cursor.y * windowDimensions.height - offset
 	const pointer = cursor.pointer ?? 'mouse'
 	return html`
-		<div class="Cursor" data-left=${left} data-top=${top} style=${`left: ${left}px; top: ${top}px`}>
+		<div
+			class="Cursor"
+			data-left=${left}
+			data-top=${top}
+			style=${`left: ${left}px; top: ${top}px`}
+		>
 			${pointer === 'touch'
 				? html`<svg
 						height="32"
@@ -103,7 +112,10 @@ function sendPosition(pos) {
 	localPosition = pos
 }
 
-const debouncedSendPosition = debounce(sendPosition, 100, {leading: true, trailing: true})
+const debouncedSendPosition = debounce(sendPosition, 100, {
+	leading: true,
+	trailing: true,
+})
 
 const onMouseMove = (e) => {
 	if (!socket) return
