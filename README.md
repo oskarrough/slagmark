@@ -16,6 +16,13 @@ Basic ideas:
 - https://gitlab.com/jfalxa/vroum
 - https://webreflection.github.io/uhtml/
 
+## Development
+
+```
+bunx partykit dev
+bun run dev
+```
+
 ## Also see
 
 - https://github.com/oskarrough/webhealer/

@@ -39,6 +39,11 @@ export class Gold extends Task {
 		if (this.amount === this.maxAmount) return
 		this.amount = this.amount + 1
 	}
+
+	decrement() {
+		if (this.amount < 2) return 0
+		this.amount = this.amount - 1
+	}
 }
 
 export class RefillMinions extends Task {
@@ -75,8 +80,7 @@ export class Player extends Task {
 	}
 }
 
-export class AI extends Player {
-}
+export class AI extends Player {}
 
 const MINION_TYPES = ['rock', 'paper', 'scissors']
 export class Minion extends Task {
@@ -97,7 +101,7 @@ export class Minion extends Task {
 	deploy() {
 		if (this.parent.is(AI)) this.y = this.parent.get(Board).height
 		this.deployed = game.elapsedTime
-		this.parent.get(Gold).amount--
+		this.parent.get(Gold).decrement()
 		this.parent.get(Board).add(this)
 	}
 
@@ -119,44 +123,37 @@ export class Minion extends Task {
 	}
 
 	tick() {
-		// If not deployed, stop.
-		if (!this.parent?.is(Board)) return
+		if (!this.deployed) return
 
-		// If AI minion
-		if (this.parent.parent?.is(AI)) {
-			const opponentMinion = this.root
-				.find(Player)
-				.get(Board)
-				.getAll(Minion)
-				.find((minion) => minion.y === this.y)
-			if (opponentMinion) {
-				const loser = this.fight(opponentMinion)
-				loser?.disconnect()
-			}
-			if (!this.parent) return
-			this.y = this.y - this.speed
-			if (this.y === -1) {
-				this.root.find(Player).health--
-				this.disconnect()
-			}
-		} else {
-			// If player minion
-			const opponentMinion = this.root
-				.find(AI)
-				.get(Board)
-				.getAll(Minion)
-				.find((minion) => minion.y === this.y)
-			if (opponentMinion) {
-				const loser = this.fight(opponentMinion)
-				loser?.disconnect()
-			}
-			if (!this.parent) return
-			this.y = this.y + this.speed
-			if (this.y === this.parent.height) {
-				this.root.find(AI).health--
-				this.disconnect()
-			}
+		const isAIMinion = this.parent.parent.is(AI)
+		const opponent = isAIMinion ? Player : AI
+
+		const enemy = this.findEnemy(opponent)
+		if (enemy) {
+			const loser = this.fight(enemy)
+			loser?.disconnect()
 		}
+
+		if (!this.parent) return
+
+		this.move(isAIMinion ? -1 : 1)
+
+		if (this.y === (isAIMinion ? -1 : this.parent.height)) {
+			this.root.find(opponent).health--
+			this.disconnect()
+		}
+	}
+
+	move(direction = 1) {
+		this.y = this.y + this.speed * direction
+	}
+
+	findEnemy(player) {
+		return this.root
+			.find(player)
+			.get(Board)
+			.getAll(Minion)
+			.find((minion) => minion.y === this.y)
 	}
 }
 

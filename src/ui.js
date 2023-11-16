@@ -1,6 +1,5 @@
 import {html, roundOne} from './utils.js'
 import {Player, AI, Gold, Minion, Board} from './nodes.js'
-import {menu as MultiplayerMenu, CursorUI} from './multiplayer.js'
 
 export function UI(game) {
 	if (!game.children?.length) return html`<nav>${Menu(game)}</nav>`
@@ -9,21 +8,21 @@ export function UI(game) {
 	const ai = game.get(AI)
 
 	return html`
-		<nav>${Menu(game)} ${MultiplayerMenu()}</nav>
+		<nav>${Menu(game)}</nav>
 		<aside>
 			<div>
 				<h2>AI ${ai.health} ♥️</h2>
-				${GoldBar(ai.get(Gold))}
 				<ul>
 					${ai.getAll(Minion).map(minion)}
 				</ul>
+				${GoldBar(ai.get(Gold))}
 			</div>
 			<div>
 				<h2>Player ${player.health} ♥️</h2>
-				${GoldBar(player.get(Gold))}
 				<ul>
 					${player.getAll(Minion).map(minion)}
 				</ul>
+				${GoldBar(player.get(Gold))}
 			</div>
 		</aside>
 		<main>
@@ -36,7 +35,6 @@ export function UI(game) {
 				</ul>
 			</div>
 		</main>
-		<div class="Cursors">${Object.entries(window.remoteCursors).map(cursor => CursorUI(cursor))}</div>
 	`
 }
 

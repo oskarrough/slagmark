@@ -113,4 +113,5 @@ web-rumble ul {
 	position: absolute;
 	z-index: 1;
 	pointer-events: none;
+	transition: all 100ms;
 }
