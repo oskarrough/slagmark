@@ -70,8 +70,8 @@ export class Player extends Task {
 
 	tick() {
 		if (this.health <= 0) {
-			console.log(`${this.constructor.name} lost`)
-			this.root.pause()
+			// console.log(`${this.constructor.name} lost`)
+			// this.root.stop()
 		}
 	}
 }
@@ -79,6 +79,7 @@ export class Player extends Task {
 export class AI extends Player {}
 
 const MINION_TYPES = ['rock', 'paper', 'scissors']
+
 export class Minion extends Task {
 	minionType = ''
 	speed = 1
@@ -95,8 +96,34 @@ export class Minion extends Task {
 		this.minionType = random(MINION_TYPES)
 	}
 
+	tick() {
+		if (!this.deployed) return
+
+		const isAIMinion = this.parent.parent.is(AI)
+		const opponent = isAIMinion ? Player : AI
+
+		// Fight any enemies on same Y, and remove the loser.
+		const enemies = this.findEnemies(opponent)
+		for (const enemy of enemies) {
+			const loser = this.fight(enemy)
+			loser.disconnect()
+			if (loser === this) return
+		}
+
+		// If we reached the opposite end, opponent player loses a life, and we leave the board.
+		const finalY = isAIMinion ? 0 : this.parent.height
+		if (this.y === finalY) {
+			this.root.find(opponent).health--
+			this.disconnect()
+			return
+		}
+
+		this.move(isAIMinion ? -1 : 1)
+	}
+
 	deploy() {
-		if (this.parent.is(AI)) this.y = this.parent.get(Board).height
+		const isAI = this.parent.is(AI)
+		if (isAI) this.y = this.parent.get(Board).height
 		if (this.parent.get(Gold).amount < this.cost) {
 			console.log('not enough gold')
 			return
@@ -104,16 +131,22 @@ export class Minion extends Task {
 		this.parent.get(Gold).decrement()
 		this.deployed = game.elapsedTime
 		this.parent.get(Board).add(this)
+		console.log(isAI ? 'AI' : 'Player', 'deploy', this.minionType)
+	}
+
+	move(direction = 1) {
+		this.y = Math.max(0, this.y + this.speed * direction)
 	}
 
 	// Returns the losing minion, if draw return a random winner
 	fight(opponent) {
+		const isAI = this.parent.parent.is(AI)
+		console.log(isAI ? 'AI' : 'Player', this.minionType, 'vs', opponent.minionType)
 		const winningCombos = {
 			rock: 'scissors',
 			paper: 'rock',
 			scissors: 'paper',
 		}
-		console.log('fight', this.minionType, 'vs', opponent.minionType)
 		if (winningCombos[this.minionType] === opponent.minionType) {
 			return opponent
 		} else if (winningCombos[opponent.minionType] === this.minionType) {
@@ -123,42 +156,17 @@ export class Minion extends Task {
 		}
 	}
 
-	tick() {
-		if (!this.deployed) return
-
-		const isAIMinion = this.parent.parent.is(AI)
-		const opponent = isAIMinion ? Player : AI
-
-		const enemy = this.findEnemy(opponent)
-		if (enemy) {
-			const loser = this.fight(enemy)
-			loser?.disconnect()
-		}
-
-		if (!this.parent) return
-
-		this.move(isAIMinion ? -1 : 1)
-
-		if (this.y === (isAIMinion ? -1 : this.parent.height)) {
-			this.root.find(opponent).health--
-			this.disconnect()
-		}
-	}
-
-	move(direction = 1) {
-		this.y = this.y + this.speed * direction
-	}
-
-	findEnemy(player) {
+	// Returns a list of enemy minions on the same Y position.
+	findEnemies(player) {
 		return this.root
 			.find(player)
 			.get(Board)
 			.getAll(Minion)
-			.find((minion) => minion.y === this.y)
+			.filter((minion) => minion.y === this.y)
 	}
 }
 
 export class Board extends Node {
 	width = 1
-	height = 10
+	height = 8
 }

@@ -32,7 +32,7 @@ web-rumble {
 	margin: auto;
 	display: grid;
 	grid-template-rows: min-content 1fr;
-	grid-template-columns: minmax(260px, max-content) minmax(100px, 1fr);
+	grid-template-columns: minmax(270px, max-content) minmax(100px, 1fr);
 }
 
 web-rumble > nav {
@@ -115,13 +115,21 @@ button {
 	flex: 1;
 }
 
-/* Deployed minions */
-.Board li {
-	position: absolute;
-	transition: top 1000ms linear;
-	transform: translateY(-50%);
+.Minion {
+	display: flex;
+	position: relative;
 }
-
+.Minion span {
+	display: inline-block;
+	position: absolute;
+	bottom: -2px;
+	right: -2px;
+	background: black;
+	color: white;
+	border-radius: 5px;
+	padding: 0px 4px;
+	font-size: 12px;
+}
 .Minion button {
 	border-radius: 50%;
 	background: #4b3636;
@@ -131,6 +139,16 @@ button {
 }
 .Minion.ai button {
 	background-color: #522f82;
+}
+
+/* Deployed minions */
+.Board li {
+	position: absolute;
+	transform: translateY(-50%);
+	/* transition: top 1000ms linear; */
+}
+.Board [data-player] li {
+	left: 3rem;
 }
 
 .Cursor {

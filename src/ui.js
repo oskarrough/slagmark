@@ -27,10 +27,10 @@ export function UI(game) {
 		</aside>
 		<main>
 			<div class="Board">
-				<ul>
+				<ul data-ai>
 					${ai.get(Board).getAll(Minion).map(minion)}
 				</ul>
-				<ul>
+				<ul data-player>
 					${player.get(Board).getAll(Minion).map(minion)}
 				</ul>
 			</div>
@@ -71,21 +71,24 @@ const minion = (minion) => {
 	const height = minion.parent.height
 	return html`<li
 		class=${`Minion ${isAi ? 'ai' : null}`}
+		data-y=${minion.y}
 		style=${`top: ${((height - minion.y) / height) * 100}%`}
 	>
 		<button onclick=${() => minion.deploy()}>${minionTypeToEmoji(minion.minionType)}</button>
-		${minion.deployed ? minion.y : null}
+		<span>${minion.deployed ? minion.y : minion.cost}</span>
 	</li>`
 }
 
-function GoldBar(gold) {
-	const nuggets = Array(gold.amount).fill('🪙')
+function GoldBar({amount}) {
+	if (!amount) amount = 0
+	const nuggets = Array(amount).fill('🪙')
 	return html`<ul class="GoldBar">
 		${nuggets.map((n) => html`<li>${n}</li>`)}
 	</ul>`
 }
 
 function HealthBar(health) {
+	if (!health) health = 0
 	const hearts = Array(health).fill('♥️')
 	return html`<ul class="HealthBar">
 		${hearts.map((n) => html`<li>${n}</li>`)}
