@@ -70,8 +70,8 @@ export class Player extends Task {
 
 	tick() {
 		if (this.health <= 0) {
-			console.log(`${this.constructor.name} lost but we continue ticking..`)
-			// this.root.pause()
+			console.log(`${this.constructor.name} lost`)
+			this.root.pause()
 		}
 	}
 }

@@ -17,47 +17,22 @@ body {
 	display: flex;
 	place-items: center;
 	overflow: hidden;
-}
-
-.HealthBar,
-ul.GoldBar,
-aside ul:has(.Minion) {
-	display: inline-flex;
-	flex-flow: row wrap;
-	place-items: center;
-	border: 1px solid hsla(0 100% 100% / 0.5);
-	border-radius: 5px;
-	/* min-height: 3rem; */
-	/* gap: 0.25rem; */
-	/* background: hsla(0 0% 0% / 0.5); */
-	/* padding: 0.5rem; */
-}
-
-.HealthBar {
-	color: red;
-}
-
-menu {
-	padding: 0;
-	display: flex;
-	flex-flow: row wrap;
-
-	& button:last-of-type {
-		margin-right: auto;
-	}
-}
-
-button {
-	font-size: inherit;
+	min-height: 100vh;
 }
 
 web-rumble {
-	width: 100%;
+	/* border: 2px solid black; */
+	/* border-radius: 5px; */
+	/* background: cornsilk; */
+	/* color: black; */
+	/* width: 100%; */
+	flex: 1;
 	height: 100vh;
+	min-height: 50vh;
 	margin: auto;
 	display: grid;
 	grid-template-rows: min-content 1fr;
-	grid-template-columns: minmax(260px, max-content) 3fr;
+	grid-template-columns: minmax(260px, max-content) minmax(100px, 1fr);
 }
 
 web-rumble > nav {
@@ -92,12 +67,55 @@ web-rumble ul {
 	list-style: none;
 }
 
+.HealthBar,
+ul.GoldBar,
+.MinionBar {
+	display: inline-flex;
+	flex-flow: row wrap;
+	place-items: center;
+	border: 1px solid hsla(0 100% 100% / 0.5);
+	border-radius: 5px;
+}
+
+.HealthBar {
+	color: red;
+	font-size: 2rem;
+	padding: 0 0.25em;
+	gap: 0.25em;
+}
+
+.MinionBar {
+	padding: 0.5em;
+	gap: 1em;
+}
+
+.GoldBar {
+	min-height: 1.625rem;
+	padding: 0 0.5em;
+}
+
+menu {
+	padding: 0;
+	display: flex;
+	flex-flow: row wrap;
+
+	& button:last-of-type {
+		margin-right: auto;
+	}
+}
+
+button {
+	font-size: inherit;
+}
+
 .Board {
 	margin: 1rem;
 	position: relative;
 	border: 5px dotted orange;
 	flex: 1;
 }
+
+/* Deployed minions */
 .Board li {
 	position: absolute;
 	transition: top 1000ms linear;
