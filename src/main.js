@@ -1,35 +1,34 @@
-import {html, render} from './utils.js'
+import {render} from './utils.js'
 import {GameLoop} from './nodes.js'
 import {UI} from './ui.js'
-import {socket, Cursor} from './multiplayer.js'
+import {socket} from './multiplayer.js'
 import './index.css'
+import {LiveCursors} from './live-cusors.js'
 
-const game = new GameLoop()
-game.element = document.querySelector('web-rumble')
-window.game = game // for debugging
 window.socket = socket
 
-// Trigger a one-time render for the menu.
-render(game.element, UI(game))
+customElements.define(
+	'web-rumble',
+	class WebRumble extends HTMLElement {
+		connectedCallback() {
+			const game = new GameLoop()
+			game.element = this
+			window.game = game
+			render(this, UI(game))
+		}
+	},
+)
 
-// Map of remotes cursors
-// [id: string]: {id, pointer, x,y,lastUpdate}
-const remoteCursors = {}
+customElements.define('live-cursors', LiveCursors)
 
-// Catch messages from the server
+// Catch and handle messages from the server
 socket.addEventListener('message', (event) => {
 	const msg = JSON.parse(event.data)
-	// console.log('got message', msg)
-	if (msg.type === 'cursorUpdate') {
-		remoteCursors[msg.id] = msg
-		render(document.querySelector('multi-player'), Cursors(remoteCursors))
+	if (msg.type === 'welcome') {
+		console.log(msg)
+	} else if (msg.type === 'cursorUpdate') {
+		// handled by <live-cursors>
+	} else {
+		console.log('unhandled message', msg)
 	}
 })
-
-function Cursors(cursors) {
-	return html`
-		<div class="Cursors">
-			${Object.entries(cursors).map(([_, cursor]) => Cursor(cursor))}
-		</div>
-	`
-}

@@ -29,7 +29,7 @@ class PartyServer {
 			`Connected:
   id: ${conn.id}
   room: ${this.party.id}
-  url: ${new URL(ctx.request.url).pathname}`
+  url: ${new URL(ctx.request.url).pathname}`,
 		)
 
 		const connections = []
@@ -39,7 +39,7 @@ class PartyServer {
 
 		// Send a message to the connection
 		conn.send(
-			JSON.stringify({type: 'welcome', connections: connections.length})
+			JSON.stringify({type: 'welcome', connections: connections.length}),
 		)
 	}
 
@@ -48,29 +48,29 @@ class PartyServer {
 	 * @param {Connection} sender
 	 */
 	onMessage(messageString, sender) {
-		// console.log(`connection ${sender.id} sent message: ${messageString}`)
 		const message = JSON.parse(messageString)
 		console.log('server got', message)
 
 		if (message?.pointer) {
-			const cursor = JSON.stringify({id: sender.id, type: 'cursorUpdate', lastUpdate: Date.now(), ...message})
-			// sender.send(cursor)
+			const cursor = JSON.stringify({
+				id: sender.id,
+				type: 'cursorUpdate',
+				lastUpdate: Date.now(),
+				...message,
+			})
+			// Broadcast the received message to all other connections in the room except the sender
 			this.party.broadcast(cursor)
+			// for (const conn of this.party.getConnections()) {
+			// 	if (conn.id !== sender.id) {
+			// 		// conn.send(JSON.stringify(msg))
+			// 		conn.send(JSON.stringify({type: 'yolo', msg: 'hello'}))
+			// 	}
+			// }
+			// this.party.broadcast(JSON.stringify(msg), [sender.id])
 		}
-
-		// const position = JSON.parse(message)
-		// // Broadcast the received message to all other connections in the room except the sender
-		// const msg = {type: 'test', message, position}
-		// for (const conn of this.party.getConnections()) {
-		// 	if (conn.id !== sender.id) {
-		// 		// conn.send(JSON.stringify(msg))
-		// 		conn.send(JSON.stringify({type: 'yolo', msg: 'hello'}))
-		// 	}
-		// }
-		// this.party.broadcast(JSON.stringify(msg), [sender.id])
 	}
 
-	async onRequest(req) {
+	/* async onRequest(req) {
 		if (req.method === 'POST') {
 			const body = await req.json()
 			return new Response(JSON.stringify(body), {
@@ -80,7 +80,7 @@ class PartyServer {
 		}
 
 		return new Response('Not found', {status: 404})
-	}
+	} */
 }
 
 export default PartyServer

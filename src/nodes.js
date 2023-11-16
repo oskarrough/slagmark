@@ -14,10 +14,6 @@ export class GameLoop extends Loop {
 	}
 
 	tick() {
-		this.render()
-	}
-
-	render() {
 		render(this.element, UI(this))
 	}
 }
