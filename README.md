@@ -1,13 +1,16 @@
 Web Rumble
 
-This is for now a proof of concept, inspired by Warcraft Rumble et alia.
+This is for now a proof of concept, inspired by Dota, Warcraft Rumble, Totally Accurate Battle Simulator, et alia.
+
+Latest version is at https://rumble.0sk.ar.
 
 Basic ideas:
 
 - two `Player`s
 - player receives 1 `Gold` per second (max 10)
 - player receives 4 random `Minion`s at start
-- player can deploy own minions to a `Board`
+- get a new (random) minion every 3 seconds
+- player can deploy their minions to their own `Board`
 - deployed minions move towards the opposite end of the Board
 - minions will attempt to fight any enemy minion on the same `Y` value
 
@@ -18,8 +21,11 @@ Basic ideas:
 
 ## Development
 
+You need two local servers at the same time. Can also use `npm`.
+
 ```
-bunx partykit dev
+bun install
+bun run websocketserver
 bun run dev
 ```
 
