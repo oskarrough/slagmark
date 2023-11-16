@@ -129,7 +129,7 @@ export class Minion extends Task {
 			return
 		}
 		this.parent.get(Gold).decrement()
-		this.deployed = game.elapsedTime
+		this.deployed = this.root.elapsedTime
 		this.parent.get(Board).add(this)
 		console.log(isAI ? 'AI' : 'Player', 'deploy', this.minionType)
 	}

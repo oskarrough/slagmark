@@ -1,25 +1,13 @@
-import {render} from './utils.js'
-import {GameLoop} from './nodes.js'
-import {UI} from './ui.js'
-import {socket} from './multiplayer.js'
 import './index.css'
+import {socket} from './multiplayer.js'
+import { WebRumble } from './web-rumble.js'
 import {LiveCursors} from './live-cusors.js'
 
-window.socket = socket
-
-customElements.define(
-	'web-rumble',
-	class WebRumble extends HTMLElement {
-		connectedCallback() {
-			const game = new GameLoop()
-			game.element = this
-			window.game = game
-			render(this, UI(game))
-		}
-	},
-)
-
+customElements.define('web-rumble', WebRumble)
 customElements.define('live-cursors', LiveCursors)
+
+// for debugging
+window.rumblesocket = socket
 
 // Catch and handle messages from the server
 socket.addEventListener('message', (event) => {
@@ -32,3 +20,4 @@ socket.addEventListener('message', (event) => {
 		console.log('unhandled message', msg)
 	}
 })
+

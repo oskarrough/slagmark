@@ -51,8 +51,8 @@ function Menu(game) {
 						<button onclick=${stopGame}>Quit</button>
 				  `
 				: html` <button onclick=${newGame}>New Rumble</button> `}
-						<p style="min-width: 6rem">FPS ${fps}</p>
-						<p style="min-width: 2rem">${roundOne(game.elapsedTime / 1000)}</p>
+			<p style="min-width: 6rem">FPS ${fps}</p>
+			<p style="min-width: 2rem">${roundOne(game.elapsedTime / 1000)}s</p>
 		</menu>
 	`
 }
