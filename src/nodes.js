@@ -4,7 +4,7 @@ import {UI} from './ui.js'
 
 export class GameLoop extends Loop {
 	build() {
-		return [new Player(), new AI()]
+		return [new Player(), new AI(), new Board()]
 	}
 
 	mount() {
@@ -57,15 +57,7 @@ export class Player extends Task {
 	health = 3
 
 	build() {
-		return [
-			new Gold(),
-			new Minion(),
-			new Minion(),
-			new Minion(),
-			new Minion(),
-			new Board(),
-			new RefillMinions(),
-		]
+		return [new Gold(), new Minion(), new Minion(), new Minion(), new Minion(), new RefillMinions()]
 	}
 
 	tick() {
@@ -99,39 +91,43 @@ export class Minion extends Task {
 	tick() {
 		if (!this.deployed) return
 
-		const isAIMinion = this.parent.parent.is(AI)
-		const opponent = isAIMinion ? Player : AI
+		const isAI = this.parent.is(AI)
+		const startY = isAI ? this.root.get(Board).height : 0
+		const finalY = isAI ? 0 : this.root.get(Board).height
+		const opponent = this.root.find(isAI ? Player : AI)
 
 		// Fight any enemies on same Y, and remove the loser.
-		const enemies = this.findEnemies(opponent)
-		for (const enemy of enemies) {
-			const loser = this.fight(enemy)
-			loser.disconnect()
-			if (loser === this) return
+		if (this.y !== startY)  {
+			const enemies = this.findEnemies(opponent)
+			for (const enemy of enemies) {
+				const loser = this.fight(enemy)
+				loser.disconnect()
+				if (loser === this) return
+			}
 		}
 
 		// If we reached the opposite end, opponent player loses a life, and we leave the board.
-		const finalY = isAIMinion ? 0 : this.parent.height
 		if (this.y === finalY) {
-			this.root.find(opponent).health--
+			opponent.health--
 			this.disconnect()
 			return
 		}
 
-		this.move(isAIMinion ? -1 : 1)
+		this.move(isAI ? -1 : 1)
 	}
 
 	deploy() {
-		const isAI = this.parent.is(AI)
-		if (isAI) this.y = this.parent.get(Board).height
+		// Handle gold
 		if (this.parent.get(Gold).amount < this.cost) {
 			console.log('not enough gold')
 			return
 		}
 		this.parent.get(Gold).decrement()
+		// Deploy
+		const isAI = this.parent.is(AI)
+		this.y = isAI ? this.root.get(Board).height : 0
 		this.deployed = this.root.elapsedTime
-		this.parent.get(Board).add(this)
-		console.log(isAI ? 'AI' : 'Player', 'deploy', this.minionType)
+		console.log(isAI ? 'AI' : 'Player', 'deploy', this.minionType, this.y)
 	}
 
 	move(direction = 1) {
@@ -140,8 +136,8 @@ export class Minion extends Task {
 
 	// Returns the losing minion, if draw return a random winner
 	fight(opponent) {
-		const isAI = this.parent.parent.is(AI)
-		console.log(isAI ? 'AI' : 'Player', this.minionType, 'vs', opponent.minionType)
+		const isAI = this.parent.is(AI)
+		console.log('Fight on', this.y, isAI ? 'AI' : 'Player', this.minionType, 'vs', opponent.minionType)
 		const winningCombos = {
 			rock: 'scissors',
 			paper: 'rock',
@@ -156,13 +152,8 @@ export class Minion extends Task {
 		}
 	}
 
-	// Returns a list of enemy minions on the same Y position.
-	findEnemies(player) {
-		return this.root
-			.find(player)
-			.get(Board)
-			.getAll(Minion)
-			.filter((minion) => minion.y === this.y)
+	findEnemies(opponent) {
+		return opponent.getAll(Minion).filter((minion) => minion.y === this.y)
 	}
 }
 

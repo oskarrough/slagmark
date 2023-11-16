@@ -13,14 +13,20 @@ export function UI(game) {
 			<div>
 				<h2>AI ${HealthBar(ai.health)}</h2>
 				<ul class="MinionBar">
-					${ai.getAll(Minion).map(minion)}
+					${ai
+						.getAll(Minion)
+						.filter((m) => !m.deployed)
+						.map(minion)}
 				</ul>
 				${GoldBar(ai.get(Gold))}
 			</div>
 			<div>
 				<h2>Player ${HealthBar(player.health)}</h2>
 				<ul class="MinionBar">
-					${player.getAll(Minion).map(minion)}
+					${player
+						.getAll(Minion)
+						.filter((m) => !m.deployed)
+						.map(minion)}
 				</ul>
 				${GoldBar(player.get(Gold))}
 			</div>
@@ -28,10 +34,16 @@ export function UI(game) {
 		<main>
 			<div class="Board">
 				<ul data-ai>
-					${ai.get(Board).getAll(Minion).map(minion)}
+					${ai
+						.getAll(Minion)
+						.filter((m) => m.deployed)
+						.map(minion)}
 				</ul>
 				<ul data-player>
-					${player.get(Board).getAll(Minion).map(minion)}
+					${player
+						.getAll(Minion)
+						.filter((m) => m.deployed)
+						.map(minion)}
 				</ul>
 			</div>
 		</main>
@@ -67,8 +79,8 @@ function minionTypeToEmoji(type) {
 }
 
 const minion = (minion) => {
-	const isAi = minion.parent?.is(AI) || minion.parent.parent.is(AI)
-	const height = minion.parent.height
+	const isAi = minion.parent.is(AI)
+	const height = minion.parent.parent.get(Board).height
 	return html`<li
 		class=${`Minion ${isAi ? 'ai' : null}`}
 		data-y=${minion.y}
