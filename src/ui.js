@@ -42,15 +42,17 @@ function Menu(game) {
 	const newGame = () => game.start()
 	const stopGame = () => game.stop()
 	const toggle = () => (game.paused ? game.play() : game.pause())
+	const fps = roundOne(1000 / game.deltaTime)
 	return html`
 		<menu>
 			${game.started
 				? html`
 						<button onclick=${toggle}>${game.paused ? 'Play' : 'Pause'}</button>
 						<button onclick=${stopGame}>Quit</button>
-						<p>${roundOne(game.elapsedTime / 1000)}</p>
 				  `
 				: html` <button onclick=${newGame}>New Rumble</button> `}
+						<p style="min-width: 6rem">FPS ${fps}</p>
+						<p style="min-width: 2rem">${roundOne(game.elapsedTime / 1000)}</p>
 		</menu>
 	`
 }
