@@ -1,5 +1,5 @@
 {
-	"name": "webrumble",
+	"name": "rumble",
 	"private": true,
 	"version": "0.0.0",
 	"type": "module",
@@ -12,14 +12,14 @@
 	"dependencies": {
 		"gsap": "^3.12.2",
 		"lodash": "^4.17.21",
-		"partysocket": "0.0.15",
+		"partysocket": "^0.0.15",
 		"prettier": "^3.1.0",
 		"uhtml": "^4.1.19",
 		"vroum": "^0.1.10"
 	},
 	"devDependencies": {
-		"vite": "^4.4.5",
-		"partykit": "0.0.35"
+		"vite": "^5.0.0",
+		"partykit": "^0.0.37"
 	},
 	"prettier": {
 		"bracketSpacing": false,
