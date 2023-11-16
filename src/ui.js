@@ -11,14 +11,14 @@ export function UI(game) {
 		<nav>${Menu(game)}</nav>
 		<aside>
 			<div>
-				<h2>AI ${ai.health} ♥️</h2>
+				<h2>AI ${HealthBar(ai.health)}</h2>
 				<ul>
 					${ai.getAll(Minion).map(minion)}
 				</ul>
 				${GoldBar(ai.get(Gold))}
 			</div>
 			<div>
-				<h2>Player ${player.health} ♥️</h2>
+				<h2>Player ${HealthBar(player.health)}</h2>
 				<ul>
 					${player.getAll(Minion).map(minion)}
 				</ul>
@@ -52,15 +52,8 @@ const minion = (minion) => {
 		class=${`Minion ${isAi ? 'ai' : null}`}
 		style=${`top: ${((height - minion.y) / height) * 100}%`}
 	>
-		<button onclick=${() => minion.deploy()}>
-			${minionTypeToEmoji(minion.minionType)}
-		</button>
+		<button onclick=${() => minion.deploy()}>${minionTypeToEmoji(minion.minionType)}</button>
 		${minion.deployed ? minion.y : null}
-		<time hidden
-			>${minion.deployed
-				? roundOne(game.timeSince(minion.deployed) / 1000)
-				: null}</time
-		>
 	</li>`
 }
 
@@ -85,5 +78,12 @@ function GoldBar(gold) {
 	const nuggets = Array(gold.amount).fill('🪙')
 	return html`<ul class="GoldBar">
 		${nuggets.map((n) => html`<li>${n}</li>`)}
+	</ul>`
+}
+
+function HealthBar(health) {
+	const hearts = Array(health).fill('♥️')
+	return html`<ul class="HealthBar">
+		${hearts.map((n) => html`<li>${n}</li>`)}
 	</ul>`
 }

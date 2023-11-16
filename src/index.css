@@ -19,16 +19,22 @@ body {
 	overflow: hidden;
 }
 
+.HealthBar,
 ul.GoldBar,
 aside ul:has(.Minion) {
 	display: inline-flex;
 	flex-flow: row wrap;
+	place-items: center;
 	gap: 0.25rem;
-	background: hsla(0 0% 0% / 0.5);
-	border: 2px solid hsla(0 100% 100% / 0.5);
-	padding: 0.5rem;
+	/* background: hsla(0 0% 0% / 0.5); */
+	border: 1px solid hsla(0 100% 100% / 0.5);
+	/* padding: 0.5rem; */
 	border-radius: 5px;
 	min-height: 3rem;
+}
+
+.HealthBar {
+	color: red;
 }
 
 menu {
@@ -51,7 +57,7 @@ web-rumble {
 	margin: auto;
 	display: grid;
 	grid-template-rows: min-content 1fr;
-	grid-template-columns: 2fr 3fr;
+	grid-template-columns: max-content 3fr;
 }
 
 web-rumble > nav {
