@@ -5,16 +5,19 @@ import {socket} from './multiplayer.js'
 const sendObject = (pos) => socket.send(JSON.stringify(pos))
 const throttledSend = throttle(sendObject, 16, {trailing: true})
 
-// [id: string]: {id, pointer, x,y,lastUpdate}
-const CURSORS = {}
-
 /**
  * Send cursor position to the server via websockets.
  * Collect all cursor positions from the server and render them.
  */
 export class LiveCursors extends HTMLElement {
+	constructor() {
+		super()
+		// [id: string]: {id, pointer, x,y,lastUpdate}
+		this.cursors = {}
+	}
+
 	connectedCallback() {
-		window.addEventListener('mousemove', this.onPointerMove)
+		window.addEventListener('mousemove', this.onPointerMove, {passive: true})
 		window.addEventListener('touchmove', this.onPointerMove, {passive: false})
 		window.addEventListener('touchend', this.onTouchEnd)
 
@@ -38,7 +41,11 @@ export class LiveCursors extends HTMLElement {
 		socket.addEventListener('message', (event) => {
 			const msg = JSON.parse(event.data)
 			if (msg.type === 'cursorUpdate') {
-				CURSORS[msg.id] = msg
+				this.cursors[msg.id] = msg
+				this.render()
+			} else if (msg.type === 'cursorRemove') {
+				console.log('deleted cursor', msg.id)
+				delete this.cursors[msg.id]
 				this.render()
 			}
 		})
@@ -52,7 +59,7 @@ export class LiveCursors extends HTMLElement {
 		throttledSend(position)
 	}
 
-	// Catch the end of touch events. Dunno why we need this.
+	// Catch the end of touch events. Allows the server to detect and remove the cursor.
 	onTouchEnd = () => {
 		if (!socket) return
 		socket.send(JSON.stringify({}))
@@ -70,7 +77,7 @@ export class LiveCursors extends HTMLElement {
 	}
 
 	render() {
-		render(this, html`${Object.entries(CURSORS).map(([_, cursor]) => this.renderCursor(cursor))}`)
+		render(this, html`${Object.entries(this.cursors).map(([_, cursor]) => this.renderCursor(cursor))}`)
 	}
 
 	renderCursor(cursor) {

@@ -38,9 +38,7 @@ class PartyServer {
 		}
 
 		// Send a message to the connection
-		conn.send(
-			JSON.stringify({type: 'welcome', connections: connections.length}),
-		)
+		conn.send(JSON.stringify({type: 'welcome', connections: connections.length}))
 	}
 
 	/**
@@ -67,6 +65,8 @@ class PartyServer {
 			// 	}
 			// }
 			// this.party.broadcast(JSON.stringify(msg), [sender.id])
+		} else {
+			this.party.broadcast(JSON.stringify({type: 'cursorRemove', id: sender.id}))
 		}
 	}
 
