@@ -70,8 +70,8 @@ export class Player extends Task {
 
 	tick() {
 		if (this.health <= 0) {
-			console.log(`${this.constructor.name} lost`)
-			this.root.pause()
+			console.log(`${this.constructor.name} lost but we continue ticking..`)
+			// this.root.pause()
 		}
 	}
 }
@@ -83,6 +83,7 @@ export class Minion extends Task {
 	minionType = ''
 	speed = 1
 	y = 0
+	cost = 1
 
 	delay = 1000
 	duration = 0
@@ -96,8 +97,12 @@ export class Minion extends Task {
 
 	deploy() {
 		if (this.parent.is(AI)) this.y = this.parent.get(Board).height
-		this.deployed = game.elapsedTime
+		if (this.parent.get(Gold).amount < this.cost) {
+			console.log('not enough gold')
+			return
+		}
 		this.parent.get(Gold).decrement()
+		this.deployed = game.elapsedTime
 		this.parent.get(Board).add(this)
 	}
 
