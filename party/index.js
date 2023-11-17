@@ -10,7 +10,7 @@
 /**
  * @implements {Server}
  */
-class PartyServer {
+export default class PartyServer {
 	/**
 	 * @param {Party} party - The Party object.
 	 */
@@ -24,21 +24,19 @@ class PartyServer {
 	 * @param {ConnectionContext} ctx - The context object.
 	 */
 	onConnect(conn, ctx) {
-		// A websocket just connected!
-		console.log(
-			`Connected:
+		console.log(`Connected:
   id: ${conn.id}
   room: ${this.party.id}
-  url: ${new URL(ctx.request.url).pathname}`,
-		)
+  url: ${new URL(ctx.request.url).pathname}`)
+		this.updatePresence()
+	}
 
-		const connections = []
-		for (const c of this.party.getConnections()) {
-			connections.push(c)
-		}
+	onClose() {
+		this.updatePresence()
+	}
 
-		// Send a message to the connection
-		conn.send(JSON.stringify({type: 'welcome', connections: connections.length}))
+	onError() {
+		this.updatePresence()
 	}
 
 	/**
@@ -47,40 +45,35 @@ class PartyServer {
 	 */
 	onMessage(messageString, sender) {
 		const message = JSON.parse(messageString)
-		console.log('server got', message)
-
+		// console.log('server got', message)
 		if (message?.pointer) {
-			const cursor = JSON.stringify({
-				id: sender.id,
+			const msg = {
 				type: 'cursorUpdate',
-				lastUpdate: Date.now(),
+				id: sender.id,
 				...message,
-			})
-			// Broadcast the received message to all other connections in the room except the sender
-			this.party.broadcast(cursor)
-			// for (const conn of this.party.getConnections()) {
-			// 	if (conn.id !== sender.id) {
-			// 		// conn.send(JSON.stringify(msg))
-			// 		conn.send(JSON.stringify({type: 'yolo', msg: 'hello'}))
-			// 	}
-			// }
-			// this.party.broadcast(JSON.stringify(msg), [sender.id])
+				// lastUpdate: Date.now(),
+			}
+			this.party.broadcast(JSON.stringify(msg), [sender.id])
 		} else {
-			this.party.broadcast(JSON.stringify({type: 'cursorRemove', id: sender.id}))
+			const msg = {type: 'cursorRemove', id: sender.id}
+			this.party.broadcast(JSON.stringify(msg), [sender.id])
 		}
 	}
 
-	/* async onRequest(req) {
-		if (req.method === 'POST') {
-			const body = await req.json()
-			return new Response(JSON.stringify(body), {
-				status: 200,
-				headers: {'Content-Type': 'application/json'},
-			})
-		}
+	updatePresence() {
+		const count = Array.from(this.party.getConnections()).length
+		const msg = {type: 'presence', count}
+		this.party.broadcast(JSON.stringify(msg))
+	}
 
-		return new Response('Not found', {status: 404})
-	} */
+	// async onRequest(req) {
+	// 	if (req.method === 'POST') {
+	// 		const body = await req.json()
+	// 		return new Response(JSON.stringify(body), {
+	// 			status: 200,
+	// 			headers: {'Content-Type': 'application/json'},
+	// 		})
+	// 	}
+	// 	return new Response('Not found', {status: 404})
+	// }
 }
-
-export default PartyServer

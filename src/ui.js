@@ -5,17 +5,23 @@ export function UI(game) {
 	if (!game.children?.length)
 		return html`
 			<header>
-				Gold is flowing, your minions await.<br />
-				Strategically deploy your ${minionTypeToEmoji('rock')} ${minionTypeToEmoji('paper')}
-				${minionTypeToEmoji('scissors')} and witness the battle.
-				<br />
-				<br />
-				<button type="button" onclick=${() => game.start()}>New Rumble</button>
-				<br /><br /><br />
-				<p style="opacity:0.6"><small>
-					Pssst: this is an experiment from <em>Ooh Games</em> in creating small games for the web. <a href="https://matrix.to/#/#ooh-games:matrix.org">Come say hi</a>, help make it fun! 
-					</small>
-				</p>
+				<article class="Splash">
+					Gold is flowing, your minions await.<br />
+					Strategically deploy your ${minionTypeToEmoji('rock')} ${minionTypeToEmoji('paper')}
+					${minionTypeToEmoji('scissors')} and witness the battle.
+					<br />
+					<br />
+					<button type="button" onclick=${() => game.start()}>New Rumble</button>
+					<br /><br />
+					<p><live-presence></live-presence> players in the lobby</p>
+					<br /><br /><br />
+					<p style="opacity:0.6">
+						<small>
+							Pssst: this is an experiment from <em>Ooh Games</em> in creating small games for the web.
+							<a href="https://matrix.to/#/#ooh-games:matrix.org">Come say hi</a>, help make it fun!
+						</small>
+					</p>
+				</article>
 			</header>
 		`
 
@@ -76,6 +82,7 @@ function Menu(game) {
 		<menu>
 			<button type="button" onclick=${toggle}>${game.paused ? 'Play' : 'Pause'}</button>
 			<button type="button" onclick=${stopGame}>Quit</button>
+			<p><live-presence></live-presence> online&nbsp;&nbsp;</p>
 			<p style="min-width: 5rem"><small>FPS ${fps}</small></p>
 			<p style="min-width: 3.5rem"><small>${roundOne(game.elapsedTime / 1000)}s</small></p>
 		</menu>
