@@ -106,6 +106,7 @@ ul.GoldBar,
 	flex-flow: row wrap;
 	place-items: center;
 	gap: 0.1rem;
+	user-select: none;
 }
 
 .HealthBar {
@@ -129,7 +130,6 @@ ul.GoldBar,
 .GoldBar {
 	min-height: 3rem;
 	padding: 0.5rem;
-	user-select: none;
 }
 
 .Minion {
@@ -146,7 +146,6 @@ ul.GoldBar,
 	border-radius: 5px;
 	padding: 0px 4px;
 	font-size: 12px;
-	user-select: none;
 }
 .Minion button {
 	border-radius: 50%;
