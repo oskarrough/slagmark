@@ -1,4 +1,4 @@
-export {render, html} from 'uhtml'
+export {render, html} from 'uhtml/keyed'
 
 /**
  * @param {Array} arr

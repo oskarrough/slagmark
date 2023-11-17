@@ -2,28 +2,9 @@ import {html, roundOne} from './utils.js'
 import {Player, AI, Gold, Minion, Board} from './nodes.js'
 
 export function UI(game) {
-	if (!game.children?.length)
-		return html`
-			<header>
-				<article class="Splash">
-					Gold is flowing, your minions await.<br />
-					Strategically deploy your ${minionTypeToEmoji('rock')} ${minionTypeToEmoji('paper')}
-					${minionTypeToEmoji('scissors')} and witness the battle.
-					<br />
-					<br />
-					<button type="button" onclick=${() => game.start()}>New Rumble</button>
-					<br /><br />
-					<p><live-presence></live-presence> players in the lobby</p>
-					<br /><br /><br />
-					<p style="opacity:0.6">
-						<small>
-							Pssst: this is an experiment from <em>Ooh Games</em> in creating small games for the web.
-							<a href="https://matrix.to/#/#ooh-games:matrix.org">Come say hi</a>, help make it fun!
-						</small>
-					</p>
-				</article>
-			</header>
-		`
+	if (!game.children?.length) {
+		return html` <header>${Splash(game)}</header> `
+	}
 
 	const player = game.get(Player)
 	const ai = game.get(AI)
@@ -51,29 +32,20 @@ export function UI(game) {
 		</aside>
 
 		<main>
-			<div class="Board">
-				<ul data-ai>
-					${MinionList(ai, true)}
-				</ul>
-				<ul data-player>
-					${MinionList(player, true)}
-				</ul>
-			</div>
+			<ul data-ai>
+				${MinionList(ai, true)}
+			</ul>
+			<ul data-player>
+				${MinionList(player, true)}
+			</ul>
 		</main>
 	`
 }
 
-function MinionList(parent, deployed) {
-	const list = parent.getAll(Minion).filter((m) => Boolean(m.deployed) === deployed)
-	if (!list.length) return html``
-	return list.map((m) => minion(m))
-}
-
 function Menu(game) {
-	// const newGame = () => game.start()
+	const fps = roundOne(1000 / game.deltaTime)
 	const stopGame = () => game.stop()
 	const toggle = () => (game.paused ? game.play() : game.pause())
-	const fps = roundOne(1000 / game.deltaTime)
 	return html`
 		<menu>
 			<button type="button" onclick=${toggle}>${game.paused ? 'Play' : 'Pause'}</button>
@@ -83,6 +55,16 @@ function Menu(game) {
 			<p style="min-width: 3.5rem"><small>${roundOne(game.elapsedTime / 1000)}s</small></p>
 		</menu>
 	`
+}
+
+function MinionList(parent, deployed) {
+	let list
+	if (deployed) {
+		list = parent.getAll(Minion).filter((m) => m.deployed)
+	} else {
+		list = parent.getAll(Minion).filter((m) => !m.deployed)
+	}
+	return list.map((m) => minion(m))
 }
 
 function minionTypeToEmoji(type) {
@@ -96,8 +78,8 @@ function minionTypeToEmoji(type) {
 
 const minion = (minion) => {
 	const isAi = minion.parent.is(AI)
+	const canDeploy = !minion.deployed && minion.parent.get(Gold).amount >= minion.cost
 	const height = minion.parent.parent.get(Board).height
-	const canDeploy = minion.parent.get(Gold).amount >= minion.cost
 	const topPercentage = ((height - minion.y) / height) * 100
 	return html`<li
 		class=${`Minion ${isAi ? 'ai' : null}`}
@@ -112,7 +94,7 @@ const minion = (minion) => {
 }
 
 function GoldBar(gold) {
-	if (!gold.amount) return html`<ul class="GoldBar"></ul>`
+	if (!gold?.amount) return html`<ul class="GoldBar"></ul>`
 	const nuggets = Array(gold.amount).fill('🪙')
 	return html`<ul class="GoldBar">
 		${nuggets.map((n) => html`<li>${n}</li>`)}
@@ -125,4 +107,26 @@ function HealthBar(health) {
 	return html`<ul class="HealthBar">
 		${hearts.map((n) => html`<li>${n}</li>`)}
 	</ul>`
+}
+
+function Splash(game) {
+	return html`
+		<article class="Splash">
+			Gold is flowing, your minions await.<br />
+			Strategically deploy your ${minionTypeToEmoji('rock')} ${minionTypeToEmoji('paper')}
+			${minionTypeToEmoji('scissors')} and witness the battle.
+			<br />
+			<br />
+			<button type="button" onclick=${() => game.start()}>New Rumble</button>
+			<br /><br />
+			<p><live-presence></live-presence> players in the lobby</p>
+			<br /><br /><br />
+			<p style="opacity:0.6">
+				<small>
+					Pssst: this is an experiment from <em>Ooh Games</em> in creating small games for the web.
+					<a href="https://matrix.to/#/#ooh-games:matrix.org">Come say hi</a>, help make it fun!
+				</small>
+			</p>
+		</article>
+	`
 }

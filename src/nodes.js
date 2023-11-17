@@ -43,7 +43,7 @@ export class Gold extends Task {
 
 	decrement(value = 1) {
 		if (this.amount < 2) return 0
-		this.amount = this.amount - value 
+		this.amount = this.amount - value
 	}
 }
 
@@ -66,9 +66,12 @@ export class Player extends Task {
 	}
 
 	tick() {
+	}
+
+	afterTick() {
 		if (this.health <= 0) {
-			// console.log(`${this.constructor.name} lost`)
-			// this.root.stop()
+			console.log(`${this.constructor.name} lost`)
+			this.parent.stop()
 		}
 	}
 }
@@ -96,13 +99,14 @@ export class Minion extends Task {
 	tick() {
 		if (!this.deployed) return
 
+		const root = this.parent.parent
 		const isAI = this.parent.is(AI)
-		const startY = isAI ? this.root.get(Board).height : 0
-		const finalY = isAI ? 0 : this.root.get(Board).height
-		const opponent = this.root.find(isAI ? Player : AI)
+		const startY = isAI ? root.get(Board).height : 0
+		const finalY = isAI ? 0 : root.get(Board).height
+		const opponent = root.find(isAI ? Player : AI)
 
 		// Fight any enemies on same Y, and remove the loser.
-		if (this.y !== startY && this.y !== finalY)  {
+		if (this.y !== startY && this.y !== finalY) {
 			const enemies = this.findEnemies(opponent)
 			for (const enemy of enemies) {
 				const loser = this.fight(enemy)
@@ -130,8 +134,8 @@ export class Minion extends Task {
 		this.parent.get(Gold).decrement(this.cost)
 		// Deploy
 		const isAI = this.parent.is(AI)
-		this.y = isAI ? this.root.get(Board).height : 0
-		this.deployed = this.root.elapsedTime
+		this.y = isAI ? this.parent.parent.get(Board).height : 0
+		this.deployed = this.parent.parent.elapsedTime
 		console.log(isAI ? 'AI' : 'Player', 'deploy', this.minionType, this.y)
 	}
 
