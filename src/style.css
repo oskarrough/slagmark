@@ -18,8 +18,14 @@
 	background: var(--bg);
 	color: var(--text);
 	font-family: Meilen, system-ui;
-	font-size: 1.25rem;
+	font-size: 1rem;
 	line-height: 1.5;
+}
+
+@media (min-width: 37.5rem) {
+	:root {
+		font-size: 1.25rem;
+	}
 }
 
 body {
@@ -48,10 +54,12 @@ web-rumble {
 	height: 100vh;
 	min-height: 50vh;
 	margin: auto;
+	padding: 0.5rem;
 	display: grid;
 	grid-template-rows: min-content 1fr;
-	/* 17 is the magic number that avoids aside jumping */
-	grid-template-columns: minmax(17rem, max-content) minmax(100px, 1fr);
+	/* 16 is the magic number that avoids aside jumping */
+	grid-template-columns: minmax(16rem, max-content) minmax(3rem, 1fr);
+	gap: 1rem;
 }
 
 web-rumble > header {
@@ -66,7 +74,7 @@ web-rumble > aside {
 	align-items: center;
 	gap: 2rem;
 	justify-content: space-between;
-	margin: auto 0 auto 1rem;
+	margin: auto 0;
 
 	& > div {
 		width: 100%;
@@ -109,7 +117,6 @@ ul.GoldBar,
 
 .MinionBar {
 	padding: 0.5rem 0.5rem 0.6rem;
-	gap: 1rem;
 	border-bottom: 0;
 }
 
@@ -120,7 +127,6 @@ ul.GoldBar,
 }
 
 .Board {
-	margin: 1rem;
 	position: relative;
 	border: 3px inset hsla(0 100% 100% / 0.5);
 	background: var(--bg2);
@@ -165,9 +171,10 @@ ul.GoldBar,
 	position: absolute;
 	transform: translateY(-50%);
 	transition: top 1000ms linear;
+	left: 0.5rem;
 }
 .Board [data-player] li {
-	left: 3rem;
+	left: 1.5rem;
 }
 
 .Cursor {
