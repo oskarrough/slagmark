@@ -35,6 +35,10 @@ button {
 	font-family: inherit;
 }
 
+p a {
+	color: floralwhite;
+}
+
 h2 {
 	user-select: none;
 }

@@ -9,7 +9,13 @@ export function UI(game) {
 				Strategically deploy your ${minionTypeToEmoji('rock')} ${minionTypeToEmoji('paper')}
 				${minionTypeToEmoji('scissors')} and witness the battle.
 				<br />
+				<br />
 				<button type="button" onclick=${() => game.start()}>New Rumble</button>
+				<br /><br /><br />
+				<p style="opacity:0.6"><small>
+					Pssst: this is an experiment from <em>Ooh Games</em> in creating small games for the web. <a href="https://matrix.to/#/#ooh-games:matrix.org">Come say hi</a>, help make it fun! 
+					</small>
+				</p>
 			</header>
 		`
 
