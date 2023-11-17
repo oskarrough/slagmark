@@ -13,5 +13,7 @@ export class WebRumble extends HTMLElement {
 		game.element = this
 		window.rumble = game
 		render(this, UI(game))
+		// jump straight into a game
+		game.start()
 	}
 }

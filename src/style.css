@@ -85,8 +85,13 @@ web-rumble > aside {
 
 web-rumble > main {
 	grid-area: 2 / 2;
+	flex: 1;
+
 	display: flex;
 	flex-flow: column nowrap;
+	position: relative;
+	background: var(--bg2);
+	border: 3px inset hsla(0 100% 100% / 0.5);
 }
 
 web-rumble ul {
@@ -106,6 +111,7 @@ ul.GoldBar,
 .HealthBar {
 	color: red;
 	font-size: 2rem;
+	min-height: 1em;
 }
 
 .MinionBar,
@@ -124,13 +130,6 @@ ul.GoldBar,
 	min-height: 3rem;
 	padding: 0.5rem;
 	user-select: none;
-}
-
-.Board {
-	position: relative;
-	border: 3px inset hsla(0 100% 100% / 0.5);
-	background: var(--bg2);
-	flex: 1;
 }
 
 .Minion {
@@ -167,13 +166,13 @@ ul.GoldBar,
 }
 
 /* Deployed minions */
-.Board li {
+web-rumble > main .Minion {
 	position: absolute;
 	transform: translateY(-50%);
 	transition: top 1000ms linear;
 	left: 0.5rem;
 }
-.Board [data-player] li {
+web-rumble > main [data-player] .Minion {
 	left: 1.5rem;
 }
 
