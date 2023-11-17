@@ -97,7 +97,7 @@ export class Minion extends Task {
 		const opponent = this.root.find(isAI ? Player : AI)
 
 		// Fight any enemies on same Y, and remove the loser.
-		if (this.y !== startY)  {
+		if (this.y !== startY && this.y !== finalY)  {
 			const enemies = this.findEnemies(opponent)
 			for (const enemy of enemies) {
 				const loser = this.fight(enemy)
