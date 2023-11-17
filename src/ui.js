@@ -2,13 +2,24 @@ import {html, roundOne} from './utils.js'
 import {Player, AI, Gold, Minion, Board} from './nodes.js'
 
 export function UI(game) {
-	if (!game.children?.length) return html`<nav>${Menu(game)}</nav>`
+	if (!game.children?.length)
+		return html`
+			<header>
+				Gold is flowing, your minions await.<br />
+				Strategically deploy your ${minionTypeToEmoji('rock')} ${minionTypeToEmoji('paper')}
+				${minionTypeToEmoji('scissors')} and witness the battle.
+				<br />
+				<button type="button" onclick=${() => game.start()}>New Rumble</button>
+			</header>
+		`
 
 	const player = game.get(Player)
 	const ai = game.get(AI)
 
 	return html`
-		<nav>${Menu(game)}</nav>
+		<header>
+			<nav>${Menu(game)}</nav>
+		</header>
 		<aside>
 			<div>
 				<h2>AI ${HealthBar(ai.health)}</h2>
@@ -16,7 +27,7 @@ export function UI(game) {
 					${ai
 						.getAll(Minion)
 						.filter((m) => !m.deployed)
-						.map(minion)}
+						.map((m) => minion(m))}
 				</ul>
 				${GoldBar(ai.get(Gold))}
 			</div>
@@ -26,7 +37,7 @@ export function UI(game) {
 					${player
 						.getAll(Minion)
 						.filter((m) => !m.deployed)
-						.map(minion)}
+						.map((m) => minion(m))}
 				</ul>
 				${GoldBar(player.get(Gold))}
 			</div>
@@ -37,13 +48,13 @@ export function UI(game) {
 					${ai
 						.getAll(Minion)
 						.filter((m) => m.deployed)
-						.map(minion)}
+						.map((m) => minion(m))}
 				</ul>
 				<ul data-player>
 					${player
 						.getAll(Minion)
 						.filter((m) => m.deployed)
-						.map(minion)}
+						.map((m) => minion(m))}
 				</ul>
 			</div>
 		</main>
@@ -51,20 +62,16 @@ export function UI(game) {
 }
 
 function Menu(game) {
-	const newGame = () => game.start()
+	// const newGame = () => game.start()
 	const stopGame = () => game.stop()
 	const toggle = () => (game.paused ? game.play() : game.pause())
 	const fps = roundOne(1000 / game.deltaTime)
 	return html`
 		<menu>
-			${game.started
-				? html`
-						<button onclick=${toggle}>${game.paused ? 'Play' : 'Pause'}</button>
-						<button onclick=${stopGame}>Quit</button>
-				  `
-				: html` <button onclick=${newGame}>New Rumble</button> `}
-			<p style="min-width: 6rem">FPS ${fps}</p>
-			<p style="min-width: 2rem">${roundOne(game.elapsedTime / 1000)}s</p>
+			<button type="button" onclick=${toggle}>${game.paused ? 'Play' : 'Pause'}</button>
+			<button type="button" onclick=${stopGame}>Quit</button>
+			<p style="min-width: 5rem"><small>FPS ${fps}</small></p>
+			<p style="min-width: 3.5rem"><small>${roundOne(game.elapsedTime / 1000)}s</small></p>
 		</menu>
 	`
 }
@@ -78,7 +85,7 @@ function minionTypeToEmoji(type) {
 	return map[type] || type
 }
 
-const minion = (minion, game) => {
+const minion = (minion) => {
 	const isAi = minion.parent.is(AI)
 	const height = minion.parent.parent.get(Board).height
 	const canDeploy = minion.parent.get(Gold).amount >= minion.cost
@@ -88,7 +95,7 @@ const minion = (minion, game) => {
 		data-y=${minion.y}
 		style=${`top: ${topPercentage}%`}
 	>
-		<button ?disabled=${!canDeploy} onclick=${() => minion.deploy()}>
+		<button type="button" ?disabled=${!canDeploy} onclick=${() => minion.deploy()}>
 			${minionTypeToEmoji(minion.minionType)}
 		</button>
 		<span>${minion.deployed ? minion.y : minion.cost}</span>

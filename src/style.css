@@ -10,7 +10,7 @@
 :root {
 	--bg: hsl(166deg 100% 12%);
 	--bg2: hsl(166deg 100% 8%);
-	--text: whitesmoke;
+	--text: floralwhite;
 
 	--player1: #4b3636;
 	--player2: #522f82;
@@ -49,7 +49,7 @@ web-rumble {
 	grid-template-columns: minmax(270px, max-content) minmax(100px, 1fr);
 }
 
-web-rumble > nav {
+web-rumble > header {
 	grid-area: 1 / 1;
 	grid-column: span 2;
 }
@@ -114,16 +114,6 @@ ul.GoldBar,
 	user-select: none;
 }
 
-menu {
-	padding: 0;
-	display: flex;
-	flex-flow: row wrap;
-
-	& button:last-of-type {
-		margin-right: auto;
-	}
-}
-
 .Board {
 	margin: 1rem;
 	position: relative;
@@ -181,3 +171,14 @@ menu {
 	pointer-events: none;
 	transition: all 100ms;
 }
+
+menu {
+	padding: 0rem;
+	display: flex;
+	flex-flow: row wrap;
+
+	& button:last-of-type + p {
+		margin-left: auto;
+	}
+}
+
