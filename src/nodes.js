@@ -17,6 +17,10 @@ export class GameLoop extends Loop {
 		if (!this.element) throw new Error('missing DOM element to render to')
 		render(this.element, UI(this))
 	}
+
+	render() {
+		render(this.element, UI(this))
+	}
 }
 
 export class Gold extends Task {
