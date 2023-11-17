@@ -1,4 +1,4 @@
-import {Node, Loop, Task} from 'vroum/core'
+import {Node, Loop, Task} from 'vroum'
 import {render, random} from './utils.js'
 import {UI} from './ui.js'
 
