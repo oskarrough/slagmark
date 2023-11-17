@@ -14,7 +14,6 @@ export class LivePresence extends HTMLElement {
 		socket.addEventListener('message', (event) => {
 			const msg = JSON.parse(event.data)
 			if (msg.type === 'presence') {
-				console.log('presence', msg.count)
 				this.count.value = msg.count
 			}
 		})

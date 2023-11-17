@@ -57,14 +57,16 @@ function Menu(game) {
 	`
 }
 
+/* Returns a list of HTML minions */
 function MinionList(parent, deployed) {
-	let list
+	let list = parent.getAll(Minion)
 	if (deployed) {
-		list = parent.getAll(Minion).filter((m) => m.deployed)
-	} else {
-		list = parent.getAll(Minion).filter((m) => !m.deployed)
+		list = list.filter((m) => m.deployed)
+	} else if (deployed === false) {
+		list = list.filter((m) => !m.deployed)
 	}
-	return list.map((m) => minion(m))
+	if (!list.length) return null
+	return html`${list.map((m) => minion(m))}`
 }
 
 function minionTypeToEmoji(type) {
