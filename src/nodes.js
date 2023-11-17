@@ -24,7 +24,7 @@ export class GameLoop extends Loop {
 }
 
 export class Gold extends Task {
-	delay = 1000
+	delay = 0
 	duration = 0
 	interval = 1000
 	repeat = Infinity
