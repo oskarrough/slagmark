@@ -78,15 +78,19 @@ function minionTypeToEmoji(type) {
 	return map[type] || type
 }
 
-const minion = (minion) => {
+const minion = (minion, game) => {
 	const isAi = minion.parent.is(AI)
 	const height = minion.parent.parent.get(Board).height
+	const canDeploy = minion.parent.get(Gold).amount >= minion.cost
+	const topPercentage = ((height - minion.y) / height) * 100
 	return html`<li
 		class=${`Minion ${isAi ? 'ai' : null}`}
 		data-y=${minion.y}
-		style=${`top: ${((height - minion.y) / height) * 100}%`}
+		style=${`top: ${topPercentage}%`}
 	>
-		<button onclick=${() => minion.deploy()}>${minionTypeToEmoji(minion.minionType)}</button>
+		<button ?disabled=${!canDeploy} onclick=${() => minion.deploy()}>
+			${minionTypeToEmoji(minion.minionType)}
+		</button>
 		<span>${minion.deployed ? minion.y : minion.cost}</span>
 	</li>`
 }

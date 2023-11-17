@@ -31,14 +31,14 @@ export class Gold extends Task {
 		this.increment()
 	}
 
-	increment() {
+	increment(value = 1) {
 		if (this.amount === this.maxAmount) return
-		this.amount = this.amount + 1
+		this.amount = this.amount + value
 	}
 
-	decrement() {
+	decrement(value = 1) {
 		if (this.amount < 2) return 0
-		this.amount = this.amount - 1
+		this.amount = this.amount - value 
 	}
 }
 
@@ -76,7 +76,7 @@ export class Minion extends Task {
 	minionType = ''
 	speed = 1
 	y = 0
-	cost = 1
+	cost = 2
 
 	delay = 1000
 	duration = 0
@@ -122,7 +122,7 @@ export class Minion extends Task {
 			console.log('not enough gold')
 			return
 		}
-		this.parent.get(Gold).decrement()
+		this.parent.get(Gold).decrement(this.cost)
 		// Deploy
 		const isAI = this.parent.is(AI)
 		this.y = isAI ? this.root.get(Board).height : 0
