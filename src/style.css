@@ -50,7 +50,8 @@ web-rumble {
 	margin: auto;
 	display: grid;
 	grid-template-rows: min-content 1fr;
-	grid-template-columns: minmax(270px, max-content) minmax(100px, 1fr);
+	/* 17 is the magic number that avoids aside jumping */
+	grid-template-columns: minmax(17rem, max-content) minmax(100px, 1fr);
 }
 
 web-rumble > header {
