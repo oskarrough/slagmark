@@ -32,45 +32,41 @@ export function UI(game) {
 		<header>
 			<nav>${Menu(game)}</nav>
 		</header>
+
 		<aside>
 			<div>
 				<h2>AI ${HealthBar(ai.health)}</h2>
 				<ul class="MinionBar">
-					${ai
-						.getAll(Minion)
-						.filter((m) => !m.deployed)
-						.map((m) => minion(m))}
+					${MinionList(ai, false)}
 				</ul>
 				${GoldBar(ai.get(Gold))}
 			</div>
 			<div>
 				<h2>Player ${HealthBar(player.health)}</h2>
 				<ul class="MinionBar">
-					${player
-						.getAll(Minion)
-						.filter((m) => !m.deployed)
-						.map((m) => minion(m))}
+					${MinionList(player, false)}
 				</ul>
 				${GoldBar(player.get(Gold))}
 			</div>
 		</aside>
+
 		<main>
 			<div class="Board">
 				<ul data-ai>
-					${ai
-						.getAll(Minion)
-						.filter((m) => m.deployed)
-						.map((m) => minion(m))}
+					${MinionList(ai, true)}
 				</ul>
 				<ul data-player>
-					${player
-						.getAll(Minion)
-						.filter((m) => m.deployed)
-						.map((m) => minion(m))}
+					${MinionList(player, true)}
 				</ul>
 			</div>
 		</main>
 	`
+}
+
+function MinionList(parent, deployed) {
+	const list = parent.getAll(Minion).filter((m) => Boolean(m.deployed) === deployed)
+	if (!list.length) return html``
+	return list.map((m) => minion(m))
 }
 
 function Menu(game) {
@@ -115,16 +111,16 @@ const minion = (minion) => {
 	</li>`
 }
 
-function GoldBar({amount}) {
-	if (!amount) amount = 0
-	const nuggets = Array(amount).fill('🪙')
+function GoldBar(gold) {
+	if (!gold.amount) return html`<ul class="GoldBar"></ul>`
+	const nuggets = Array(gold.amount).fill('🪙')
 	return html`<ul class="GoldBar">
 		${nuggets.map((n) => html`<li>${n}</li>`)}
 	</ul>`
 }
 
 function HealthBar(health) {
-	if (!health) health = 0
+	if (!health) return html`<ul class="HealthBar"></ul>`
 	const hearts = Array(health).fill('♥️')
 	return html`<ul class="HealthBar">
 		${hearts.map((n) => html`<li>${n}</li>`)}

@@ -14,6 +14,7 @@ export class GameLoop extends Loop {
 	}
 
 	tick() {
+		if (!this.element) throw new Error('missing DOM element to render to')
 		render(this.element, UI(this))
 	}
 }

@@ -34,9 +34,6 @@ export class LiveCursors extends HTMLElement {
 		})
 		observer.observe(document.body)
 
-		// Initial one-time render.
-		this.render()
-
 		// Catch and handle messages from the server.
 		socket.addEventListener('message', (event) => {
 			const msg = JSON.parse(event.data)
@@ -49,6 +46,9 @@ export class LiveCursors extends HTMLElement {
 				this.render()
 			}
 		})
+
+		// Initial one-time render.
+		this.render()
 	}
 
 	onPointerMove = (e) => {
@@ -77,6 +77,8 @@ export class LiveCursors extends HTMLElement {
 	}
 
 	render() {
+		const cursors = Object.entries(this.cursors)
+		if (!cursors.length) return
 		render(this, html`${Object.entries(this.cursors).map(([_, cursor]) => this.renderCursor(cursor))}`)
 	}
 
