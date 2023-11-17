@@ -1,3 +1,5 @@
+@import url('./assets/webfonts.css');
+
 *,
 *::before,
 *::after {
@@ -6,10 +8,18 @@
 }
 
 :root {
-	font-size: 1rem;
+	--bg: hsl(166deg 100% 12%);
+	--bg2: hsl(166deg 100% 8%);
+	--text: whitesmoke;
+
+	--player1: #4b3636;
+	--player2: #522f82;
+
+	background: var(--bg);
+	color: var(--text);
+	font-family: Meilen, system-ui;
+	font-size: 1.25rem;
 	line-height: 1.5;
-	background: #00392c;
-	color: whitesmoke;
 }
 
 body {
@@ -20,12 +30,16 @@ body {
 	min-height: 100vh;
 }
 
+button {
+	font-size: inherit;
+	font-family: inherit;
+}
+
+h2 {
+	user-select: none;
+}
+
 web-rumble {
-	/* border: 2px solid black; */
-	/* border-radius: 5px; */
-	/* background: cornsilk; */
-	/* color: black; */
-	/* width: 100%; */
 	flex: 1;
 	height: 100vh;
 	min-height: 50vh;
@@ -73,25 +87,31 @@ ul.GoldBar,
 	display: inline-flex;
 	flex-flow: row wrap;
 	place-items: center;
-	border: 1px solid hsla(0 100% 100% / 0.5);
-	border-radius: 5px;
+	gap: 0.1rem;
 }
 
 .HealthBar {
 	color: red;
 	font-size: 2rem;
-	padding: 0 0.25em;
-	gap: 0.25em;
+}
+
+.MinionBar,
+.GoldBar {
+	border: 3px inset hsla(0 100% 100% / 0.5);
+	border-radius: 3px;
+	background: var(--bg2);
 }
 
 .MinionBar {
-	padding: 0.5em;
-	gap: 1em;
+	padding: 0.5rem 0.5rem 0.6rem;
+	gap: 1rem;
+	border-bottom: 0;
 }
 
 .GoldBar {
-	min-height: 1.625rem;
-	padding: 0 0.5em;
+	min-height: 3rem;
+	padding: 0.5rem;
+	user-select: none;
 }
 
 menu {
@@ -104,14 +124,11 @@ menu {
 	}
 }
 
-button {
-	font-size: inherit;
-}
-
 .Board {
 	margin: 1rem;
 	position: relative;
-	border: 5px dotted orange;
+	border: 3px inset hsla(0 100% 100% / 0.5);
+	background: var(--bg2);
 	flex: 1;
 }
 
@@ -129,23 +146,30 @@ button {
 	border-radius: 5px;
 	padding: 0px 4px;
 	font-size: 12px;
+	user-select: none;
 }
 .Minion button {
 	border-radius: 50%;
-	background: #4b3636;
+	background: var(--player1);
 	border: 1px solid black;
 	font-size: 2rem;
 	padding: 0;
+	transition: transform 200ms ease-in-out;
 }
 .Minion.ai button {
-	background-color: #522f82;
+	background-color: var(--player2);
+}
+
+.Minion button:hover {
+	transform: scale(1.1);
+	transition-duration: 100ms;
 }
 
 /* Deployed minions */
 .Board li {
 	position: absolute;
 	transform: translateY(-50%);
-	/* transition: top 1000ms linear; */
+	transition: top 1000ms linear;
 }
 .Board [data-player] li {
 	left: 3rem;

@@ -1,6 +1,6 @@
-import './index.css'
+import './style.css'
 import {socket} from './multiplayer.js'
-import { WebRumble } from './web-rumble.js'
+import {WebRumble} from './web-rumble.js'
 import {LiveCursors} from './live-cusors.js'
 
 customElements.define('web-rumble', WebRumble)
@@ -20,4 +20,3 @@ socket.addEventListener('message', (event) => {
 		console.log('unhandled message', msg)
 	}
 })
-
