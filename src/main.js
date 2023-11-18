@@ -13,7 +13,7 @@ customElements.define('rumble-lobby', RumbleLobby)
 // for debugging
 window.rumblesocket = socket
 
-// Catch and handle messages from the server
+// Making sure all messages are caught somewhere.
 socket.addEventListener('message', (event) => {
 	const msg = JSON.parse(event.data)
 	if (msg.type === 'presence') {
@@ -21,6 +21,8 @@ socket.addEventListener('message', (event) => {
 		// handled by <live-presence>
 	} else if (msg.type === 'cursorUpdate') {
 		// handled by <live-cursors>
+	} else if (msg.type === 'connections') {
+		// handled by <rumble-lobby>	
 	} else {
 		console.log('main socket unhandled message', msg)
 	}

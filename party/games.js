@@ -14,18 +14,13 @@ export default class PartyServer {
 		this.updateConnections('connect', conn)
 	}
 
-	async onMessage(websocketMessage, sender) {
-		const event = JSON.parse(websocketMessage)
-		console.log('lobby server unhandled message', this.party.id, event)
-	}
-
 	onClose(conn) {
 		this.updateConnections('disconnect', conn)
 	}
 
 	async updateConnections(type, connection) {
-		const connectionsRoom = this.party.context.parties.whatever.get('active-connections')
-		await connectionsRoom.fetch({
+		const lobbyRoom = this.party.context.parties.main.get('lobby')
+		await lobbyRoom.fetch({
 			method: 'POST',
 			body: JSON.stringify({type, connectionId: connection.id, roomId: this.party.id}),
 		})

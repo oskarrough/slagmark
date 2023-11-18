@@ -2,27 +2,27 @@ import {render, html} from './utils.js'
 import {friendlyId} from './friendly-id.js'
 import {effect, signal} from 'usignal'
 import PartySocket from 'partysocket'
-import {PARTYKIT_URL} from './multiplayer.js'
+import {socket, PARTYKIT_URL} from './multiplayer.js'
 
 /** A custom element wrapper around the UI */
 export class RumbleLobby extends HTMLElement {
 	constructor() {
 		super()
-		this.whateverSocket = new PartySocket({
-			host: PARTYKIT_URL,
-			party: 'whatever',
-			room: 'active-connections',
-		})
-		this.whateverSocket.addEventListener('message', (event) => {
-			const connections = JSON.parse(event.data)
-			this.rooms.value = connections
-			this.render()
-		})
 
 		this.rooms = signal([])
-		effect(() => {
-			this.render()
+
+		socket.addEventListener('message', (event) => {
+			const msg = JSON.parse(event.data)
+			console.log(msg)
+			if (msg.type === 'connections') {
+				this.rooms.value = msg.connections
+				this.render()
+			}
 		})
+
+		// effect(() => {
+		// 	this.render()
+		// })
 
 		window.rumblelobby = this
 	}
