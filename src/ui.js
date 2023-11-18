@@ -1,14 +1,13 @@
 import {html, roundOne} from './utils.js'
-import {Player, AI, Gold, Minion, Board} from './nodes.js'
+import {AI} from './nodes.js'
 
 export function UI(game) {
-	const player = game.Player
-	const ai = game.AI
-	console.log(game.started, game)
-
 	if (!game.started) {
 		return html` <header>${Splash(game)}</header> `
 	}
+
+	const player = game.Player
+	const ai = game.AI
 
 	return html`
 		<header>
@@ -64,6 +63,7 @@ function Menu(game) {
 /* Returns a list of HTML minions */
 function MinionList(parent, deployed) {
 	let list = parent.Minions
+	if (!list?.length) return null
 	if (deployed) {
 		list = list.filter((m) => m.deployed)
 	} else if (deployed === false) {
@@ -85,7 +85,7 @@ function minionTypeToEmoji(type) {
 const minion = (minion) => {
 	const isAi = minion.parent.is(AI)
 	const canDeploy = !minion.deployed && minion.Owner.Gold.amount >= minion.cost
-	const height = minion.Root.Board.height
+	const height = minion.Loop.Board.height
 	const topPercentage = ((height - minion.y) / height) * 100
 	return html`<li
 		class=${`Minion ${isAi ? 'ai' : null}`}

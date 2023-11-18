@@ -15,9 +15,7 @@ export class RumbleLobby extends HTMLElement {
 			const msg = JSON.parse(event.data)
 			if (msg.type === 'connections') {
 				this.rooms.value = msg.connections
-				this.render()
-			} else {
-				console.log('unhandled message', msg)
+				// this.render()
 			}
 		})
 
@@ -34,6 +32,7 @@ export class RumbleLobby extends HTMLElement {
 	}
 
 	async joinRoom(id) {
+		console.log('joining game')
 		await this.gamesSocket?.close()
 		this.gamesSocket = new PartySocket({
 			host: PARTYKIT_URL,
@@ -46,7 +45,6 @@ export class RumbleLobby extends HTMLElement {
 		})
 		document.querySelector('rumble-game')?.newGame()
 		document.querySelector('rumble-game')?.game.start()
-		console.log('starting game')
 		// this.querySelector('details').removeAttribute('open')
 	}
 
