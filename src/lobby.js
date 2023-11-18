@@ -43,8 +43,8 @@ export class RumbleLobby extends HTMLElement {
 			const msg = JSON.parse(event.data)
 			console.log('games socket unhandled message', msg)
 		})
-		document.querySelector('web-rumble')?.newGame()
-		document.querySelector('web-rumble')?.game.start()
+		document.querySelector('rumble-game')?.newGame()
+		document.querySelector('rumble-game')?.game.start()
 		// this.querySelector('details').removeAttribute('open')
 	}
 

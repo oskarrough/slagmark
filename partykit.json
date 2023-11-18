@@ -1,5 +1,5 @@
 {
-  "name": "webrumble-party",
+  "name": "rumble",
   "main": "party/main.js",
 	"parties": {
   	"games": "party/games.js"

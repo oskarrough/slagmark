@@ -1,8 +1,18 @@
 import PartySocket from 'partysocket'
 
+/**
+ * To make everything multiplayer we use PartyKit.io,
+ * which is basically websocket servers with persistance deployed to Cloudflare.
+ *
+ * We have two servers (or parties): main and games.
+ *  - main has one room "lobby" room
+ *  - games has one room per game (random id)
+ *
+ */
+
 export const PARTYKIT_URL =
 	import.meta.env.MODE === 'production'
-		? 'https://webrumble-party.oskarrough.partykit.dev'
+		? 'https://rumble.oskarrough.partykit.dev'
 		: 'http://localhost:1999'
 
 // https://docs.partykit.io/reference/partysocket-api/
