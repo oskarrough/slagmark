@@ -44,12 +44,15 @@ export function UI(game) {
 
 function Menu(game) {
 	const fps = roundOne(1000 / game.deltaTime)
-	const stopGame = () => game.stop()
 	const toggle = () => (game.paused ? game.play() : game.pause())
+	const quit = () => {
+		game.stop() 
+		location.reload()
+	}
 	return html`
 		<menu>
 			<button type="button" onclick=${toggle}>${game.paused ? 'Play' : 'Pause'}</button>
-			<button type="button" onclick=${stopGame}>Quit</button>
+			<button type="button" onclick=${quit}>Quit</button>
 			<p><live-presence></live-presence> online&nbsp;&nbsp;</p>
 			<p style="min-width: 5rem"><small>FPS ${fps}</small></p>
 			<p style="min-width: 3.5rem"><small>${roundOne(game.elapsedTime / 1000)}s</small></p>

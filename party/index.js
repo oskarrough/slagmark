@@ -1,7 +1,3 @@
-/* eslint-env browser */
-
-// @ts-check
-// Optional JS type checking, powered by TypeScript.
 /** @typedef {import("partykit/server").Party} Party */
 /** @typedef {import("partykit/server").Server} Server */
 /** @typedef {import("partykit/server").Connection} Connection */
