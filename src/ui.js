@@ -46,7 +46,7 @@ function Menu(game) {
 	const fps = roundOne(1000 / game.deltaTime)
 	const toggle = () => (game.paused ? game.play() : game.pause())
 	const quit = () => {
-		game.stop() 
+		game.stop()
 		location.reload()
 	}
 	return html`
@@ -115,17 +115,17 @@ function HealthBar(health) {
 }
 
 function Splash(game) {
+	// const btn = html`<button type="button" onclick=${() => game.start()}>New Rumble</button>`
 	return html`
 		<article class="Splash">
-			Gold is flowing, your minions await.<br />
-			Strategically deploy your ${minionTypeToEmoji('rock')} ${minionTypeToEmoji('paper')}
-			${minionTypeToEmoji('scissors')} and witness the battle.
+			<p>
+				Gold is flowing, your minions await.<br />
+				Strategically deploy your ${minionTypeToEmoji('rock')} ${minionTypeToEmoji('paper')}
+				${minionTypeToEmoji('scissors')} and witness the battle.
+			</p>
 			<br />
+			<p><live-presence></live-presence> lurkers online.</p>
 			<br />
-			<button type="button" onclick=${() => game.start()}>New Rumble</button>
-			<br /><br />
-			<p><live-presence></live-presence> players in the lobby</p>
-			<br /><br /><br />
 			<p style="opacity:0.6">
 				<small>
 					Pssst: this is an experiment from <em>Ooh Games</em> in creating small games for the web.

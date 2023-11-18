@@ -50,6 +50,12 @@ h2 {
 	user-select: none;
 }
 
+rumble-lobby {
+	width: 100%;
+	flex: 1;
+	padding: 0.5rem;
+}
+
 web-rumble {
 	flex: 1;
 	height: 100vh;

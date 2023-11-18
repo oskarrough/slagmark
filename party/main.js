@@ -20,7 +20,7 @@ export default class PartyServer {
 	 * @param {ConnectionContext} ctx - The context object.
 	 */
 	onConnect(conn, ctx) {
-		console.log('main server:connect', this.party.id)
+		// console.log('main server:connect', this.party.id)
 		this.updatePresence()
 	}
 

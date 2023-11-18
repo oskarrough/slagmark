@@ -7,11 +7,7 @@ import {PARTYKIT_URL} from './multiplayer.js'
 export class RumbleLobby extends HTMLElement {
 	constructor() {
 		super()
-
-		window.rumblelobby = this
-
 		this.rooms = signal([])
-
 		this.whateverSocket = new PartySocket({
 			host: PARTYKIT_URL,
 			party: 'whatever',
@@ -22,34 +18,13 @@ export class RumbleLobby extends HTMLElement {
 			console.log('got connections', connections)
 			this.rooms.value = connections
 		})
-
-		// The lobby socket
-		// this.gamesSocket = new PartySocket({
-		// 	host: PARTYKIT_URL,
-		// 	party: 'games',
-		// 	room: 'lobby',
-		// })
-		// this.gamesSocket.addEventListener('message', (event) => {
-		// 	const msg = JSON.parse(event.data)
-		// 	console.log('lobby', msg)
-		// 	if (msg.type === 'join') {
-		// 	}
-		// 	if (msg.type === 'presence') {
-		// 		this.rooms.value = msg.rooms
-		// 	}
-		// })
-
-		// And the room socket (if/once a room is joined)
-		this.roomSocket = null
-
+		window.rumblelobby = this
 		effect(() => {
-			// console.log('rooms effect', this.rooms.value)
 			this.render()
 		})
 	}
 
 	createRoom() {
-		// this.whateverSocket.send(JSON.stringify({type: 'create'}))
 		this.leaveRoom()
 		this.joinRoom(uuid())
 	}
@@ -64,45 +39,42 @@ export class RumbleLobby extends HTMLElement {
 		this.gamesSocket.addEventListener('message', (event) => {
 			const msg = JSON.parse(event.data)
 			console.log('games socket', msg)
-			if (msg.type === 'join') {
-				this.render()
-			}
-			// if (msg.type === 'presence') {
-			// 	this.rooms.value = msg.rooms
-			// }
 		})
+		document.querySelector('web-rumble')?.newGame()
+		document.querySelector('web-rumble')?.game.start()
+		this.querySelector('details').removeAttribute('open')
 	}
 
 	leaveRoom() {
 		this.gamesSocket?.close()
 		this.gamesSocket = null
-		console.log('@todo did we really leave?')
+		this.querySelector('details').setAttribute('open', '')
 		this.render()
 	}
 
 	render() {
 		const rooms = Object.entries(this.rooms.value).map(([id, count]) => ({id, count}))
-		const lobby = this.rooms.value['lobby']
 		const totalConnections = Object.entries(this.rooms.value).reduce((acc, [id, count]) => acc + count, 0)
-		console.log('rendering rooms', rooms, totalConnections)
 		const tpl = html`
-			<h2>Lobby (${totalConnections})</h2>
-			${this.gamesSocket && html`<p>You are in: ${this.gamesSocket?.room}</p>`}
-			<ul>
-				${rooms?.length
-					? rooms.map(
-							(room) => html`
-								<li>
-									${room.id} ${room.count && html`(${room.count})`}
-									${room.id === this.gamesSocket?.room
-										? html` <button onclick=${() => this.leaveRoom()}>Leave</button> `
-										: html` <button onclick=${() => this.joinRoom(room.id)}>Join</button> `}
-								</li>
-							`,
-					  )
-					: [html`<li>It's empty here..</li>`]}
-			</ul>
-			<p><button onclick=${() => this.createRoom()}>Create room</button></p>
+			<details open>
+				<summary><h2>Lobby (${totalConnections})</h2></summary>
+				<ul>
+					${rooms?.length
+						? rooms.map(
+								(room) => html`
+									<li>
+										${room.id} ${room.count && html`(${room.count})`}
+										${room.id === this.gamesSocket?.room
+											? html` <button onclick=${() => this.leaveRoom()}>Leave</button> `
+											: html` <button onclick=${() => this.joinRoom(room.id)}>Join</button> `}
+									</li>
+								`,
+						  )
+						: [html`<li>It's empty here..</li>`]}
+				</ul>
+			</details>
+			${this.gamesSocket ? html`<p>You are in: ${this.gamesSocket?.room}</p>` : html`<p>Let's go!</p>`}
+			<p><button onclick=${() => this.createRoom()}>New Rumble</button></p>
 		`
 		render(this, tpl)
 	}
