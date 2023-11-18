@@ -10,6 +10,5 @@ export const socket = new PartySocket({
 	host: PARTYKIT_URL,
 	// See partykit.json for the mapping
 	party: 'main',
-	room: 'presence',
+	room: 'lobby',
 })
-

@@ -20,21 +20,13 @@ export default class PartyServer {
 	 * @param {ConnectionContext} ctx - The context object.
 	 */
 	onConnect(conn, ctx) {
-		console.log('index server:connect', this.party.id)
-		// console.log(`main party connected:
-  // id: ${conn.id}
-  // room: ${this.party.id}
-  // url: ${new URL(ctx.request.url).pathname}`)
+		console.log('main server:connect', this.party.id)
 		this.updatePresence()
 	}
 
 	onClose() {
 		this.updatePresence()
 	}
-
-	// onError() {
-	// 	this.updatePresence()
-	// }
 
 	/**
 	 * @param {string} messageString
