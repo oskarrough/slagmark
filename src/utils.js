@@ -42,12 +42,13 @@ export function naturalizeNumber(num = 0, percentage = 0.05) {
 	const max = num - num * percentage
 	return randomIntFromInterval(min, max)
 }
- 
+
 /**
  * Creates a random-looking string for ids.
  * @param {number} [a]
  * @returns {string}
  */
+// export const uuid = () => crypto.randomUUID()
 export function uuid(a) {
 	return a
 		? (a ^ ((Math.random() * 16) >> (a / 4))).toString(16)

@@ -3,10 +3,12 @@ import {socket} from './multiplayer.js'
 import {WebRumble} from './web-rumble.js'
 import {LiveCursors} from './live-cusors.js'
 import {LivePresence} from './live-presence.js'
+import {RumbleLobby} from './lobby.js'
 
 customElements.define('web-rumble', WebRumble)
 customElements.define('live-cursors', LiveCursors)
 customElements.define('live-presence', LivePresence)
+customElements.define('rumble-lobby', RumbleLobby)
 
 // for debugging
 window.rumblesocket = socket

@@ -32,6 +32,7 @@ body {
 	margin: 0;
 	display: flex;
 	place-items: center;
+	flex-flow: column;
 	overflow: hidden;
 	min-height: 100vh;
 }
@@ -192,3 +193,7 @@ menu {
 	}
 }
 
+h2 {
+	/* font-family: 'Meilen-Black'; */
+	/* font-weight: normal; */
+}

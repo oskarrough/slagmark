@@ -20,10 +20,11 @@ export default class PartyServer {
 	 * @param {ConnectionContext} ctx - The context object.
 	 */
 	onConnect(conn, ctx) {
-		console.log(`Connected:
-  id: ${conn.id}
-  room: ${this.party.id}
-  url: ${new URL(ctx.request.url).pathname}`)
+		console.log('index server:connect', this.party.id)
+		// console.log(`main party connected:
+  // id: ${conn.id}
+  // room: ${this.party.id}
+  // url: ${new URL(ctx.request.url).pathname}`)
 		this.updatePresence()
 	}
 
@@ -31,9 +32,9 @@ export default class PartyServer {
 		this.updatePresence()
 	}
 
-	onError() {
-		this.updatePresence()
-	}
+	// onError() {
+	// 	this.updatePresence()
+	// }
 
 	/**
 	 * @param {string} messageString
@@ -61,15 +62,4 @@ export default class PartyServer {
 		const msg = {type: 'presence', count}
 		this.party.broadcast(JSON.stringify(msg))
 	}
-
-	// async onRequest(req) {
-	// 	if (req.method === 'POST') {
-	// 		const body = await req.json()
-	// 		return new Response(JSON.stringify(body), {
-	// 			status: 200,
-	// 			headers: {'Content-Type': 'application/json'},
-	// 		})
-	// 	}
-	// 	return new Response('Not found', {status: 404})
-	// }
 }

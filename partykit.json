@@ -1,5 +1,8 @@
 {
   "name": "webrumble-party",
   "main": "party/index.js",
+	"parties": {
+  	"games": "party/games.js"
+	},
   "compatibilityDate": "2023-11-15"
 }
