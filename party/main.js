@@ -20,7 +20,6 @@ export default class PartyServer {
 	 * @param {ConnectionContext} ctx - The context object.
 	 */
 	onConnect(conn, ctx) {
-		// console.log('main server:connect', this.party.id)
 		this.updatePresence()
 	}
 
@@ -34,7 +33,6 @@ export default class PartyServer {
 	 */
 	onMessage(messageString, sender) {
 		const message = JSON.parse(messageString)
-		// console.log('server got', message)
 		if (message?.pointer) {
 			const msg = {
 				type: 'cursorUpdate',

@@ -65,8 +65,7 @@ export class Player extends Task {
 		return [new Gold(), new Minion(), new Minion(), new Minion(), new Minion(), new RefillMinions()]
 	}
 
-	tick() {
-	}
+	tick() {}
 
 	afterTick() {
 		if (this.health <= 0) {

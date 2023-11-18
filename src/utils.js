@@ -34,16 +34,6 @@ export function toPercent(value, max) {
 }
 
 /**
- * Returns a new, random number within -percentage and +percentage of the original.
- * e.g. naturalizeNumber(100, 0.1) returns a number between 90 and 110.
- */
-export function naturalizeNumber(num = 0, percentage = 0.05) {
-	const min = num + num * percentage
-	const max = num - num * percentage
-	return randomIntFromInterval(min, max)
-}
-
-/**
  * Creates a random-looking string for ids.
  * @param {number} [a]
  * @returns {string}

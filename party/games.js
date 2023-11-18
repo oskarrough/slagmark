@@ -11,20 +11,15 @@ export default class PartyServer {
 	}
 
 	onConnect(conn, ctx) {
-		// const msg = {type: 'info', message: `${conn.id} joined game ${this.party.id}`}
-		// this.party.broadcast(JSON.stringify(msg))
 		this.updateConnections('connect', conn)
 	}
 
 	async onMessage(websocketMessage, sender) {
 		const event = JSON.parse(websocketMessage)
-		console.log('lobby server:message', this.party.id, event)
+		console.log('lobby server unhandled message', this.party.id, event)
 	}
 
 	onClose(conn) {
-		console.log('lobby server:close')
-		// const msg = {type: 'leave', connId: conn.id, roomId: this.party.id}
-		// this.party.broadcast(JSON.stringify(msg))
 		this.updateConnections('disconnect', conn)
 	}
 

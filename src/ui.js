@@ -125,13 +125,6 @@ function Splash(game) {
 			</p>
 			<br />
 			<p><live-presence></live-presence> lurkers online.</p>
-			<br />
-			<p style="opacity:0.6">
-				<small>
-					Pssst: this is an experiment from <em>Ooh Games</em> in creating small games for the web.
-					<a href="https://matrix.to/#/#ooh-games:matrix.org">Come say hi</a>, help make it fun!
-				</small>
-			</p>
 		</article>
 	`
 }

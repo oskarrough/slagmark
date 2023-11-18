@@ -1,4 +1,5 @@
-import {render, html, uuid} from './utils.js'
+import {render, html} from './utils.js'
+import {friendlyId} from './friendly-id.js'
 import {effect, signal} from 'usignal'
 import PartySocket from 'partysocket'
 import {PARTYKIT_URL} from './multiplayer.js'
@@ -7,7 +8,6 @@ import {PARTYKIT_URL} from './multiplayer.js'
 export class RumbleLobby extends HTMLElement {
 	constructor() {
 		super()
-		this.rooms = signal([])
 		this.whateverSocket = new PartySocket({
 			host: PARTYKIT_URL,
 			party: 'whatever',
@@ -15,18 +15,21 @@ export class RumbleLobby extends HTMLElement {
 		})
 		this.whateverSocket.addEventListener('message', (event) => {
 			const connections = JSON.parse(event.data)
-			console.log('got connections', connections)
 			this.rooms.value = connections
+			this.render()
 		})
-		window.rumblelobby = this
+
+		this.rooms = signal([])
 		effect(() => {
 			this.render()
 		})
+
+		window.rumblelobby = this
 	}
 
 	createRoom() {
 		this.leaveRoom()
-		this.joinRoom(uuid())
+		this.joinRoom(friendlyId())
 	}
 
 	async joinRoom(id) {
@@ -38,18 +41,18 @@ export class RumbleLobby extends HTMLElement {
 		})
 		this.gamesSocket.addEventListener('message', (event) => {
 			const msg = JSON.parse(event.data)
-			console.log('games socket', msg)
+			console.log('games socket unhandled message', msg)
 		})
 		document.querySelector('web-rumble')?.newGame()
 		document.querySelector('web-rumble')?.game.start()
-		this.querySelector('details').removeAttribute('open')
+		// this.querySelector('details').removeAttribute('open')
 	}
 
 	leaveRoom() {
 		this.gamesSocket?.close()
 		this.gamesSocket = null
-		this.querySelector('details').setAttribute('open', '')
-		this.render()
+		// this.querySelector('details').setAttribute('open', '')
+		// this.render()
 	}
 
 	render() {
@@ -57,24 +60,30 @@ export class RumbleLobby extends HTMLElement {
 		const totalConnections = Object.entries(this.rooms.value).reduce((acc, [id, count]) => acc + count, 0)
 		const tpl = html`
 			<details open>
-				<summary><h2>Lobby (${totalConnections})</h2></summary>
+				<summary>Lobby (${rooms.length} rooms, ${totalConnections} playing)</summary>
 				<ul>
 					${rooms?.length
-						? rooms.map(
+						? html`${rooms.map(
 								(room) => html`
 									<li>
 										${room.id} ${room.count && html`(${room.count})`}
-										${room.id === this.gamesSocket?.room
-											? html` <button onclick=${() => this.leaveRoom()}>Leave</button> `
-											: html` <button onclick=${() => this.joinRoom(room.id)}>Join</button> `}
+										${room.id !== this.gamesSocket?.room
+											? html` <button onclick=${() => this.joinRoom(room.id)}>Join</button> `
+											: null}
 									</li>
 								`,
-						  )
-						: [html`<li>It's empty here..</li>`]}
+						  )}`
+						: html`<li>No active rooms</li>`}
 				</ul>
 			</details>
-			${this.gamesSocket ? html`<p>You are in: ${this.gamesSocket?.room}</p>` : html`<p>Let's go!</p>`}
 			<p><button onclick=${() => this.createRoom()}>New Rumble</button></p>
+			${this.gamesSocket
+				? html`
+						<p>
+							You are in: ${this.gamesSocket?.room} <button onclick=${() => this.leaveRoom()}>Leave</button>
+						</p>
+				  `
+				: null}
 		`
 		render(this, tpl)
 	}

@@ -22,6 +22,6 @@ socket.addEventListener('message', (event) => {
 	} else if (msg.type === 'cursorUpdate') {
 		// handled by <live-cursors>
 	} else {
-		console.log('unhandled message', msg)
+		console.log('main socket unhandled message', msg)
 	}
 })
