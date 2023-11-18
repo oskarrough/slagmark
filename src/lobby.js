@@ -51,8 +51,8 @@ export class RumbleLobby extends HTMLElement {
 	leaveRoom() {
 		this.gamesSocket?.close()
 		this.gamesSocket = null
-		// this.querySelector('details').setAttribute('open', '')
-		// this.render()
+		// const rumble = document.querySelector('rumble-game')
+		// rumble?.game?.stop()
 	}
 
 	render() {

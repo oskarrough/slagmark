@@ -13,10 +13,10 @@ export class GameLoop extends Loop {
 	static get descendants() {
 		return {
 			// Participants: {type: Participant, list: true},
-			Player: {type: Player},
-			AI: {type: AI},
-			Board: {type: Board},
-			Renderer: {type: Renderer},
+			Player: {type: Player, optional: true},
+			AI: {type: AI, optional: true},
+			Board: {type: Board, optional: true},
+			Renderer: {type: Renderer, optional: true},
 		}
 	}
 
@@ -39,7 +39,7 @@ class Renderer extends Task {
 
 	delay = 0
 	duration = 0
-	interval = 1000
+	interval = 32
 	repeat = Infinity
 
 	tick() {
@@ -48,7 +48,7 @@ class Renderer extends Task {
 	}
 
 	render() {
-		if (!this.Loop.element) throw new Error('missing DOM element to render to')
+		if (!this.Loop?.element) return //throw new Error('missing DOM element to render to')
 		render(this.Loop.element, UI(this.Loop))
 	}
 }
@@ -64,9 +64,9 @@ class Participant extends Task {
 
 	static get descendants() {
 		return {
-			Gold: {type: Gold},
+			Gold: {type: Gold, optional: true},
 			Minions: {type: Minion, list: true},
-			RefillMinions: {type: RefillMinions},
+			RefillMinions: {type: RefillMinions, optional: true},
 		}
 	}
 
