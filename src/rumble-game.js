@@ -15,6 +15,7 @@ export class RumbleGame extends HTMLElement {
 
 		// jump straight into a game
 		// game.start()
+		// render(this, UI(game))
 
 		// references for later
 		this.game = game

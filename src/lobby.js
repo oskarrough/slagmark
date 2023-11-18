@@ -13,16 +13,17 @@ export class RumbleLobby extends HTMLElement {
 
 		socket.addEventListener('message', (event) => {
 			const msg = JSON.parse(event.data)
-			console.log(msg)
 			if (msg.type === 'connections') {
 				this.rooms.value = msg.connections
 				this.render()
+			} else {
+				console.log('unhandled message', msg)
 			}
 		})
 
-		// effect(() => {
-		// 	this.render()
-		// })
+		effect(() => {
+			this.render()
+		})
 
 		window.rumblelobby = this
 	}
@@ -45,6 +46,7 @@ export class RumbleLobby extends HTMLElement {
 		})
 		document.querySelector('rumble-game')?.newGame()
 		document.querySelector('rumble-game')?.game.start()
+		console.log('starting game')
 		// this.querySelector('details').removeAttribute('open')
 	}
 

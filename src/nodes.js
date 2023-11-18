@@ -3,25 +3,70 @@ import {render, random} from './utils.js'
 import {UI} from './ui.js'
 
 export class GameLoop extends Loop {
+	// The DOM element to render to
+	element = null
+
+	static get descendants() {
+		return {
+			Participants: {type: Participant, list: true},
+			Player: {type: Player},
+			AI: {type: AI},
+			Board: {type: Board},
+		}
+	}
+
 	build() {
 		return [new Player(), new AI(), new Board()]
 	}
 
 	mount() {
-		this.loop.subscribe('stop', this.render)
-		this.loop.subscribe('play', this.render)
-		this.loop.subscribe('pause', this.render)
+		this.subscribe('stop', this.render)
+		this.subscribe('play', this.render)
+		this.subscribe('pause', this.render)
 	}
 
 	tick() {
+		console.log('tick?!')
 		if (!this.element) throw new Error('missing DOM element to render to')
-		render(this.element, UI(this))
+		this.render()
 	}
 
 	render() {
 		render(this.element, UI(this))
 	}
 }
+
+class Participant extends Task {
+	health = 3
+
+	static get ancestors() {
+		return {
+			Root: {type: GameLoop},
+		}
+	}
+
+	static get descendants() {
+		return {
+			Gold: {type: Gold},
+			Minions: {type: Minion, list: true},
+		}
+	}
+
+	build() {
+		return [new Gold(), new Minion(), new Minion(), new Minion(), new Minion(), new RefillMinions()]
+	}
+
+	afterTick() {
+		if (this.health <= 0) {
+			console.log(`${this.constructor.name} lost`)
+			this.Root.stop()
+		}
+	}
+}
+
+export class Player extends Participant {}
+
+export class AI extends Player {}
 
 export class Gold extends Task {
 	delay = 0
@@ -51,31 +96,18 @@ export class RefillMinions extends Task {
 	duration = 0
 	interval = 3000
 
+	static get ancestors() {
+		return {
+			Owner: {type: Participant},
+		}
+	}
+
 	tick() {
-		if (this.parent.getAll(Minion).length < 4) {
-			this.parent.add(new Minion())
+		if (this.Owner.Minions.length < 4) {
+			this.Owner.add(new Minion())
 		}
 	}
 }
-
-export class Player extends Task {
-	health = 3
-
-	build() {
-		return [new Gold(), new Minion(), new Minion(), new Minion(), new Minion(), new RefillMinions()]
-	}
-
-	tick() {}
-
-	afterTick() {
-		if (this.health <= 0) {
-			console.log(`${this.constructor.name} lost`)
-			this.parent.stop()
-		}
-	}
-}
-
-export class AI extends Player {}
 
 const MINION_TYPES = ['rock', 'paper', 'scissors']
 
@@ -90,6 +122,13 @@ export class Minion extends Task {
 	interval = 1000
 	repeat = Infinity
 
+	static get ancestors() {
+		return {
+			Root: {type: GameLoop},
+			Owner: {type: Participant},
+		}
+	}
+
 	constructor() {
 		super()
 		this.minionType = random(MINION_TYPES)
@@ -98,11 +137,10 @@ export class Minion extends Task {
 	tick() {
 		if (!this.deployed) return
 
-		const root = this.parent.parent
-		const isAI = this.parent.is(AI)
-		const startY = isAI ? root.get(Board).height : 0
-		const finalY = isAI ? 0 : root.get(Board).height
-		const opponent = root.find(isAI ? Player : AI)
+		const isAI = this.Owner.is(AI)
+		const startY = isAI ? this.Root.Board.height : 0
+		const finalY = isAI ? 0 : this.Root.Board.height
+		const opponent = this.Root.Participants.find((participant) => participant !== this.Owner)
 
 		// Fight any enemies on same Y, and remove the loser.
 		if (this.y !== startY && this.y !== finalY) {
@@ -126,15 +164,15 @@ export class Minion extends Task {
 
 	deploy() {
 		// Handle gold
-		if (this.parent.get(Gold).amount < this.cost) {
+		if (this.Owner.Gold.amount < this.cost) {
 			console.log('not enough gold')
 			return
 		}
-		this.parent.get(Gold).decrement(this.cost)
+		this.Owner.Gold.decrement(this.cost)
 		// Deploy
 		const isAI = this.parent.is(AI)
-		this.y = isAI ? this.parent.parent.get(Board).height : 0
-		this.deployed = this.parent.parent.elapsedTime
+		this.y = isAI ? this.Root.Board.height : 0
+		this.deployed = this.Root.elapsedTime
 		console.log(isAI ? 'AI' : 'Player', 'deploy', this.minionType, this.y)
 	}
 
@@ -161,7 +199,7 @@ export class Minion extends Task {
 	}
 
 	findEnemies(opponent) {
-		return opponent.getAll(Minion).filter((minion) => minion.y === this.y)
+		return opponent.Minions.filter((minion) => minion.y === this.y)
 	}
 }
 
