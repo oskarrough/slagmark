@@ -87,16 +87,16 @@ class Participant extends Task {
 		return [new Gold(), new Minion(), new Minion(), new Minion(), new Minion(), new RefillMinions()]
 	}
 
-	afterTick() {
+	afterCycle() {
 		if (this.health <= 0) {
 			console.log(`${this.constructor.name} lost`)
-			this.disconnect()
 			this.Loop.stop()
 		}
 	}
 }
 
 export class Player extends Participant {}
+
 export class AI extends Participant {}
 
 export class Gold extends Task {
@@ -175,7 +175,7 @@ export class Minion extends Task {
 		if (!this.deployed) return
 	}
 
-	afterTick() {
+	afterCycle() {
 		if (!this.deployed) return
 
 		const isAI = this.Owner.is(AI)
@@ -189,7 +189,6 @@ export class Minion extends Task {
 			for (const enemy of enemies) {
 				const loser = this.fight(enemy)
 				loser.disconnect()
-				if (loser === this) return
 			}
 		}
 
@@ -203,14 +202,17 @@ export class Minion extends Task {
 		this.move(isAI ? -1 : 1)
 	}
 
+	/**
+	 * Deploys the minion, meaning it's on the board now.
+	 */
 	deploy() {
 		// Handle gold
 		if (this.Owner.Gold.amount < this.cost) {
-			console.log('not enough gold')
+			console.log(`You need ${this.cost} gold to deploy this minion`)
 			return
 		}
 		this.Owner.Gold.decrement(this.cost)
-		// Deploy
+		// Deploy to the starting side of the board.
 		const isAI = this.parent.is(AI)
 		this.y = isAI ? this.Loop.Board.height : 0
 		this.deployed = this.Loop.elapsedTime
@@ -221,7 +223,10 @@ export class Minion extends Task {
 		this.y = Math.max(0, this.y + this.speed * direction)
 	}
 
-	// Returns the losing minion, if draw return a random winner
+	/**
+	 * Returns the losing minion, if draw return a random winner
+	 * @argument {Participant} opponent
+	 */
 	fight(opponent) {
 		const isAI = this.parent.is(AI)
 		console.log('Fight on', this.y, isAI ? 'AI' : 'Player', this.minionType, 'vs', opponent.minionType)
@@ -239,6 +244,10 @@ export class Minion extends Task {
 		}
 	}
 
+	/**
+	 * Returns any non-friendly minions on the same position.
+	 * @argument {Participant} opponent
+	 */
 	findEnemies(opponent) {
 		return opponent.Minions.filter((minion) => minion.y === this.y)
 	}
@@ -246,5 +255,5 @@ export class Minion extends Task {
 
 export class Board extends Node {
 	width = 1
-	height = 8
+	height = 2
 }
