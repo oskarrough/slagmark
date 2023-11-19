@@ -3,27 +3,109 @@ import {render, random} from './utils.js'
 import {UI} from './ui.js'
 
 export class GameLoop extends Loop {
+	constructor(props) {
+		super()
+		// The DOM element to render to
+		this.element = props.element
+	}
+
+	Renderer = null
+
+	static get descendants() {
+		return {
+			// Participants: {type: Participant, list: true},
+			Player: {type: Player, optional: true},
+			AI: {type: AI, optional: true},
+			Board: {type: Board, optional: true},
+			Renderer: {type: Renderer, optional: true},
+		}
+	}
+
 	build() {
-		return [new Player(), new AI(), new Board()]
+		return [new Player(), new AI(), new Board(), new Renderer()]
 	}
 
 	mount() {
-		this.loop.subscribe('stop', this.render)
-		this.loop.subscribe('play', this.render)
-		this.loop.subscribe('pause', this.render)
+		this.subscribe('start', () => {
+			this.Renderer.render()
+		})
+		this.subscribe('stop', () => {
+			this.Renderer.render()
+		})
+		this.subscribe('play', () => {
+			this.Renderer.render()
+		})
+		this.subscribe('pause', () => {
+			this.Renderer.render()
+		})
 	}
 
-	tick() {
-		if (!this.element) throw new Error('missing DOM element to render to')
-		render(this.element, UI(this))
-	}
-
-	render() {
-		render(this.element, UI(this))
+	destroy() {
+		console.log('destroy', this.children)
+		this.Renderer.render()
 	}
 }
 
+class Renderer extends Task {
+	static get ancestors() {
+		return {Loop: {type: GameLoop}}
+	}
+
+	delay = 0
+	duration = 0
+	interval = 32
+	repeat = Infinity
+
+	tick() {
+		this.render()
+	}
+
+	render() {
+		if (!this.Loop?.element) return //throw new Error('missing DOM element to render to')
+		render(this.Loop.element, UI(this.Loop))
+	}
+}
+
+class Participant extends Task {
+	health = 3
+
+	static get ancestors() {
+		return {
+			Loop: {type: GameLoop},
+		}
+	}
+
+	static get descendants() {
+		return {
+			Gold: {type: Gold, optional: true},
+			Minions: {type: Minion, list: true},
+			RefillMinions: {type: RefillMinions, optional: true},
+		}
+	}
+
+	build() {
+		return [new Gold(), new Minion(), new Minion(), new Minion(), new Minion(), new RefillMinions()]
+	}
+
+	afterCycle() {
+		if (this.health <= 0) {
+			console.log(`${this.constructor.name} lost`)
+			this.Loop.stop()
+		}
+	}
+}
+
+export class Player extends Participant {}
+
+export class AI extends Participant {}
+
 export class Gold extends Task {
+	static get ancestors() {
+		return {
+			Owner: {type: Participant},
+		}
+	}
+
 	delay = 0
 	duration = 0
 	interval = 1000
@@ -51,31 +133,18 @@ export class RefillMinions extends Task {
 	duration = 0
 	interval = 3000
 
+	static get ancestors() {
+		return {
+			Owner: {type: Participant},
+		}
+	}
+
 	tick() {
-		if (this.parent.getAll(Minion).length < 4) {
-			this.parent.add(new Minion())
+		if (this.Owner.Minions?.length < 4) {
+			this.Owner.add(new Minion())
 		}
 	}
 }
-
-export class Player extends Task {
-	health = 3
-
-	build() {
-		return [new Gold(), new Minion(), new Minion(), new Minion(), new Minion(), new RefillMinions()]
-	}
-
-	tick() {}
-
-	afterTick() {
-		if (this.health <= 0) {
-			console.log(`${this.constructor.name} lost`)
-			this.parent.stop()
-		}
-	}
-}
-
-export class AI extends Player {}
 
 const MINION_TYPES = ['rock', 'paper', 'scissors']
 
@@ -90,6 +159,13 @@ export class Minion extends Task {
 	interval = 1000
 	repeat = Infinity
 
+	static get ancestors() {
+		return {
+			Loop: {type: GameLoop},
+			Owner: {type: Participant},
+		}
+	}
+
 	constructor() {
 		super()
 		this.minionType = random(MINION_TYPES)
@@ -97,12 +173,15 @@ export class Minion extends Task {
 
 	tick() {
 		if (!this.deployed) return
+	}
 
-		const root = this.parent.parent
-		const isAI = this.parent.is(AI)
-		const startY = isAI ? root.get(Board).height : 0
-		const finalY = isAI ? 0 : root.get(Board).height
-		const opponent = root.find(isAI ? Player : AI)
+	afterCycle() {
+		if (!this.deployed) return
+
+		const isAI = this.Owner.is(AI)
+		const startY = isAI ? this.Loop.Board.height : 0
+		const finalY = isAI ? 0 : this.Loop.Board.height
+		const opponent = isAI ? this.Loop.Player : this.Loop.AI
 
 		// Fight any enemies on same Y, and remove the loser.
 		if (this.y !== startY && this.y !== finalY) {
@@ -110,7 +189,6 @@ export class Minion extends Task {
 			for (const enemy of enemies) {
 				const loser = this.fight(enemy)
 				loser.disconnect()
-				if (loser === this) return
 			}
 		}
 
@@ -124,17 +202,20 @@ export class Minion extends Task {
 		this.move(isAI ? -1 : 1)
 	}
 
+	/**
+	 * Deploys the minion, meaning it's on the board now.
+	 */
 	deploy() {
 		// Handle gold
-		if (this.parent.get(Gold).amount < this.cost) {
-			console.log('not enough gold')
+		if (this.Owner.Gold.amount < this.cost) {
+			console.log(`You need ${this.cost} gold to deploy this minion`)
 			return
 		}
-		this.parent.get(Gold).decrement(this.cost)
-		// Deploy
+		this.Owner.Gold.decrement(this.cost)
+		// Deploy to the starting side of the board.
 		const isAI = this.parent.is(AI)
-		this.y = isAI ? this.parent.parent.get(Board).height : 0
-		this.deployed = this.parent.parent.elapsedTime
+		this.y = isAI ? this.Loop.Board.height : 0
+		this.deployed = this.Loop.elapsedTime
 		console.log(isAI ? 'AI' : 'Player', 'deploy', this.minionType, this.y)
 	}
 
@@ -142,7 +223,10 @@ export class Minion extends Task {
 		this.y = Math.max(0, this.y + this.speed * direction)
 	}
 
-	// Returns the losing minion, if draw return a random winner
+	/**
+	 * Returns the losing minion, if draw return a random winner
+	 * @argument {Participant} opponent
+	 */
 	fight(opponent) {
 		const isAI = this.parent.is(AI)
 		console.log('Fight on', this.y, isAI ? 'AI' : 'Player', this.minionType, 'vs', opponent.minionType)
@@ -160,12 +244,16 @@ export class Minion extends Task {
 		}
 	}
 
+	/**
+	 * Returns any non-friendly minions on the same position.
+	 * @argument {Participant} opponent
+	 */
 	findEnemies(opponent) {
-		return opponent.getAll(Minion).filter((minion) => minion.y === this.y)
+		return opponent.Minions.filter((minion) => minion.y === this.y)
 	}
 }
 
 export class Board extends Node {
 	width = 1
-	height = 8
+	height = 7
 }

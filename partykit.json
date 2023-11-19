@@ -1,8 +1,8 @@
 {
   "name": "rumble",
-  "main": "party/main.js",
+  "main": "server/main.js",
 	"parties": {
-  	"games": "party/games.js"
+  	"games": "server/games.js"
 	},
   "compatibilityDate": "2023-11-15"
 }

@@ -5,19 +5,26 @@ import {UI} from './ui.js'
 /** A custom element wrapper around the UI */
 export class RumbleGame extends HTMLElement {
 	connectedCallback() {
-		this.newGame()
+		this.render()
 	}
 
 	newGame() {
-		const game = new GameLoop()
-		game.element = this
-		render(this, UI(game))
+		if (this.game) {
+			console.log('force stopping game before starting a new')
+			this.game.stop()
+		}
+		this.game = new GameLoop({element: this})
+		this.render()
+	}
 
-		// jump straight into a game
-		// game.start()
+	quitGame() {
+		if (!this.game) return
+		this.game.stop()
+		this.game = null
+		this.render()
+	}
 
-		// references for later
-		this.game = game
-		window.rumble = game
+	render() {
+		render(this, UI(this.game))
 	}
 }
