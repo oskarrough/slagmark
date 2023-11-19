@@ -2,5 +2,6 @@
 	"compilerOptions": {
 		"checkJs": true,
 		"allowJs": true,
+		"lib": ["es6", "DOM"]
 	}
 }
