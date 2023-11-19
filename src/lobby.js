@@ -72,13 +72,11 @@ export class RumbleLobby extends HTMLElement {
 					<strong>🪨📄✂️</strong>
 					<span> and witness the battle.</span>
 				</p>
-				<br />
-				<p><live-presence></live-presence> lurkers online.</p>
 			</article>
 
 			<details open>
 				<summary>
-					Lobby (<live-presence></live-presence> online, ${rooms.length} rooms, ${totalConnections} playing)
+					Lobby (<live-presence></live-presence> online, ${rooms.length} games, ${totalConnections} playing)
 				</summary>
 				<ul>
 					${this.renderRooms(rooms)}

@@ -50,7 +50,6 @@ function Menu(game) {
 		<menu>
 			<button type="button" onclick=${toggle}>${game.paused ? 'Play' : 'Pause'}</button>
 			<button hidden type="button" onclick=${quit}>Quit</button>
-			<p><live-presence></live-presence> online&nbsp;&nbsp;</p>
 			<p style="min-width: 5rem"><small>FPS ${fps}</small></p>
 			<p style="min-width: 3.5rem"><small>${roundOne(game.elapsedTime / 1000)}s</small></p>
 		</menu>
@@ -112,19 +111,3 @@ function HealthBar(health) {
 	</ul>`
 }
 
-function Splash(game) {
-	// const btn = html`<button type="button" onclick=${() => game.start()}>New Rumble</button>`
-	const emoji = minionTypeToEmoji
-	return html`
-		<article class="Splash">
-			<h1>Triminion</h1>
-			<p>
-				<span>Gold is flowing,</span> <span>your minions await.</span> <span>Strategically deploy your</span>
-				<strong>${emoji('rock')} ${emoji('paper')} ${emoji('scissors')}</strong>
-				<span> and witness the battle.</span>
-			</p>
-			<br />
-			<p><live-presence></live-presence> lurkers online.</p>
-		</article>
-	`
-}

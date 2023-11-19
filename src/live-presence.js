@@ -1,5 +1,5 @@
 import {html, render} from './utils.js'
-import {effect, signal} from 'usignal'
+import {signal} from 'usignal'
 import {socket} from './multiplayer.js'
 
 /*
@@ -16,13 +16,12 @@ export class LivePresence extends HTMLElement {
 			const msg = JSON.parse(event.data)
 			if (msg.type === 'presence') {
 				this.count.value = msg.count
+				this.render()
 			}
 		})
 	}
 
-	connectedCallback() {
-		effect(() => {
-			render(this, html`${this.count.value}`)
-		})
+	render() {
+		render(this, html`${this.count.value}`)
 	}
 }

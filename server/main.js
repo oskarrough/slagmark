@@ -53,7 +53,6 @@ export default class PartyServer {
 	async onRequest(request) {
 		// read from storage
 		this.connections = this.connections ?? (await this.party.storage.get('connections')) ?? {}
-		console.log('we here')
 		// update connection count
 		if (request.method === 'POST') {
 			/** @type {{type, connectionId, roomId}} */

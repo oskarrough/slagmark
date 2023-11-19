@@ -27,19 +27,15 @@ export class GameLoop extends Loop {
 
 	mount() {
 		this.subscribe('start', () => {
-			console.log('loop start')
 			this.Renderer.render()
 		})
 		this.subscribe('stop', () => {
-			console.log('loop stop')
 			this.Renderer.render()
 		})
 		this.subscribe('play', () => {
-			console.log('loop play')
 			this.Renderer.render()
 		})
 		this.subscribe('pause', () => {
-			console.log('loop pause')
 			this.Renderer.render()
 		})
 	}
