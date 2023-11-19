@@ -7,8 +7,9 @@ export class GameLoop extends Loop {
 		super()
 		// The DOM element to render to
 		this.element = props.element
-		console.log(this.element)
 	}
+
+	Renderer = null
 
 	static get descendants() {
 		return {
@@ -20,15 +21,32 @@ export class GameLoop extends Loop {
 		}
 	}
 
-	mount() {
-		this.subscribe('start', this.Renderer.render)
-		this.subscribe('stop', this.Renderer.render)
-		this.subscribe('play', this.Renderer.render)
-		this.subscribe('pause', this.Renderer.render)
-	}
-
 	build() {
 		return [new Player(), new AI(), new Board(), new Renderer()]
+	}
+
+	mount() {
+		this.subscribe('start', () => {
+			console.log('loop start')
+			this.Renderer.render()
+		})
+		this.subscribe('stop', () => {
+			console.log('loop stop')
+			this.Renderer.render()
+		})
+		this.subscribe('play', () => {
+			console.log('loop play')
+			this.Renderer.render()
+		})
+		this.subscribe('pause', () => {
+			console.log('loop pause')
+			this.Renderer.render()
+		})
+	}
+
+	destroy() {
+		console.log('destroy', this.children)
+		this.Renderer.render()
 	}
 }
 
@@ -43,7 +61,6 @@ class Renderer extends Task {
 	repeat = Infinity
 
 	tick() {
-		console.log('render tick')
 		this.render()
 	}
 

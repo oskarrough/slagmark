@@ -4,13 +4,14 @@ import {socket} from './multiplayer.js'
 
 /*
  * Listens for "presence" events from the websocket server
- * and re-renders (via signals) the count to the DOM*/
+ * and re-renders (via signals) the count to the DOM
+ */
 export class LivePresence extends HTMLElement {
 	constructor() {
 		super()
 
-		this.count = signal(window.rumblepresence)
-
+		// Count the number of connections to the main socket.
+		this.count = signal(0)
 		socket.addEventListener('message', (event) => {
 			const msg = JSON.parse(event.data)
 			if (msg.type === 'presence') {
@@ -20,10 +21,6 @@ export class LivePresence extends HTMLElement {
 	}
 
 	connectedCallback() {
-		this.render()
-	}
-
-	render() {
 		effect(() => {
 			render(this, html`${this.count.value}`)
 		})

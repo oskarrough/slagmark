@@ -27,7 +27,7 @@ export const socket = new PartySocket({
 socket.addEventListener('message', (event) => {
 	const msg = JSON.parse(event.data)
 	if (msg.type === 'presence') {
-		window.rumblepresence = msg.count // initial count to live-presence
+		// window.rumblepresence = msg.count // initial count to live-presence
 		// handled by <live-presence>
 	} else if (msg.type === 'cursorUpdate') {
 		// handled by <live-cursors>
@@ -37,4 +37,3 @@ socket.addEventListener('message', (event) => {
 		console.log('main socket unhandled message', msg)
 	}
 })
-

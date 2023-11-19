@@ -2,10 +2,7 @@ import {html, roundOne} from './utils.js'
 import {AI} from './nodes.js'
 
 export function UI(game) {
-	if (!game.started) {
-		return html` <header>${Splash(game)}</header> `
-	}
-
+	if (!game?.children?.length) return html``
 	const player = game.Player
 	const ai = game.AI
 

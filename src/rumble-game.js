@@ -5,21 +5,26 @@ import {UI} from './ui.js'
 /** A custom element wrapper around the UI */
 export class RumbleGame extends HTMLElement {
 	connectedCallback() {
-		// this.newGame()
+		this.render()
 	}
 
 	newGame() {
 		if (this.game) {
-			console.log('force stopping game')
+			console.log('force stopping game before starting a new')
 			this.game.stop()
 		}
-		const game = new GameLoop({element: this})
-		this.game = game
-		render(this, UI(this.game))
+		this.game = new GameLoop({element: this})
+		this.render()
+	}
 
-		if (this.getAttribute('autoplay')) {
-			game.start()
-			render(this, UI(game))
-		}
+	quitGame() {
+		if (!this.game) return
+		this.game.stop()
+		this.game = null
+		this.render()
+	}
+
+	render() {
+		render(this, UI(this.game))
 	}
 }

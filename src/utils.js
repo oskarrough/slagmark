@@ -1,4 +1,5 @@
 export {render, html} from 'uhtml/keyed'
+export {effect, signal} from 'usignal'
 
 /**
  * @param {Array} arr
