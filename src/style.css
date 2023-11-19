@@ -10,8 +10,7 @@
 :root {
 	--bg: hsl(166deg 100% 12%);
 	--bg2: hsl(166deg 100% 8%);
-	--text: floralwhite;
-
+	--text: hsl(40deg 100% 90% / 1);
 	--player1: #4b3636;
 	--player2: #522f82;
 
@@ -52,15 +51,15 @@ h2 {
 
 rumble-lobby {
 	width: 100%;
-	flex: 1;
 	padding: 0.5rem;
 }
 
 rumble-game {
 	/* flex: 1; */
-	width: 100%;
 	/* height: 100vh;
 	min-height: 50vh; */
+	max-width: 40rem;
+	width: 100%;
 	margin: auto;
 	padding: 0.5rem;
 	display: grid;
@@ -200,3 +199,13 @@ menu {
 	}
 }
 
+summary {
+	user-select: none;
+}
+
+.Splash {}
+h1 {color: #ffca00; }
+/* .Splash p span:nth-of-type(2) {color: yellowgreen; } */
+/* .Splash p span:nth-of-type(3) {color: khaki; } */
+/* .Splash p span:nth-of-type(4) {color: darkorange; } */
+.Splash p strong { letter-spacing: -0.15em; transform: scale(1.5); display: inline-block; margin: 0 1em; }
