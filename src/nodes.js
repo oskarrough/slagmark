@@ -255,5 +255,5 @@ export class Minion extends Task {
 
 export class Board extends Node {
 	width = 1
-	height = 2
+	height = 7
 }
