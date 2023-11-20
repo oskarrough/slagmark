@@ -9,48 +9,31 @@ export class GameLoop extends Loop {
 		this.element = props.element
 	}
 
-	Renderer = null
-
-	static get descendants() {
-		return {
-			// Participants: {type: Participant, list: true},
-			Player: {type: Player, optional: true},
-			AI: {type: AI, optional: true},
-			Board: {type: Board, optional: true},
-			Renderer: {type: Renderer, optional: true},
-		}
-	}
-
 	build() {
-		return [new Player(), new AI(), new Board(), new Renderer()]
+		return [Player.new(), AI.new(), Board.new(), Renderer.new()]
 	}
 
 	mount() {
 		this.subscribe('start', () => {
-			this.Renderer.render()
+			this.query(Renderer).render()
 		})
 		this.subscribe('stop', () => {
-			this.Renderer.render()
+			this.query(Renderer).render()
 		})
 		this.subscribe('play', () => {
-			this.Renderer.render()
+			this.query(Renderer).render()
 		})
 		this.subscribe('pause', () => {
-			this.Renderer.render()
+			this.query(Renderer).render()
 		})
 	}
 
 	destroy() {
-		console.log('destroy', this.children)
-		this.Renderer.render()
+		this.query(Renderer).render()
 	}
 }
 
 class Renderer extends Task {
-	static get ancestors() {
-		return {Loop: {type: GameLoop}}
-	}
-
 	delay = 0
 	duration = 0
 	interval = 32
@@ -61,27 +44,13 @@ class Renderer extends Task {
 	}
 
 	render() {
-		if (!this.Loop?.element) return //throw new Error('missing DOM element to render to')
-		render(this.Loop.element, UI(this.Loop))
+		if (!this.root?.element) throw new Error('missing DOM element to render to')
+		render(this.root.element, UI(this.root))
 	}
 }
 
 class Participant extends Task {
 	health = 3
-
-	static get ancestors() {
-		return {
-			Loop: {type: GameLoop},
-		}
-	}
-
-	static get descendants() {
-		return {
-			Gold: {type: Gold, optional: true},
-			Minions: {type: Minion, list: true},
-			RefillMinions: {type: RefillMinions, optional: true},
-		}
-	}
 
 	build() {
 		return [new Gold(), new Minion(), new Minion(), new Minion(), new Minion(), new RefillMinions()]
@@ -90,7 +59,7 @@ class Participant extends Task {
 	afterCycle() {
 		if (this.health <= 0) {
 			console.log(`${this.constructor.name} lost`)
-			this.Loop.stop()
+			this.parent.stop()
 		}
 	}
 }
@@ -100,12 +69,6 @@ export class Player extends Participant {}
 export class AI extends Participant {}
 
 export class Gold extends Task {
-	static get ancestors() {
-		return {
-			Owner: {type: Participant},
-		}
-	}
-
 	delay = 0
 	duration = 0
 	interval = 1000
@@ -129,19 +92,14 @@ export class Gold extends Task {
 	}
 }
 
+/** Adds a new minion to the parent every {interval} seconds (if we have less than 4) */
 export class RefillMinions extends Task {
 	duration = 0
 	interval = 3000
 
-	static get ancestors() {
-		return {
-			Owner: {type: Participant},
-		}
-	}
-
 	tick() {
-		if (this.Owner.Minions?.length < 4) {
-			this.Owner.add(new Minion())
+		if (this.parent.queryAll(Minion)?.length < 4) {
+			this.parent.add(Minion.new())
 		}
 	}
 }
@@ -149,22 +107,15 @@ export class RefillMinions extends Task {
 const MINION_TYPES = ['rock', 'paper', 'scissors']
 
 export class Minion extends Task {
-	minionType = ''
-	speed = 1
-	y = 0
-	cost = 2
-
 	delay = 1000
 	duration = 0
 	interval = 1000
 	repeat = Infinity
-
-	static get ancestors() {
-		return {
-			Loop: {type: GameLoop},
-			Owner: {type: Participant},
-		}
-	}
+	// Props
+	minionType = ''
+	speed = 1
+	y = 0
+	cost = 2
 
 	constructor() {
 		super()
@@ -178,10 +129,10 @@ export class Minion extends Task {
 	afterCycle() {
 		if (!this.deployed) return
 
-		const isAI = this.Owner.is(AI)
-		const startY = isAI ? this.Loop.Board.height : 0
-		const finalY = isAI ? 0 : this.Loop.Board.height
-		const opponent = isAI ? this.Loop.Player : this.Loop.AI
+		const isAI = this.parent.is(AI)
+		const startY = isAI ? this.root.query(Board).height : 0
+		const finalY = isAI ? 0 : this.root.query(Board).height
+		const opponent = this.root.query(isAI ? Player : AI)
 
 		// Fight any enemies on same Y, and remove the loser.
 		if (this.y !== startY && this.y !== finalY) {
@@ -207,16 +158,16 @@ export class Minion extends Task {
 	 */
 	deploy() {
 		// Handle gold
-		if (this.Owner.Gold.amount < this.cost) {
+		if (this.parent.query(Gold).amount < this.cost) {
 			console.log(`You need ${this.cost} gold to deploy this minion`)
 			return
 		}
-		this.Owner.Gold.decrement(this.cost)
+		this.parent.query(Gold).decrement(this.cost)
 		// Deploy to the starting side of the board.
 		const isAI = this.parent.is(AI)
-		this.y = isAI ? this.Loop.Board.height : 0
-		this.deployed = this.Loop.elapsedTime
-		console.log(isAI ? 'AI' : 'Player', 'deploy', this.minionType, this.y)
+		this.y = isAI ? this.root.query(Board).height : 0
+		this.deployed = this.root.elapsedTime
+		console.log('ACTION deploy', isAI ? 'AI' : 'Player', this.minionType, this.y)
 	}
 
 	move(direction = 1) {
@@ -229,7 +180,7 @@ export class Minion extends Task {
 	 */
 	fight(opponent) {
 		const isAI = this.parent.is(AI)
-		console.log('Fight on', this.y, isAI ? 'AI' : 'Player', this.minionType, 'vs', opponent.minionType)
+		console.log('ACTION fight', this.y, isAI ? 'AI' : 'Player', this.minionType, 'vs', opponent.minionType)
 		const winningCombos = {
 			rock: 'scissors',
 			paper: 'rock',
@@ -249,7 +200,7 @@ export class Minion extends Task {
 	 * @argument {Participant} opponent
 	 */
 	findEnemies(opponent) {
-		return opponent.Minions.filter((minion) => minion.y === this.y)
+		return opponent.queryAll(Minion).filter((minion) => minion.y === this.y)
 	}
 }
 
