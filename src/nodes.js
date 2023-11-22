@@ -1,8 +1,10 @@
-import {Node, Loop, Task} from 'vroum'
+import {Node, Loop, Task, Query} from 'vroum'
 import {render, random} from './utils.js'
 import {UI} from './ui.js'
 
 export class GameLoop extends Loop {
+	ui = Query(Renderer)
+
 	constructor(props) {
 		super()
 		// The DOM element to render to
@@ -15,16 +17,16 @@ export class GameLoop extends Loop {
 
 	mount() {
 		this.subscribe('start', () => {
-			this.query(Renderer).render()
+			ui.render()
 		})
 		this.subscribe('stop', () => {
-			this.query(Renderer).render()
+			ui.render()
 		})
 		this.subscribe('play', () => {
-			this.query(Renderer).render()
+			ui.render()
 		})
 		this.subscribe('pause', () => {
-			this.query(Renderer).render()
+			ui.render()
 		})
 	}
 
