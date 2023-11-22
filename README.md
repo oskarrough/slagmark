@@ -21,11 +21,8 @@ Basic ideas:
 
 ## Development
 
-You need two local servers at the same time. Can also use `npm`.
-
 ```
 bun install
-bun run websocketserver
 bun run dev
 ```
 
