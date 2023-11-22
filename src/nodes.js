@@ -41,10 +41,10 @@ export class GameLoop extends Loop {
 class Renderer extends Task {
 	Game = Closest(GameLoop)
 
-	delay = 0
-	duration = 0
-	interval = 16
-	repeat = Infinity
+	// delay = 0
+	// duration = 0
+	// interval = 500
+	// repeat = Infinity
 
 	tick() {
 		this.render()
@@ -71,7 +71,7 @@ export class Player extends Task {
 	}
 
 	build() {
-		return [new Gold(), new Minion(), new Minion(), new Minion(), new Minion(), new RefillMinions()]
+		return [Gold.new(), Minion.new(), Minion.new(), Minion.new(), Minion.new(), RefillMinions.new()]
 	}
 
 	afterCycle() {
@@ -111,8 +111,10 @@ export class RefillMinions extends Task {
 	duration = 0
 	interval = 3000
 
+	maxAmount = 4
+
 	tick() {
-		if (this.parent.queryAll(Minion)?.length < 4) {
+		if (this.parent.Minions?.length < this.maxAmount) {
 			this.parent.add(Minion.new())
 		}
 	}
@@ -172,10 +174,6 @@ export class Minion extends Task {
 
 	/** Deploys to the starting side of the parent Player's board. */
 	deploy() {
-		if (!this.Player) {
-			console.log('no player ref, this should not happen')
-			debugger
-		}
 		const gold = this.parent.Gold
 		if (gold.amount < this.cost) {
 			console.log(`You need ${this.cost} gold to deploy this minion`)
