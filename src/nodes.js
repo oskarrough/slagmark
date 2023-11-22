@@ -1,9 +1,11 @@
-import {Node, Loop, Task, Query} from 'vroum'
+import {Node, Loop, Task, Query, QueryAll, Closest} from 'vroum'
 import {render, random} from './utils.js'
 import {UI} from './ui.js'
 
 export class GameLoop extends Loop {
 	ui = Query(Renderer)
+	Players = QueryAll(Player)
+	Board = Query(Board)
 
 	constructor(props) {
 		super()
@@ -12,10 +14,11 @@ export class GameLoop extends Loop {
 	}
 
 	build() {
-		return [Player.new(), AI.new(), Board.new(), Renderer.new()]
+		return [Player.new(), Player.new({ai: true}), Board.new(), Renderer.new()]
 	}
 
 	mount() {
+		const ui = this.ui
 		this.subscribe('start', () => {
 			ui.render()
 		})
@@ -36,9 +39,11 @@ export class GameLoop extends Loop {
 }
 
 class Renderer extends Task {
+	Game = Closest(GameLoop)
+
 	delay = 0
 	duration = 0
-	interval = 32
+	interval = 16
 	repeat = Infinity
 
 	tick() {
@@ -46,13 +51,24 @@ class Renderer extends Task {
 	}
 
 	render() {
-		if (!this.root?.element) throw new Error('missing DOM element to render to')
-		render(this.root.element, UI(this.root))
+		if (!this.Game?.element) throw new Error('missing DOM element to render to')
+		// const start = performance.now()
+		render(this.Game.element, UI(this.root))
+		// const end = performance.now()
+		// console.log(`render time = ${end - start}ms`)
 	}
 }
 
-class Participant extends Task {
+export class Player extends Task {
+	Game = Closest(GameLoop)
+	Minions = QueryAll(Minion)
+	Gold = Query(Gold)
 	health = 3
+
+	constructor(props) {
+		super()
+		this.ai = props?.ai ?? false
+	}
 
 	build() {
 		return [new Gold(), new Minion(), new Minion(), new Minion(), new Minion(), new RefillMinions()]
@@ -61,14 +77,10 @@ class Participant extends Task {
 	afterCycle() {
 		if (this.health <= 0) {
 			console.log(`${this.constructor.name} lost`)
-			this.parent.stop()
+			this.Game.stop()
 		}
 	}
 }
-
-export class Player extends Participant {}
-
-export class AI extends Participant {}
 
 export class Gold extends Task {
 	delay = 0
@@ -109,6 +121,9 @@ export class RefillMinions extends Task {
 const MINION_TYPES = ['rock', 'paper', 'scissors']
 
 export class Minion extends Task {
+	Game = Closest(GameLoop)
+	Player = Closest(Player)
+
 	delay = 1000
 	duration = 0
 	interval = 1000
@@ -125,51 +140,52 @@ export class Minion extends Task {
 	}
 
 	tick() {
-		if (!this.deployed) return
+		if (!this.deployed || this.shouldDisconnect) return
+
+		const {Game, Player} = this
+		const startY = Player.ai ? this.root.Board.height : 0
+		const finalY = Player.ai ? 0 : this.root.Board.height
+
+		// Fight any enemies on same Y, and remove the loser.
+		const opponent = Game.Players.find((p) => p !== Player)
+		if (this.y !== startY && this.y !== finalY) {
+			const enemies = opponent.Minions.filter((m) => m.y === this.y)
+			for (const enemy of enemies) {
+				const loser = this.fight(enemy)
+				loser.shouldDisconnect = true
+			}
+		}
+
+		if (this.y !== finalY) {
+			this.move(this.Player.ai ? -1 : 1)
+		} else {
+			// If we reached the opposite end, opponent player loses a life, and we leave the board.
+			opponent.health--
+			this.shouldDisconnect = true
+		}
 	}
 
 	afterCycle() {
 		if (!this.deployed) return
-
-		const isAI = this.parent.is(AI)
-		const startY = isAI ? this.root.query(Board).height : 0
-		const finalY = isAI ? 0 : this.root.query(Board).height
-		const opponent = this.root.query(isAI ? Player : AI)
-
-		// Fight any enemies on same Y, and remove the loser.
-		if (this.y !== startY && this.y !== finalY) {
-			const enemies = this.findEnemies(opponent)
-			for (const enemy of enemies) {
-				const loser = this.fight(enemy)
-				loser.disconnect()
-			}
-		}
-
-		// If we reached the opposite end, opponent player loses a life, and we leave the board.
-		if (this.y === finalY) {
-			opponent.health--
-			this.disconnect()
-			return
-		}
-
-		this.move(isAI ? -1 : 1)
+		if (this.shouldDisconnect) this.disconnect()
 	}
 
-	/**
-	 * Deploys the minion, meaning it's on the board now.
-	 */
+	/** Deploys to the starting side of the parent Player's board. */
 	deploy() {
-		// Handle gold
-		if (this.parent.query(Gold).amount < this.cost) {
+		if (!this.Player) {
+			console.log('no player ref, this should not happen')
+			debugger
+		}
+		const gold = this.parent.Gold
+		if (gold.amount < this.cost) {
 			console.log(`You need ${this.cost} gold to deploy this minion`)
 			return
 		}
-		this.parent.query(Gold).decrement(this.cost)
-		// Deploy to the starting side of the board.
-		const isAI = this.parent.is(AI)
-		this.y = isAI ? this.root.query(Board).height : 0
+		gold.decrement(this.cost)
+
+		this.y = this.parent.ai ? this.root.Board.height : 0
 		this.deployed = this.root.elapsedTime
-		console.log('ACTION deploy', isAI ? 'AI' : 'Player', this.minionType, this.y)
+		console.log('ACTION deploy', this.parent.ai ? 'AI' : 'Player', this.minionType, this.y)
 	}
 
 	move(direction = 1) {
@@ -178,10 +194,10 @@ export class Minion extends Task {
 
 	/**
 	 * Returns the losing minion, if draw return a random winner
-	 * @argument {Participant} opponent
+	 * @argument {Minion} opponent
 	 */
 	fight(opponent) {
-		const isAI = this.parent.is(AI)
+		const isAI = this.Player.ai
 		console.log('ACTION fight', this.y, isAI ? 'AI' : 'Player', this.minionType, 'vs', opponent.minionType)
 		const winningCombos = {
 			rock: 'scissors',
@@ -195,14 +211,6 @@ export class Minion extends Task {
 		} else {
 			return random([this, opponent])
 		}
-	}
-
-	/**
-	 * Returns any non-friendly minions on the same position.
-	 * @argument {Participant} opponent
-	 */
-	findEnemies(opponent) {
-		return opponent.queryAll(Minion).filter((minion) => minion.y === this.y)
 	}
 }
 

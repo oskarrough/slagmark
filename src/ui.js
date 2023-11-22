@@ -1,11 +1,12 @@
 import {html, roundOne} from './utils.js'
-import {Player, AI, Minion, Gold, Board} from './nodes.js'
+import {Player, Minion, Gold, Board} from './nodes.js'
 
 export function UI(game) {
 	if (!game?.children?.length) return html``
 
-	const player = game.query(Player)
-	const ai = game.query(AI)
+	const players = game.queryAll(Player)
+	const player1 = players[0]
+	const player2 = players[1]
 
 	return html`
 		<header>
@@ -14,27 +15,27 @@ export function UI(game) {
 
 		<aside>
 			<div>
-				<h2>AI ${HealthBar(ai.health)}</h2>
+				<h2>AI ${HealthBar(player2.health)}</h2>
 				<ul class="MinionBar">
-					${MinionList(ai, false)}
+					${MinionList(player2, false)}
 				</ul>
-				${GoldBar(ai.Gold)}
+				${GoldBar(player2.Gold)}
 			</div>
 			<div>
-				<h2>Player ${HealthBar(player.health)}</h2>
+				<h2>Player ${HealthBar(player1.health)}</h2>
 				<ul class="MinionBar">
-					${MinionList(player, false)}
+					${MinionList(player1, false)}
 				</ul>
-				${GoldBar(player.Gold)}
+				${GoldBar(player1.Gold)}
 			</div>
 		</aside>
 
 		<main>
 			<ul data-ai>
-				${MinionList(ai, true)}
+				${MinionList(player2, true)}
 			</ul>
 			<ul data-player>
-				${MinionList(player, true)}
+				${MinionList(player1, true)}
 			</ul>
 		</main>
 	`
@@ -80,12 +81,11 @@ function minionTypeToEmoji(type) {
 }
 
 function minion(minion) {
-	const isAi = minion.parent.is(AI)
 	const canDeploy = !minion.deployed && minion.parent.query(Gold).amount >= minion.cost
 	const height = minion.parent.parent.query(Board).height
 	const topPercentage = ((height - minion.y) / height) * 100
 	return html`<li
-		class=${`Minion ${isAi ? 'ai' : null}`}
+		class=${`Minion ${minion.parent.ai ? 'ai' : null}`}
 		data-y=${minion.y}
 		style=${`top: ${topPercentage}%`}
 	>
