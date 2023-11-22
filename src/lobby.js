@@ -64,16 +64,6 @@ export class RumbleLobby extends HTMLElement {
 		const rooms = Object.entries(this.rooms.value).map(([id, count]) => ({id, count}))
 		const totalConnections = Object.entries(this.rooms.value).reduce((acc, [id, count]) => acc + count, 0)
 		const tpl = html`
-			<article class="Splash">
-				<h1>Triminion</h1>
-				<p>
-					<span>Gold is flowing,</span> <span>your minions await.</span>
-					<span>Strategically deploy your</span>
-					<strong>🪨📄✂️</strong>
-					<span> and witness the battle.</span>
-				</p>
-			</article>
-
 			<details open>
 				<summary>
 					Lobby (<live-presence></live-presence> online, ${rooms.length} games, ${totalConnections} playing)

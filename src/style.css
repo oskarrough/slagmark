@@ -203,7 +203,11 @@ summary {
 	user-select: none;
 }
 
-.Splash {}
+.Splash {
+	margin-right: auto;
+	margin-left: 0.5rem;
+}
+
 h1 {color: #ffca00; }
 /* .Splash p span:nth-of-type(2) {color: yellowgreen; } */
 /* .Splash p span:nth-of-type(3) {color: khaki; } */

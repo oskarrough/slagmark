@@ -1,4 +1,4 @@
-Triminion
+Slagmark
 
 This is for now a proof of concept, inspired by Dota, Warcraft Rumble, Totally Accurate Battle Simulator, et alia.
 
