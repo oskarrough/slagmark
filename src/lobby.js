@@ -1,8 +1,9 @@
 import PartySocket from 'partysocket'
 import {socket, PARTYKIT_URL} from './multiplayer.js'
-import {render, html, signal, effect} from './utils.js'
+import {render, html, signal, effect, uuid} from './utils.js'
 import {friendlyId} from './friendly-id.js'
 import {RumbleGame} from './rumble-game.js'
+import {Minion} from './nodes.js'
 
 /**
  * The lobby manages the "rooms" (or games) that are currently active.
@@ -19,17 +20,36 @@ export class RumbleLobby extends HTMLElement {
 			this.render(this.rooms)
 		})
 
-		socket.addEventListener('message', (event) => {
-			const msg = JSON.parse(event.data)
-			if (msg.type === 'connections') {
-				this.rooms.value = msg.connections
-			}
-		})
+		socket.addEventListener('message', this.onLobbyMessage.bind(this))
+	}
+
+	onLobbyMessage(event) {
+		const msg = JSON.parse(event.data)
+		if (msg.type === 'connections') {
+			this.rooms.value = msg.connections
+		} else if (msg.type === 'presence') {
+		} else if (msg.type === 'cursorUpdate') {
+		} else {
+			console.log('unhandled msg from main server', msg)
+		}
+	}
+
+	onGameMessage(event) {
+		const msg = JSON.parse(event.data)
+		if (msg.type === 'deployMinion') {
+			const minions = this.parentElement.game.Minions
+			const minion = minions.find((m) => m.id === msg.id)
+			// minion.deploy()
+			console.log('@todo deploy', minions, minion)
+		} else {
+			console.log('games socket unhandled message', event.data)
+		}
 	}
 
 	createRoom() {
 		this.leaveRoom()
 		this.joinRoom(friendlyId())
+		this.createGame()
 	}
 
 	joinRoom(id) {
@@ -38,26 +58,22 @@ export class RumbleLobby extends HTMLElement {
 			party: 'games',
 			room: id,
 		})
-		this.gamesSocket.addEventListener('message', (event) => {
-			const msg = JSON.parse(event.data)
-			console.log('games socket unhandled message', msg)
-		})
 
-		/** @type {RumbleGame} */
-		const rumble = document.querySelector('rumble-game')
-
-		// Once we're in the new room, we can start the game as well.
-		rumble?.newGame()
-		rumble?.game.start()
+		this.gamesSocket.addEventListener('message', this.onGameMessage)
 	}
 
 	leaveRoom() {
 		this.gamesSocket?.close()
 		this.gamesSocket = null
+		this.parentElement?.quitGame()
+	}
 
-		/** @type {RumbleGame} */
-		const rumble = document.querySelector('rumble-game')
-		rumble?.quitGame()
+	createGame() {
+		console.log(this.parentElement)
+		// Once we're in the new room, we can start the game as well.
+		this.parentElement.newGame()
+		const msg = {type: 'create'} 
+		this.gamesSocket.send(JSON.stringify(msg))
 	}
 
 	render(_) {

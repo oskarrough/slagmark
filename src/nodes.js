@@ -1,10 +1,11 @@
 import {Node, Loop, Task, Query, QueryAll, Closest} from 'vroum'
-import {render, random} from './utils.js'
+import {render, random, uuid} from './utils.js'
 import {UI} from './ui.js'
 
 export class GameLoop extends Loop {
-	ui = Query(Renderer)
+	Renderer = Query(Renderer)
 	Players = QueryAll(Player)
+	Minions = QueryAll(Minion)
 	Board = Query(Board)
 
 	constructor(props) {
@@ -18,7 +19,7 @@ export class GameLoop extends Loop {
 	}
 
 	mount() {
-		const ui = this.ui
+		const Renderer = this.Renderer
 		this.subscribe('start', () => {
 			ui.render()
 		})
@@ -133,6 +134,7 @@ export class Minion extends Task {
 	constructor() {
 		super()
 		this.minionType = random(MINION_TYPES)
+		this.id = uuid()
 	}
 
 	tick() {
@@ -176,10 +178,9 @@ export class Minion extends Task {
 			return
 		}
 		gold.decrement(this.cost)
-
 		this.y = this.Player.ai ? this.Game.Board.height : 0
 		this.deployed = this.Game.elapsedTime
-		console.log('ACTION deploy', this.Player.ai ? 'AI' : 'Player', this.minionType, this.y)
+		console.log('node minion deploy', this.Player.ai ? 'AI' : 'Player', this.minionType, this.y)
 	}
 
 	move(direction = 1) {
@@ -210,5 +211,5 @@ export class Minion extends Task {
 
 export class Board extends Node {
 	width = 1
-	height = 5
+	height = 10
 }

@@ -11,7 +11,7 @@ export class RumbleGame extends HTMLElement {
 	newGame() {
 		if (this.game) this.game.stop()
 		this.game = GameLoop.new({element: this})
-		this.render()
+		this.parentElement.game?.start()
 	}
 
 	quitGame() {
