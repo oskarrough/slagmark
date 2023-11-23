@@ -55,7 +55,7 @@ rumble-lobby {
 }
 
 rumble-game {
-	/* flex: 1; */
+	flex: 1;
 	/* height: 100vh;
 	min-height: 50vh; */
 	max-width: 40rem;
@@ -207,9 +207,5 @@ summary {
 	margin-right: auto;
 	margin-left: 0.5rem;
 }
-
-h1 {color: #ffca00; }
-/* .Splash p span:nth-of-type(2) {color: yellowgreen; } */
-/* .Splash p span:nth-of-type(3) {color: khaki; } */
-/* .Splash p span:nth-of-type(4) {color: darkorange; } */
+.Splash h1 {color: #ffca00; }
 .Splash p strong { letter-spacing: -0.15em; transform: scale(1.5); display: inline-block; margin: 0 1em; }

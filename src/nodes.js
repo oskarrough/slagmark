@@ -41,11 +41,6 @@ export class GameLoop extends Loop {
 class Renderer extends Task {
 	Game = Closest(GameLoop)
 
-	// delay = 0
-	// duration = 0
-	// interval = 500
-	// repeat = Infinity
-
 	tick() {
 		this.render()
 	}
@@ -77,16 +72,15 @@ export class Player extends Task {
 	afterCycle() {
 		if (this.health <= 0) {
 			console.log(`${this.constructor.name} lost`)
+			alert(`${this.constructor.name} lost`)
 			this.Game.stop()
 		}
 	}
 }
 
 export class Gold extends Task {
-	delay = 0
 	duration = 0
 	interval = 1000
-	repeat = Infinity
 
 	amount = 0
 	maxAmount = 10
@@ -110,12 +104,12 @@ export class Gold extends Task {
 export class RefillMinions extends Task {
 	duration = 0
 	interval = 3000
-
 	maxAmount = 4
+	Player = Closest(Player)
 
 	tick() {
-		if (this.parent.Minions?.length < this.maxAmount) {
-			this.parent.add(Minion.new())
+		if (this.Player.Minions?.length < this.maxAmount) {
+			this.Player.add(Minion.new())
 		}
 	}
 }
@@ -126,7 +120,7 @@ export class Minion extends Task {
 	Game = Closest(GameLoop)
 	Player = Closest(Player)
 
-	delay = 1000
+	delay = 0
 	duration = 0
 	interval = 1000
 	repeat = Infinity
@@ -134,7 +128,7 @@ export class Minion extends Task {
 	minionType = ''
 	speed = 1
 	y = 0
-	cost = 2
+	cost = 1
 
 	constructor() {
 		super()
@@ -144,12 +138,13 @@ export class Minion extends Task {
 	tick() {
 		if (!this.deployed || this.shouldDisconnect) return
 
-		const {Game, Player} = this
-		const startY = Player.ai ? this.root.Board.height : 0
-		const finalY = Player.ai ? 0 : this.root.Board.height
+		// Variables needed to move later.
+		const direction = this.Player.ai ? 'down' : 'up'
+		const startY = direction === 'down' ? this.Game.Board.height : 0
+		const finalY = direction === 'down' ? 0 : this.Game.Board.height
 
 		// Fight any enemies on same Y, and remove the loser.
-		const opponent = Game.Players.find((p) => p !== Player)
+		const opponent = this.Game.Players.find((p) => p !== this.Player)
 		if (this.y !== startY && this.y !== finalY) {
 			const enemies = opponent.Minions.filter((m) => m.y === this.y)
 			for (const enemy of enemies) {
@@ -158,12 +153,13 @@ export class Minion extends Task {
 			}
 		}
 
-		if (this.y !== finalY) {
-			this.move(this.Player.ai ? -1 : 1)
-		} else {
-			// If we reached the opposite end, opponent player loses a life, and we leave the board.
+		// If we reached the opposite end, opponent player loses a life, and we leave the board.
+		if (this.y === finalY) {
 			opponent.health--
 			this.shouldDisconnect = true
+		} else {
+			// Else we keep moving.
+			this.move(this.Player.ai ? -1 : 1)
 		}
 	}
 
@@ -174,20 +170,20 @@ export class Minion extends Task {
 
 	/** Deploys to the starting side of the parent Player's board. */
 	deploy() {
-		const gold = this.parent.Gold
+		const gold = this.Player.Gold
 		if (gold.amount < this.cost) {
-			console.log(`You need ${this.cost} gold to deploy this minion`)
+			console.log(`ACTION deploy', 'You need ${this.cost} gold to deploy this minion`)
 			return
 		}
 		gold.decrement(this.cost)
 
-		this.y = this.parent.ai ? this.root.Board.height : 0
-		this.deployed = this.root.elapsedTime
-		console.log('ACTION deploy', this.parent.ai ? 'AI' : 'Player', this.minionType, this.y)
+		this.y = this.Player.ai ? this.Game.Board.height : 0
+		this.deployed = this.Game.elapsedTime
+		console.log('ACTION deploy', this.Player.ai ? 'AI' : 'Player', this.minionType, this.y)
 	}
 
 	move(direction = 1) {
-		this.y = Math.max(0, this.y + this.speed * direction)
+		this.y = this.y + this.speed * direction
 	}
 
 	/**
@@ -214,5 +210,5 @@ export class Minion extends Task {
 
 export class Board extends Node {
 	width = 1
-	height = 7
+	height = 5
 }
