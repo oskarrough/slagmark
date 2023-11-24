@@ -9,9 +9,3 @@ customElements.define('rumble-lobby', RumbleLobby)
 customElements.define('live-cursors', LiveCursors)
 customElements.define('live-presence', LivePresence)
 
-window.slagmark = function() {
-	const el = document.querySelector('rumble-game')
-	return {
-		game: el.game
-	}
-}

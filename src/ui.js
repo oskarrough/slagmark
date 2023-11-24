@@ -31,7 +31,7 @@ export function UI(game) {
 		</aside>
 
 		<main>
-			<ul data-ai>
+			<ul data-player2>
 				${MinionList(player2, true)}
 			</ul>
 			<ul data-player>
@@ -51,7 +51,7 @@ function Menu(game) {
 	return html`
 		<menu>
 			<button type="button" onclick=${toggle}>${game.paused ? 'Play' : 'Pause'}</button>
-			<button hidden type="button" onclick=${quit}>Quit</button>
+			<button type="button" onclick=${quit}>Quit</button>
 			<p style="min-width: 5rem"><small>FPS ${fps}</small></p>
 			<p style="min-width: 3.5rem"><small>${roundOne(game.elapsedTime / 1000)}s</small></p>
 		</menu>
@@ -59,8 +59,8 @@ function Menu(game) {
 }
 
 /* Returns a list of HTML minions */
-function MinionList(parent, deployed) {
-	let list = parent.queryAll(Minion)
+function MinionList(player, deployed) {
+	let list = player.Minions
 	if (!list?.length) return null
 	if (deployed) {
 		list = list.filter((m) => m.deployed)
@@ -80,16 +80,30 @@ function minionTypeToEmoji(type) {
 	return map[type] || type
 }
 
+function sendAction(action) {
+	const el = document.querySelector('rumble-lobby')
+	if (!el) throw new Error('Missing <rumble-lobby> element')
+	if (!el.gamesSocket) throw new Error('Missing game socket')
+	el.gamesSocket?.send(JSON.stringify(action))
+}
+
 function minion(minion) {
-	const canDeploy = !minion.deployed && minion.parent.query(Gold).amount >= minion.cost
-	const height = minion.parent.parent.query(Board).height
+	const canDeploy = !minion.deployed && minion.Player.query(Gold).amount >= minion.cost
+	const height = minion.Game.Board.height
 	const topPercentage = ((height - minion.y) / height) * 100
+
+	const onClick = () => {
+		// console.log('trigger action deploy minion', minion)
+		// sendAction({type: 'deployMinion', id: minion.id})
+		minion.deploy()
+	}
+
 	return html`<li
-		class=${`Minion ${minion.parent.ai ? 'ai' : null}`}
+		class=${`Minion ${minion.Player.ai ? 'ai' : null}`}
 		data-y=${minion.y}
 		style=${`top: ${topPercentage}%`}
 	>
-		<button type="button" ?disabled=${!canDeploy} onclick=${() => minion.deploy()}>
+		<button type="button" ?disabled=${!canDeploy} onclick=${onClick}>
 			${minionTypeToEmoji(minion.minionType)}
 		</button>
 		<span>${minion.deployed ? minion.y : minion.cost}</span>
@@ -111,4 +125,3 @@ function HealthBar(health) {
 		${hearts.map((n) => html`<li>${n}</li>`)}
 	</ul>`
 }
-
