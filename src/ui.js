@@ -51,7 +51,7 @@ function Menu(game) {
 	return html`
 		<menu>
 			<button type="button" onclick=${toggle}>${game.paused ? 'Play' : 'Pause'}</button>
-			<button hidden type="button" onclick=${quit}>Quit</button>
+			<button type="button" onclick=${quit}>Quit</button>
 			<p style="min-width: 5rem"><small>FPS ${fps}</small></p>
 			<p style="min-width: 3.5rem"><small>${roundOne(game.elapsedTime / 1000)}s</small></p>
 		</menu>
@@ -80,15 +80,16 @@ function minionTypeToEmoji(type) {
 	return map[type] || type
 }
 
-
 function sendAction(action) {
 	const el = document.querySelector('rumble-lobby')
-	el.gamesSocket.send(JSON.stringify(action))
+	if (!el) throw new Error('Missing <rumble-lobby> element')
+	if (!el.gamesSocket) throw new Error('Missing game socket')
+	el.gamesSocket?.send(JSON.stringify(action))
 }
 
 function minion(minion) {
-	const canDeploy = !minion.deployed && minion.parent.query(Gold).amount >= minion.cost
-	const height = minion.parent.parent.query(Board).height
+	const canDeploy = !minion.deployed && minion.Player.query(Gold).amount >= minion.cost
+	const height = minion.Game.Board.height
 	const topPercentage = ((height - minion.y) / height) * 100
 
 	const onClick = () => {
@@ -124,4 +125,3 @@ function HealthBar(health) {
 		${hearts.map((n) => html`<li>${n}</li>`)}
 	</ul>`
 }
-

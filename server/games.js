@@ -16,7 +16,7 @@ export default class PartyServer {
 		for (const c of this.party.getConnections()) {
 			count++
 		}
-		conn.send(JSON.stringify({info: `welcome you are number ${count}`}))
+		conn.send(JSON.stringify({type: 'info', content: `Welcome, you are Player ${count}`}))
 		this.updateConnections('connect', conn)
 	}
 
@@ -30,6 +30,7 @@ export default class PartyServer {
 		this.party.broadcast(string, [conn.id])
 		// if (msg.type === 'deployMinion') {
 		// 	console.log('deplooooooy')
+		if (msg.type === 'create') {}
 	}
 
 	async updateConnections(type, connection) {

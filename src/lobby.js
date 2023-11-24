@@ -12,14 +12,11 @@ import {Minion} from './nodes.js'
 export class RumbleLobby extends HTMLElement {
 	constructor() {
 		super()
-
 		this.rooms = signal([])
 		this.gamesSocket = null
-
 		effect(() => {
 			this.render(this.rooms)
 		})
-
 		socket.addEventListener('message', this.onLobbyMessage.bind(this))
 	}
 
@@ -39,8 +36,10 @@ export class RumbleLobby extends HTMLElement {
 		if (msg.type === 'deployMinion') {
 			const minions = this.parentElement.game.Minions
 			const minion = minions.find((m) => m.id === msg.id)
-			// minion.deploy()
 			console.log('@todo deploy', minions, minion)
+			minion.deploy()
+		} else if (msg.type === 'info') {
+			console.log(msg.content)
 		} else {
 			console.log('games socket unhandled message', event.data)
 		}

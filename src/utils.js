@@ -40,3 +40,4 @@ export function toPercent(value, max) {
  * @returns {string}
  */
 export const uuid = () => crypto.randomUUID()
+

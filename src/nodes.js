@@ -3,10 +3,10 @@ import {render, random, uuid} from './utils.js'
 import {UI} from './ui.js'
 
 export class GameLoop extends Loop {
-	Renderer = Query(Renderer)
+	Board = Query(Board)
 	Players = QueryAll(Player)
 	Minions = QueryAll(Minion)
-	Board = Query(Board)
+	Renderer = Query(Renderer)
 
 	constructor(props) {
 		super()
