@@ -29,8 +29,8 @@ export default class PartyServer {
 
 	onMessage(string, conn) {
 		// Re-broadcast incoming messages to all other open connections (players).
+		conn.send(JSON.stringify({type: 'info', content: `you just sent: ${string}`}))
 		this.party.broadcast(string, [conn.id])
-
 		// const msg = JSON.parse(string)
 		// if (msg.type === 'deployMinion') {}
 		// if (msg.type === 'create') {}

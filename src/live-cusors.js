@@ -1,18 +1,19 @@
 import throttle from 'lodash/throttle'
 import {html, render} from './utils.js'
-import {socket} from './multiplayer.js'
+import {lobbySocket} from './multiplayer.js'
 
-const sendObject = (pos) => socket.send(JSON.stringify(pos))
+const sendObject = (pos) => lobbySocket.send(JSON.stringify(pos))
 const throttledSend = throttle(sendObject, 16, {trailing: true})
 
 /**
- * Send cursor position to the server via websockets.
- * Collect all cursor positions from the server and render them.
+ * Continously send local pointer position to the websocket server.
+ * Collect all positions from the server (cursorUpdate + cursorRemove)
+ * and render them.
  */
 export class LiveCursors extends HTMLElement {
 	constructor() {
 		super()
-		// [id: string]: {id, pointer, x,y,lastUpdate}
+		// [id: string]: {id, pointer, x,y}
 		this.cursors = {}
 	}
 
@@ -35,7 +36,7 @@ export class LiveCursors extends HTMLElement {
 		observer.observe(document.body)
 
 		// Catch and handle messages from the server.
-		socket.addEventListener('message', (event) => {
+		lobbySocket.addEventListener('message', (event) => {
 			const msg = JSON.parse(event.data)
 			if (msg.type === 'cursorUpdate') {
 				this.cursors[msg.id] = msg
@@ -52,7 +53,7 @@ export class LiveCursors extends HTMLElement {
 	}
 
 	onPointerMove = (e) => {
-		if (!socket) return
+		if (!lobbySocket) return
 		const pointerType = e.type === 'touchmove' ? 'touch' : 'mouse'
 		if (pointerType === 'touch') e.preventDefault()
 		const position = this.getPosition(e, pointerType)
@@ -61,8 +62,8 @@ export class LiveCursors extends HTMLElement {
 
 	// Catch the end of touch events. Allows the server to detect and remove the cursor.
 	onTouchEnd = () => {
-		if (!socket) return
-		socket.send(JSON.stringify({}))
+		if (!lobbySocket) return
+		lobbySocket.send(JSON.stringify({}))
 	}
 
 	getPosition = (e, pointerType) => {

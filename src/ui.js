@@ -1,5 +1,6 @@
-import {html, roundOne} from './utils.js'
+import {html, roundOne, uuid} from './utils.js'
 import {Player, Minion, Gold, Board} from './nodes.js'
+import {actions} from './actions.js'
 
 export function UI(game) {
 	if (!game?.children?.length) return html`<p>Waiting for game...</p>`
@@ -80,22 +81,14 @@ function minionTypeToEmoji(type) {
 	return map[type] || type
 }
 
-function sendAction(action) {
-	const el = document.querySelector('rumble-lobby')
-	if (!el) throw new Error('Missing <rumble-lobby> element')
-	if (!el.gamesSocket) throw new Error('Missing game socket')
-	el.gamesSocket?.send(JSON.stringify(action))
-}
-
 function minion(minion) {
 	const canDeploy = !minion.deployed && minion.Player.query(Gold).amount >= minion.cost
 	const height = minion.Game.Board.height
 	const topPercentage = ((height - minion.y) / height) * 100
 
 	const onClick = () => {
-		// console.log('trigger action deploy minion', minion)
-		// sendAction({type: 'deployMinion', id: minion.id})
-		minion.deploy()
+		console.log('minion onclick')
+		minion.Game.runAction({type: 'deployMinion', id: minion.id})
 	}
 
 	return html`<li

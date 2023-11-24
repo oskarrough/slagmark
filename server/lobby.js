@@ -41,7 +41,6 @@ export default class PartyServer {
 				type: 'cursorUpdate',
 				id: sender.id,
 				...message,
-				// lastUpdate: Date.now(),
 			}
 			this.party.broadcast(JSON.stringify(msg), [sender.id])
 		} else {

@@ -1,6 +1,6 @@
 {
   "name": "rumble",
-  "main": "server/main.js",
+  "main": "server/lobby.js",
 	"parties": {
   	"games": "server/games.js"
 	},

@@ -1,9 +1,7 @@
 import PartySocket from 'partysocket'
-import {socket, PARTYKIT_URL} from './multiplayer.js'
-import {render, html, signal, effect, uuid} from './utils.js'
+import {lobbySocket, PARTYKIT_URL} from './multiplayer.js'
+import {render, html, signal, effect} from './utils.js'
 import {friendlyId} from './friendly-id.js'
-import {RumbleGame} from './rumble-game.js'
-import {Minion} from './nodes.js'
 
 /**
  * The lobby manages the "rooms" (or games) that are currently active.
@@ -12,12 +10,16 @@ import {Minion} from './nodes.js'
 export class RumbleLobby extends HTMLElement {
 	constructor() {
 		super()
+
 		this.rooms = signal([])
-		this.gamesSocket = null
 		effect(() => {
 			this.render(this.rooms)
 		})
-		socket.addEventListener('message', this.onLobbyMessage.bind(this))
+
+		lobbySocket.addEventListener('message', this.onLobbyMessage.bind(this))
+
+		// Will be set in joinRoom()
+		this.gamesSocket = null
 	}
 
 	onLobbyMessage(event) {
@@ -32,14 +34,11 @@ export class RumbleLobby extends HTMLElement {
 	}
 
 	onGameMessage(event) {
-		const msg = JSON.parse(event.data)
-		if (msg.type === 'deployMinion') {
-			const minions = this.parentElement.game.Minions
-			const minion = minions.find((m) => m.id === msg.id)
-			console.log('@todo deploy', minions, minion)
-			minion.deploy()
-		} else if (msg.type === 'info') {
-			console.log(msg.content)
+		const action = JSON.parse(event.data)
+		if (action.type === 'deployMinion') {
+			this.parentElement.game.runAction(action, false)
+		} else if (action.type === 'info') {
+			console.log(action.content)
 		} else {
 			console.log('unhandled msg in lobby from games socket', event.data)
 		}
@@ -49,7 +48,6 @@ export class RumbleLobby extends HTMLElement {
 		console.log('createRoom')
 		if (this.gamesSocket) this.leaveRoom()
 		this.joinRoom(friendlyId())
-		this.previousElementSibling.newGame(this.gamesSocket)
 	}
 
 	joinRoom(id) {
@@ -59,14 +57,15 @@ export class RumbleLobby extends HTMLElement {
 			party: 'games',
 			room: id,
 		})
-		this.gamesSocket.addEventListener('message', this.onGameMessage)
+		this.gamesSocket.addEventListener('message', this.onGameMessage.bind(this))
+		this.parentElement.newGame(this.gamesSocket)
 	}
 
 	leaveRoom() {
 		console.log('leaveRoom')
 		this.gamesSocket?.close()
 		this.gamesSocket = null
-		this.previousElementSibling?.quitGame()
+		this.parentElement?.quitGame()
 	}
 
 	render(_) {

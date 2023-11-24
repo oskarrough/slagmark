@@ -1,6 +1,7 @@
 import {Node, Loop, Task, Query, QueryAll, Closest} from 'vroum'
 import {render, random, uuid} from './utils.js'
 import {UI} from './ui.js'
+import {actions} from './actions.js'
 
 export class GameLoop extends Loop {
 	Board = Query(Board)
@@ -36,6 +37,21 @@ export class GameLoop extends Loop {
 
 	destroy() {
 		this.query(Renderer).render()
+	}
+
+	runAction(action, broadcast = true) {
+		console.log('runAction', action)
+
+		// run locally
+		const handler = actions[action.type]
+		if (!handler) throw new Error(`Missing actions: ${action.type}`)
+		handler(this, action)
+
+		// Send to other parties
+		if (broadcast) {
+			const socket = this.element.parentElement.lobbyEl.gamesSocket
+			socket.send(JSON.stringify(action))
+		}
 	}
 }
 
