@@ -92,12 +92,13 @@ function minion(minion) {
 	const topPercentage = ((height - minion.y) / height) * 100
 
 	const onClick = () => {
-		console.log('trigger action deploy minion', minion)
-		sendAction({type: 'deployMinion', id: minion.id})
+		// console.log('trigger action deploy minion', minion)
+		// sendAction({type: 'deployMinion', id: minion.id})
+		minion.deploy()
 	}
 
 	return html`<li
-		class=${`Minion ${minion.parent.ai ? 'ai' : null}`}
+		class=${`Minion ${minion.Player.ai ? 'ai' : null}`}
 		data-y=${minion.y}
 		style=${`top: ${topPercentage}%`}
 	>

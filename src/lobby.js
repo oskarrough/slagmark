@@ -49,7 +49,7 @@ export class RumbleLobby extends HTMLElement {
 	createRoom() {
 		this.leaveRoom()
 		this.joinRoom(friendlyId())
-		this.createGame()
+		this.previousElementSibling.newGame(this.gamesSocket)
 	}
 
 	joinRoom(id) {
@@ -58,22 +58,13 @@ export class RumbleLobby extends HTMLElement {
 			party: 'games',
 			room: id,
 		})
-
 		this.gamesSocket.addEventListener('message', this.onGameMessage)
 	}
 
 	leaveRoom() {
 		this.gamesSocket?.close()
 		this.gamesSocket = null
-		this.parentElement?.quitGame()
-	}
-
-	createGame() {
-		console.log(this.parentElement)
-		// Once we're in the new room, we can start the game as well.
-		this.parentElement.newGame()
-		const msg = {type: 'create'} 
-		this.gamesSocket.send(JSON.stringify(msg))
+		this.previousElementSibling?.quitGame()
 	}
 
 	render(_) {
