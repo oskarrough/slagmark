@@ -12,16 +12,16 @@ export class RumbleGame extends HTMLElement {
 		if (this.game) this.game.stop()
 		this.game = GameLoop.new({element: this})
 		this.game?.start()
-
 		const msg = {type: 'create'}
 		gamesSocket.send(JSON.stringify(msg))
-
 		return this.game
 	}
 
 	quitGame() {
+		console.log('quitGame', this.game)
 		if (!this.game) return
 		this.game.stop()
+		this.game.Renderer.render()
 		this.game = null
 	}
 }

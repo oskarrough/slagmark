@@ -16,21 +16,24 @@ export default class PartyServer {
 		for (const c of this.party.getConnections()) {
 			count++
 		}
-		conn.send(JSON.stringify({type: 'info', content: `Welcome, you are Player ${count}`}))
+
+		conn.send(JSON.stringify({type: 'info', content: `You are Player ${count}`}))
+		this.broadcastInfo(`Welcome Player ${count} to ${this.party.id}`)
 		this.updateConnections('connect', conn)
 	}
 
 	onClose(conn) {
+		this.broadcastInfo(`someone left the room ${conn.id}`)
 		this.updateConnections('disconnect', conn)
 	}
 
 	onMessage(string, conn) {
-		const msg = JSON.parse(string)
-		console.log('games server message', msg)
+		// Re-broadcast incoming messages to all other open connections (players).
 		this.party.broadcast(string, [conn.id])
-		// if (msg.type === 'deployMinion') {
-		// 	console.log('deplooooooy')
-		if (msg.type === 'create') {}
+
+		// const msg = JSON.parse(string)
+		// if (msg.type === 'deployMinion') {}
+		// if (msg.type === 'create') {}
 	}
 
 	async updateConnections(type, connection) {
@@ -39,5 +42,9 @@ export default class PartyServer {
 			method: 'POST',
 			body: JSON.stringify({type, connectionId: connection.id, roomId: this.party.id}),
 		})
+	}
+
+	broadcastInfo(content, excludelist = []) {
+		this.party.broadcast(JSON.stringify({type: 'info', content}), excludelist)
 	}
 }

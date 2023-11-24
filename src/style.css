@@ -29,11 +29,14 @@
 
 body {
 	margin: 0;
+}
+
+slag-mark {
 	display: flex;
 	place-items: center;
 	flex-flow: column;
 	overflow: hidden;
-	min-height: 100vh;
+	min-height: calc(100vh - 200px);
 }
 
 button {
@@ -99,6 +102,12 @@ rumble-game > main {
 	position: relative;
 	background: var(--bg2);
 	border: 3px inset hsla(0 100% 100% / 0.5);
+}
+
+rumble-game > aside[disabled] {
+	pointer-events: none;
+	cursor: not-allowed;
+	filter: grayscale(1);
 }
 
 rumble-game ul {

@@ -27,7 +27,7 @@ export class RumbleLobby extends HTMLElement {
 		} else if (msg.type === 'presence') {
 		} else if (msg.type === 'cursorUpdate') {
 		} else {
-			console.log('unhandled msg from main server', msg)
+			console.log('unhandled msg in lobby from main socket', msg)
 		}
 	}
 
@@ -41,17 +41,19 @@ export class RumbleLobby extends HTMLElement {
 		} else if (msg.type === 'info') {
 			console.log(msg.content)
 		} else {
-			console.log('games socket unhandled message', event.data)
+			console.log('unhandled msg in lobby from games socket', event.data)
 		}
 	}
 
 	createRoom() {
-		this.leaveRoom()
+		console.log('createRoom')
+		if (this.gamesSocket) this.leaveRoom()
 		this.joinRoom(friendlyId())
 		this.previousElementSibling.newGame(this.gamesSocket)
 	}
 
 	joinRoom(id) {
+		console.log('joinRoom', id)
 		this.gamesSocket = new PartySocket({
 			host: PARTYKIT_URL,
 			party: 'games',
@@ -61,6 +63,7 @@ export class RumbleLobby extends HTMLElement {
 	}
 
 	leaveRoom() {
+		console.log('leaveRoom')
 		this.gamesSocket?.close()
 		this.gamesSocket = null
 		this.previousElementSibling?.quitGame()
@@ -83,7 +86,7 @@ export class RumbleLobby extends HTMLElement {
 				${this.gamesSocket
 					? html`You are in: ${this.gamesSocket?.room}
 							<button onclick=${() => this.leaveRoom()}>Leave</button> `
-					: html`<button onclick=${() => this.createRoom()}>New Game</button>`}
+					: html`<button onclick=${() => this.createRoom()}>Start New Game</button>`}
 			</p>
 		`
 		render(this, tpl)

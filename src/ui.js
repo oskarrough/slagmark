@@ -2,7 +2,7 @@ import {html, roundOne} from './utils.js'
 import {Player, Minion, Gold, Board} from './nodes.js'
 
 export function UI(game) {
-	if (!game?.children?.length) return html``
+	if (!game?.children?.length) return html`<p>Waiting for game...</p>`
 
 	const players = game.queryAll(Player)
 	const player1 = players[0]
@@ -13,7 +13,7 @@ export function UI(game) {
 			<nav>${Menu(game)}</nav>
 		</header>
 
-		<aside>
+		<aside ?disabled=${!game.started}>
 			<div>
 				<h2>AI ${HealthBar(player2.health)}</h2>
 				<ul class="MinionBar">
