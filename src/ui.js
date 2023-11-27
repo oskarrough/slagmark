@@ -1,6 +1,6 @@
 import {roundOne} from './utils.js'
 import {html} from 'uhtml'
-import {Player, Gold} from './nodes.js'
+import {Countdown, Player, Gold} from './nodes.js'
 
 export function UI(game) {
 	if (!game?.children?.length) return html`<p>Waiting for game...</p>`
@@ -8,6 +8,8 @@ export function UI(game) {
 	const players = game.queryAll(Player)
 	const player1 = players[0]
 	const player2 = players[1]
+	const countdown = game.query(Countdown)
+	const disabled = countdown || !game.started
 
 	if (players.length < 2) {
 		return html`<p>Waiting for players... ${players.length} out of 2 ready</p>`
@@ -18,8 +20,9 @@ export function UI(game) {
 			<nav>${Menu(game)}</nav>
 		</header>
 
-		<aside ?disabled=${!game.started}>
+		<aside ?disabled=${countdown}>
 			<div>
+				${countdown ? html`<p>Countdown ${countdown.repeat - 1 - countdown.cycles}</p>` : html`Play!`}
 				<h2>Player ${player2.number} ${HealthBar(player2.health)}</h2>
 				<ul class="MinionBar">
 					${MinionList(player2, false)}

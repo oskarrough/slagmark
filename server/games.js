@@ -24,13 +24,16 @@ export default class PartyServer {
 		conn.send(JSON.stringify({type: 'info', content: `You are Player ${count}`}))
 		this.broadcastInfo(`Welcome Player ${count} to ${this.party.id}`, [conn.id])
 
+		// new game
+		if (count === 1) {}
+
 		if (count > 2) {
 			this.broadcastInfo('Game is already full, sorry!')
 			return
 		}
 
 		const player = {
-			id: conn.id, // uuid()
+			id: conn.id, 
 			number: count,
 			minions: Array(4)
 				.fill()
@@ -47,6 +50,11 @@ export default class PartyServer {
 		this.party.broadcast(
 			JSON.stringify({type: 'playerConnected', playerId: player.id, players: this.players}),
 		)
+
+		if (count === 2) {
+			// this is when the gameplay can begin
+			this.party.broadcast(JSON.stringify({type: 'startGameCountdown'}))
+		}
 	}
 
 	onClose(conn) {
@@ -62,6 +70,7 @@ export default class PartyServer {
 	onMessage(string, conn) {
 		// Re-broadcast incoming messages to all other open connections (players).
 		this.party.broadcast(string, [conn.id])
+		// await this.party.storage.put(`${conn.id}`, string)
 	}
 
 	async updateConnections(type, connection) {

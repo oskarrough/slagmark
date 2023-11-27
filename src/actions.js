@@ -47,10 +47,19 @@ export function addNewMinion(game, action) {
 }
 
 /**
- * @param {*} game
+ * @param {Game} game
  * @param {{playerId: string, players: []}} action
  */
 export function playerDisconnected(game, action) {
 	const player = game.Players.find((player) => player.id === action.playerId)
 	player.disconnect()
+}
+
+/**
+ * @param {Game} game
+ * @param {{playerId: string, players: []}} action
+ */
+export function startGameCountdown(game, action) {
+	const countdown = Countdown.new()
+	game.add(countdown)
 }
