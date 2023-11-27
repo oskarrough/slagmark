@@ -3,7 +3,7 @@ import {GameLoop} from './nodes.js'
 /**
  * Coordinates the communication between all our things:
  - The <slag-mark-ui>
- - The <rumble-lobby>
+ - The <live-lobby>
  - The two websocket servers 
 	*/
 export class SlagMark extends HTMLElement {
@@ -11,7 +11,7 @@ export class SlagMark extends HTMLElement {
 		window.slagmark = {el: this}
 		console.log('window.slagmark', window.slagmark)
 		
-		this.lobbyEl = this.querySelector('rumble-lobby')
+		this.lobbyEl = this.querySelector('live-lobby')
 	}
 
 	newGame(gamesSocket) {

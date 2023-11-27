@@ -7,7 +7,7 @@ import {friendlyId} from './friendly-id.js'
  * The lobby manages the "rooms" (or games) that are currently active.
  * You can create, join or leave a room. If you're the last to leave, the room will be removed.
  */
-export class RumbleLobby extends HTMLElement {
+export class LiveLobby extends HTMLElement {
 	constructor() {
 		super()
 
