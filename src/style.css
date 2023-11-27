@@ -171,7 +171,7 @@ ul.GoldBar,
 	padding: 0;
 	transition: transform 200ms ease-in-out;
 }
-.Minion.ai button {
+.Minion[data-player-number='2'] button {
 	background-color: var(--player2);
 }
 
@@ -216,5 +216,12 @@ summary {
 	margin-right: auto;
 	margin-left: 0.5rem;
 }
-.Splash h1 {color: #ffca00; }
-.Splash p strong { letter-spacing: -0.15em; transform: scale(1.5); display: inline-block; margin: 0 1em; }
+.Splash h1 {
+	color: #ffca00;
+}
+.Splash p strong {
+	letter-spacing: -0.15em;
+	transform: scale(1.5);
+	display: inline-block;
+	margin: 0 1em;
+}

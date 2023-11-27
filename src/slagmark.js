@@ -22,9 +22,8 @@ export class SlagMark extends HTMLElement {
 		this.appendChild(element)
 		this.game = GameLoop.new({element})
 		this.game?.start()
-		const msg = {type: 'create'}
-		gamesSocket.send(JSON.stringify(msg))
-		return this.game
+		console.log('also started game')
+		gamesSocket.send(JSON.stringify({type: 'newGame'}))
 	}
 
 	quitGame() {

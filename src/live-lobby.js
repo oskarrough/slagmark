@@ -35,11 +35,15 @@ export class LiveLobby extends HTMLElement {
 	}
 
 	onGameMessage(event) {
+		const game = this.parentElement.game
 		const action = JSON.parse(event.data)
-		if (action.type === 'deployMinion') {
-			this.parentElement.game.runAction(action, false)
+
+		if (action.type === 'playerConnected') {
+			game.runAction(action, false)
+		} else if (action.type === 'deployMinion') {
+			game.runAction(action, false)
 		} else if (action.type === 'info') {
-			console.log(action.content)
+			console.info('👋', action.content)
 		} else {
 			console.log('unhandled msg in lobby from games socket', event.data)
 		}
@@ -102,7 +106,7 @@ export class LiveLobby extends HTMLElement {
 						? html` <button onclick=${() => this.joinRoom(room.id)}>Join</button> `
 						: null}
 				</li>
-			`
+			`,
 		)}`
 	}
 }

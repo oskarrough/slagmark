@@ -9,6 +9,10 @@ export function UI(game) {
 	const player1 = players[0]
 	const player2 = players[1]
 
+	if (players.length < 2) {
+		return html`<p>Waiting for players... ${players.length} out of 2 ready</p>`
+	}
+
 	return html`
 		<header>
 			<nav>${Menu(game)}</nav>
@@ -16,14 +20,14 @@ export function UI(game) {
 
 		<aside ?disabled=${!game.started}>
 			<div>
-				<h2>AI ${HealthBar(player2.health)}</h2>
+				<h2>Player ${player2.number} ${HealthBar(player2.health)}</h2>
 				<ul class="MinionBar">
 					${MinionList(player2, false)}
 				</ul>
 				${GoldBar(player2.Gold)}
 			</div>
 			<div>
-				<h2>Player ${HealthBar(player1.health)}</h2>
+				<h2>Player ${player1.number} ${HealthBar(player1.health)}</h2>
 				<ul class="MinionBar">
 					${MinionList(player1, false)}
 				</ul>
@@ -35,7 +39,7 @@ export function UI(game) {
 			<ul data-player2>
 				${MinionList(player2, true)}
 			</ul>
-			<ul data-player>
+			<ul data-player1>
 				${MinionList(player1, true)}
 			</ul>
 		</main>
@@ -92,7 +96,8 @@ function minion(minion) {
 	}
 
 	return html`<li
-		class=${`Minion ${minion.Player.ai ? 'ai' : null}`}
+		class="Minion"
+		data-player-number=${minion.Player.number}
 		data-y=${minion.y}
 		style=${`top: ${topPercentage}%`}
 	>
