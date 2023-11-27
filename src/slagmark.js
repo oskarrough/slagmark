@@ -1,5 +1,5 @@
 import {GameLoop} from './nodes.js'
-import {actions} from './actions.js'
+// import {actions} from './actions.js'
 
 /**
  * Coordinates the communication between all our things:
@@ -15,11 +15,7 @@ export class SlagMark extends HTMLElement {
 	// }
 
 	connectedCallback() {
-		this.lobbyEl = this.querySelector('rumble-lobby')
-		window.slagmark = {
-			el: this,
-			lobbyEl: this.lobbyEl,
-		}
+		window.slagmark =  {el: this}
 		console.log('window.slagmark', window.slagmark)
 	}
 
@@ -28,6 +24,7 @@ export class SlagMark extends HTMLElement {
 		if (this.game) this.game.stop()
 		const element = document.createElement('rumble-game')
 		this.appendChild(element)
+		console.log('element', element)
 		this.game = GameLoop.new({element})
 		this.game?.start()
 		const msg = {type: 'create'}

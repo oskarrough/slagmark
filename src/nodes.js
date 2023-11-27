@@ -8,18 +8,21 @@ export class GameLoop extends Loop {
 	Players = QueryAll(Player)
 	Minions = QueryAll(Minion)
 	Renderer = Query(Renderer)
+	
+	// DOM element to render to
+	element = null
 
-	constructor(props) {
-		super()
-		// The DOM element to render to
-		this.element = props.element
+	init() {
+		console.log('init')
 	}
 
 	build() {
+		console.log('build')
 		return [Player.new(), Player.new({ai: true}), Board.new(), Renderer.new()]
 	}
 
 	mount() {
+		console.log('mount')
 		this.subscribe('start', () => {
 			this.Renderer.render()
 		})
