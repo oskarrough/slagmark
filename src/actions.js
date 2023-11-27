@@ -1,7 +1,21 @@
-import {Player, Minion} from './nodes.js'
+import {Player, Minion, Countdown} from './nodes.js'
 
-// The 'action' here a kind of serialized mini-version of the game state to get started.
-// We turn it into real nodes here.
+/** 
+ * @typedef {import('./nodes.js').GameLoop} Game
+ */
+
+/**
+ * @typedef {object} Action
+ * @prop {string} type - the snakeCase name of an action defined in ./actions.js
+ * Other props also allowed
+ */
+
+/**
+ * The 'action' here a kind of serialized mini-version of the game state to get started.
+ * We turn it into real nodes here.
+ * @param {Game} game
+ * @param {{players: {id: string, number: Number, minions: {id: string, minionType: string}[]}[]}} action
+ */
 export function playerConnected(game, action) {
 	action.players.forEach((miniPlayer) => {
 		if (game.Players.find((p) => p.id === miniPlayer.id)) return
@@ -14,7 +28,7 @@ export function playerConnected(game, action) {
 }
 
 /**
- * @param {*} game
+ * @param {Game} game
  * @param {{id: string}} action
  */
 export function deployMinion(game, action) {
@@ -23,7 +37,7 @@ export function deployMinion(game, action) {
 }
 
 /**
- * @param {*} game
+ * @param {Game} game
  * @param {{playerId: string}} action
  */
 export function addNewMinion(game, action) {

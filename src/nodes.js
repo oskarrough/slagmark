@@ -4,11 +4,55 @@ import {uuid, random} from './utils.js'
 import {UI} from './ui.js'
 import * as actions from './actions.js'
 
+/** @typedef {import('./actions.js').Action} Action */
+
+export class Countdown extends Task {
+	delay = 1000
+	duration = 0
+	interval = 1000
+	repeat = 4
+
+	tick() {
+		const count = this.repeat - 1 - this.cycles
+		// if (this.cycles === 0) {
+		// 	this.root.pause()
+		// }
+		if (count > 0) {
+			console.log(count)
+		} else {
+			console.log('play')
+			// this.root.play()
+		}
+	}
+}
+
+/**
+ * @typedef {object} LogEntry
+ * @prop {Action} action
+ * @prop {number} now - timestamp
+ */
+
+export class Log extends Node {
+	/** @type {LogEntry[]} */
+	logs = []
+
+	/** @arg {Action} action */
+	push(action) {
+		const log = {action, now: Date.now()}
+		this.logs.push(log)
+	}
+
+	print() {
+		console.log(this.logs)
+	}
+}
+
 export class GameLoop extends Loop {
 	Board = Query(Board)
 	Players = QueryAll(Player)
 	Minions = QueryAll(Minion)
 	Renderer = Query(Renderer)
+	Log = Query(Log)
 
 	// DOM element to render to
 	element = null
@@ -19,10 +63,12 @@ export class GameLoop extends Loop {
 			// Player.new({number: 2}),
 			Board.new(),
 			Renderer.new(),
+			Log.new(),
 		]
 	}
 
 	mount() {
+		this.Log.push({type: 'newGameLoop'})
 		this.subscribe('start', () => {
 			this.Renderer.render()
 		})
@@ -43,15 +89,9 @@ export class GameLoop extends Loop {
 	}
 
 	/**
-	 * @typedef {object} Action
-	 * @prop {string} type - the name of an action defined in ./actions.js
-	 * Any other props with string keys and arbitrary values are also allowed.
-	 */
-
-	/**
 	 * Runs an action on the game first locally, then broadcasts to other peers (unless disabled)
 	 * @arg {Action} action
-	 * @arg {Boolean} broadcast  - set to false to disable broadcasting the action to other peers
+	 * @arg {Boolean} broadcast - set to false to disable broadcasting the action to other peers
 	 */
 	runAction(action, broadcast = true) {
 		console.log('runAction', action)
@@ -66,6 +106,8 @@ export class GameLoop extends Loop {
 			const socket = this.element.parentElement.lobbyEl.gamesSocket
 			socket.send(JSON.stringify(action))
 		}
+
+		this.Log.push(action)
 	}
 }
 
