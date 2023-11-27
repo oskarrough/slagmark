@@ -1,5 +1,6 @@
 import {Node, Loop, Task, Query, QueryAll, Closest} from 'vroum'
-import {render, random, uuid} from './utils.js'
+import {render} from 'uhtml/keyed'
+import {random} from './utils.js'
 import {UI} from './ui.js'
 import {actions} from './actions.js'
 

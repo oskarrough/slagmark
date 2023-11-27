@@ -1,5 +1,5 @@
 import throttle from 'lodash/throttle'
-import {html, render} from './utils.js'
+import {render, html} from 'uhtml/keyed'
 import {lobbySocket} from './multiplayer.js'
 
 const sendObject = (pos) => lobbySocket.send(JSON.stringify(pos))

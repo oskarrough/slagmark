@@ -1,6 +1,6 @@
-import {html, roundOne, uuid} from './utils.js'
-import {Player, Minion, Gold, Board} from './nodes.js'
-import {actions} from './actions.js'
+import {roundOne} from './utils.js'
+import {html} from 'uhtml'
+import {Player, Gold} from './nodes.js'
 
 export function UI(game) {
 	if (!game?.children?.length) return html`<p>Waiting for game...</p>`
