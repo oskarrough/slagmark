@@ -38,19 +38,16 @@ export class LiveLobby extends HTMLElement {
 		const game = this.parentElement.game
 		const action = JSON.parse(event.data)
 
-		if (action.type === 'playerConnected') {
-			game.runAction(action, false)
-		} else if (action.type === 'deployMinion') {
-			game.runAction(action, false)
-		} else if (action.type === 'info') {
+		if (action.type === 'info') {
+			// @todo show to user?
 			console.info('👋', action.content)
 		} else {
-			console.log('unhandled msg in lobby from games socket', event.data)
+			game.runAction(action, false)
 		}
 	}
 
-	createRoom() {
-		console.log('createRoom')
+	startNewGame() {
+		console.log('createNewGame')
 		if (this.gamesSocket) this.leaveRoom()
 		this.joinRoom(friendlyId())
 	}
@@ -70,7 +67,7 @@ export class LiveLobby extends HTMLElement {
 		console.log('leaveRoom')
 		this.gamesSocket?.close()
 		this.gamesSocket = null
-		this.parentElement?.quitGame()
+		this.parentElement.quitGame()
 	}
 
 	render(_) {
@@ -85,12 +82,12 @@ export class LiveLobby extends HTMLElement {
 					${this.renderRooms(rooms)}
 				</ul>
 			</details>
-
+			<br />
 			<p>
 				${this.gamesSocket
 					? html`You are in: ${this.gamesSocket?.room}
 							<button onclick=${() => this.leaveRoom()}>Leave</button> `
-					: html`<button onclick=${() => this.createRoom()}>Start New Game</button>`}
+					: html`<button onclick=${() => this.startNewGame()}>Start New Game</button>`}
 			</p>
 		`
 		render(this, tpl)

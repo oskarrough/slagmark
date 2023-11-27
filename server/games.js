@@ -41,24 +41,27 @@ export default class PartyServer {
 					}
 				}),
 		}
-		console.log(this.players.length, 'players')
+
+		console.log('onConnect', this.players.length, 'players', 'count', count)
 		this.players.push(player)
-		this.party.broadcast(JSON.stringify({type: 'playerConnected', players: this.players}))
+		this.party.broadcast(
+			JSON.stringify({type: 'playerConnected', playerId: player.id, players: this.players}),
+		)
 	}
 
 	onClose(conn) {
-		this.broadcastInfo(`someone left the room ${conn.id}`)
+		this.broadcastInfo(`Bye! ${conn.id} left the room`)
 		this.updateConnections('disconnect', conn)
+		const playerIndex = this.players.findIndex((p) => p.id === conn.id)
+		if (playerIndex !== 0) this.players.splice(playerIndex, 1)
+		this.party.broadcast(
+			JSON.stringify({type: 'playerDisconnected', playerId: conn.id, players: this.players}),
+		)
 	}
 
 	onMessage(string, conn) {
-		const msg = JSON.parse(string)
-
-		if (msg.type === 'newGame') {
-		} else {
-			// Re-broadcast incoming messages to all other open connections (players).
-			this.party.broadcast(string, [conn.id])
-		}
+		// Re-broadcast incoming messages to all other open connections (players).
+		this.party.broadcast(string, [conn.id])
 	}
 
 	async updateConnections(type, connection) {

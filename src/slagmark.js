@@ -10,26 +10,22 @@ export class SlagMark extends HTMLElement {
 	connectedCallback() {
 		window.slagmark = {el: this}
 		console.log('window.slagmark', window.slagmark)
-		
 		this.lobbyEl = this.querySelector('live-lobby')
+		this.uiEl = document.createElement('slag-mark-ui')
+		this.appendChild(this.uiEl)
 	}
 
 	newGame(gamesSocket) {
 		console.log('newGame')
 		if (this.game) this.game.stop()
-		// @todo reuse element
-		const element = document.createElement('slag-mark-ui')
-		this.appendChild(element)
-		this.game = GameLoop.new({element})
+		this.game = GameLoop.new({element: this.uiEl})
 		this.game?.start()
-		console.log('also started game')
-		gamesSocket.send(JSON.stringify({type: 'newGame'}))
 	}
 
-	quitGame() {
+	async quitGame() {
 		console.log('quitGame', this.game)
 		if (!this.game) return
-		this.game.stop()
+		await this.game.stop()
 		this.game.Renderer.render()
 		this.game = null
 	}

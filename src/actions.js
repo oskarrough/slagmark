@@ -13,7 +13,30 @@ export function playerConnected(game, action) {
 	})
 }
 
+/**
+ * @param {*} game
+ * @param {{id: string}} action
+ */
 export function deployMinion(game, action) {
 	const minion = game.Minions.find((m) => m.id === action.id)
 	minion?.deploy()
+}
+
+/**
+ * @param {*} game
+ * @param {{playerId: string}} action
+ */
+export function addNewMinion(game, action) {
+	const player = game.Players.find((player) => player.id === action.playerId)
+	const minion = Minion.new()
+	player.add(minion)
+}
+
+/**
+ * @param {*} game
+ * @param {{playerId: string, players: []}} action
+ */
+export function playerDisconnected(game, action) {
+	const player = game.Players.find((player) => player.id === action.playerId)
+	player.disconnect()
 }

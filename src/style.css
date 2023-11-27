@@ -184,7 +184,7 @@ ul.GoldBar,
 slag-mark-ui > main .Minion {
 	position: absolute;
 	transform: translateY(-50%);
-	transition: top 1000ms linear;
+	/* transition: top 1000ms linear; */
 	left: 0.5rem;
 }
 slag-mark-ui > main [data-player] .Minion {

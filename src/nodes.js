@@ -1,6 +1,6 @@
 import {Node, Loop, Task, Query, QueryAll, Closest} from 'vroum'
 import {render} from 'uhtml/keyed'
-import {random} from './utils.js'
+import {uuid, random} from './utils.js'
 import {UI} from './ui.js'
 import * as actions from './actions.js'
 
@@ -42,6 +42,17 @@ export class GameLoop extends Loop {
 		this.query(Renderer).render()
 	}
 
+	/**
+	 * @typedef {object} Action
+	 * @prop {string} type - the name of an action defined in ./actions.js
+	 * Any other props with string keys and arbitrary values are also allowed.
+	 */
+
+	/**
+	 * Runs an action on the game first locally, then broadcasts to other peers (unless disabled)
+	 * @arg {Action} action
+	 * @arg {Boolean} broadcast  - set to false to disable broadcasting the action to other peers
+	 */
 	runAction(action, broadcast = true) {
 		console.log('runAction', action)
 
@@ -123,14 +134,17 @@ export class Gold extends Task {
 
 /** Adds a new minion to the parent every {interval} seconds (if we have less than 4) */
 export class RefillMinions extends Task {
+	Game = Closest(GameLoop)
+	Player = Closest(Player)
+
 	duration = 0
 	interval = 3000
 	maxAmount = 4
-	Player = Closest(Player)
 
 	tick() {
-		if (this.Player.Minions?.length < this.maxAmount) {
-			this.Player.add(Minion.new())
+		const undeployedMinions = this.Player.Minions.filter((m) => !m.deployed)?.length
+		if (undeployedMinions < this.maxAmount) {
+			this.Game.runAction({type: 'addNewMinion', playerId: this.Player.id})
 		}
 	}
 }
@@ -152,11 +166,11 @@ export class Minion extends Task {
 	speed = 1
 	minionTypes = ['rock', 'paper', 'scissors']
 
-	// constructor() {
-	// 	super()
-	// 	this.id = uuid()
-	// 	this.minionType = random(this.MINION_TYPES)
-	// }
+	constructor() {
+		super()
+		this.id = uuid()
+		this.minionType = random(this.minionTypes)
+	}
 
 	tick() {
 		if (!this.deployed || this.shouldDisconnect) return
