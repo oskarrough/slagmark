@@ -8,21 +8,15 @@ export class GameLoop extends Loop {
 	Players = QueryAll(Player)
 	Minions = QueryAll(Minion)
 	Renderer = Query(Renderer)
-	
+
 	// DOM element to render to
 	element = null
 
-	init() {
-		console.log('init')
-	}
-
 	build() {
-		console.log('build')
 		return [Player.new(), Player.new({ai: true}), Board.new(), Renderer.new()]
 	}
 
 	mount() {
-		console.log('mount')
 		this.subscribe('start', () => {
 			this.Renderer.render()
 		})
@@ -78,12 +72,9 @@ export class Player extends Task {
 	Game = Closest(GameLoop)
 	Minions = QueryAll(Minion)
 	Gold = Query(Gold)
-	health = 3
 
-	constructor(props) {
-		super()
-		this.ai = props?.ai ?? false
-	}
+	health = 3
+	ai = false
 
 	build() {
 		return [Gold.new(), Minion.new(), Minion.new(), Minion.new(), Minion.new(), RefillMinions.new()]
@@ -137,9 +128,10 @@ export class RefillMinions extends Task {
 const MINION_TYPES = ['rock', 'paper', 'scissors']
 
 export class Minion extends Task {
+	// Dependencies
 	Game = Closest(GameLoop)
 	Player = Closest(Player)
-
+	// Task schedule
 	delay = 0
 	duration = 0
 	interval = 1000

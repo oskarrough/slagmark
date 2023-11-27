@@ -57,7 +57,7 @@ rumble-lobby {
 	padding: 0.5rem;
 }
 
-rumble-game {
+slag-mark-ui {
 	flex: 1;
 	/* height: 100vh;
 	min-height: 50vh; */
@@ -72,12 +72,12 @@ rumble-game {
 	gap: 1rem;
 }
 
-rumble-game > header {
+slag-mark-ui > header {
 	grid-area: 1 / 1;
 	grid-column: span 2;
 }
 
-rumble-game > aside {
+slag-mark-ui > aside {
 	grid-area: 2 / 1;
 	display: flex;
 	flex-flow: column nowrap;
@@ -93,7 +93,7 @@ rumble-game > aside {
 	}
 }
 
-rumble-game > main {
+slag-mark-ui > main {
 	grid-area: 2 / 2;
 	flex: 1;
 
@@ -104,13 +104,13 @@ rumble-game > main {
 	border: 3px inset hsla(0 100% 100% / 0.5);
 }
 
-rumble-game > aside[disabled] {
+slag-mark-ui > aside[disabled] {
 	pointer-events: none;
 	cursor: not-allowed;
 	filter: grayscale(1);
 }
 
-rumble-game ul {
+slag-mark-ui ul {
 	padding: 0;
 	list-style: none;
 }
@@ -181,13 +181,13 @@ ul.GoldBar,
 }
 
 /* Deployed minions */
-rumble-game > main .Minion {
+slag-mark-ui > main .Minion {
 	position: absolute;
 	transform: translateY(-50%);
 	transition: top 1000ms linear;
 	left: 0.5rem;
 }
-rumble-game > main [data-player] .Minion {
+slag-mark-ui > main [data-player] .Minion {
 	left: 1.5rem;
 }
 

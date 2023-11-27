@@ -1,30 +1,25 @@
 import {GameLoop} from './nodes.js'
-// import {actions} from './actions.js'
 
 /**
  * Coordinates the communication between all our things:
- - The <rumble-game>
+ - The <slag-mark-ui>
  - The <rumble-lobby>
  - The two websocket servers 
 	*/
 export class SlagMark extends HTMLElement {
-	// constructor() {
-	// 	super()
-	// 	const urlParams = new URLSearchParams(window.location.search)
-	// 	this.debug = urlParams.has('debug')
-	// }
-
 	connectedCallback() {
-		window.slagmark =  {el: this}
+		window.slagmark = {el: this}
 		console.log('window.slagmark', window.slagmark)
+		
+		this.lobbyEl = this.querySelector('rumble-lobby')
 	}
 
 	newGame(gamesSocket) {
 		console.log('newGame')
 		if (this.game) this.game.stop()
-		const element = document.createElement('rumble-game')
+		// @todo reuse element
+		const element = document.createElement('slag-mark-ui')
 		this.appendChild(element)
-		console.log('element', element)
 		this.game = GameLoop.new({element})
 		this.game?.start()
 		const msg = {type: 'create'}
