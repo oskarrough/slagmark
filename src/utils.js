@@ -1,6 +1,3 @@
-export {render, html} from 'uhtml/keyed'
-export {effect, signal} from 'usignal'
-
 /**
  * @param {Array} arr
  * @returns a random element from the array
@@ -34,10 +31,5 @@ export function toPercent(value, max) {
 	return Math.round((value / max) * 100)
 }
 
-/**
- * Creates a random-looking string for ids.
- * @param {number} [a]
- * @returns {string}
- */
+/** Creates a random-looking string for ids */
 export const uuid = () => crypto.randomUUID()
-

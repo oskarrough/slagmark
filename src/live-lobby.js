@@ -1,23 +1,26 @@
 import PartySocket from 'partysocket'
-import {socket, PARTYKIT_URL} from './multiplayer.js'
-import {render, html, signal, effect, uuid} from './utils.js'
+import {render, html} from 'uhtml/keyed'
+import {effect, signal} from 'usignal'
 import {friendlyId} from './friendly-id.js'
-import {RumbleGame} from './rumble-game.js'
-import {Minion} from './nodes.js'
+import {lobbySocket, PARTYKIT_URL} from './multiplayer.js'
 
 /**
  * The lobby manages the "rooms" (or games) that are currently active.
  * You can create, join or leave a room. If you're the last to leave, the room will be removed.
  */
-export class RumbleLobby extends HTMLElement {
+export class LiveLobby extends HTMLElement {
 	constructor() {
 		super()
+
 		this.rooms = signal([])
-		this.gamesSocket = null
 		effect(() => {
 			this.render(this.rooms)
 		})
-		socket.addEventListener('message', this.onLobbyMessage.bind(this))
+
+		lobbySocket.addEventListener('message', this.onLobbyMessage.bind(this))
+
+		// Will be set in joinRoom()
+		this.gamesSocket = null
 	}
 
 	onLobbyMessage(event) {
@@ -32,14 +35,15 @@ export class RumbleLobby extends HTMLElement {
 	}
 
 	onGameMessage(event) {
-		const msg = JSON.parse(event.data)
-		if (msg.type === 'deployMinion') {
-			const minions = this.parentElement.game.Minions
-			const minion = minions.find((m) => m.id === msg.id)
-			console.log('@todo deploy', minions, minion)
-			minion.deploy()
-		} else if (msg.type === 'info') {
-			console.log(msg.content)
+		const game = this.parentElement.game
+		const action = JSON.parse(event.data)
+
+		if (action.type === 'playerConnected') {
+			game.runAction(action, false)
+		} else if (action.type === 'deployMinion') {
+			game.runAction(action, false)
+		} else if (action.type === 'info') {
+			console.info('👋', action.content)
 		} else {
 			console.log('unhandled msg in lobby from games socket', event.data)
 		}
@@ -49,7 +53,6 @@ export class RumbleLobby extends HTMLElement {
 		console.log('createRoom')
 		if (this.gamesSocket) this.leaveRoom()
 		this.joinRoom(friendlyId())
-		this.previousElementSibling.newGame(this.gamesSocket)
 	}
 
 	joinRoom(id) {
@@ -59,14 +62,15 @@ export class RumbleLobby extends HTMLElement {
 			party: 'games',
 			room: id,
 		})
-		this.gamesSocket.addEventListener('message', this.onGameMessage)
+		this.gamesSocket.addEventListener('message', this.onGameMessage.bind(this))
+		this.parentElement.newGame(this.gamesSocket)
 	}
 
 	leaveRoom() {
 		console.log('leaveRoom')
 		this.gamesSocket?.close()
 		this.gamesSocket = null
-		this.previousElementSibling?.quitGame()
+		this.parentElement?.quitGame()
 	}
 
 	render(_) {
@@ -102,7 +106,7 @@ export class RumbleLobby extends HTMLElement {
 						? html` <button onclick=${() => this.joinRoom(room.id)}>Join</button> `
 						: null}
 				</li>
-			`
+			`,
 		)}`
 	}
 }

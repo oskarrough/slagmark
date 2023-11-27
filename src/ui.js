@@ -1,5 +1,6 @@
-import {html, roundOne} from './utils.js'
-import {Player, Minion, Gold, Board} from './nodes.js'
+import {roundOne} from './utils.js'
+import {html} from 'uhtml'
+import {Player, Gold} from './nodes.js'
 
 export function UI(game) {
 	if (!game?.children?.length) return html`<p>Waiting for game...</p>`
@@ -8,6 +9,10 @@ export function UI(game) {
 	const player1 = players[0]
 	const player2 = players[1]
 
+	if (players.length < 2) {
+		return html`<p>Waiting for players... ${players.length} out of 2 ready</p>`
+	}
+
 	return html`
 		<header>
 			<nav>${Menu(game)}</nav>
@@ -15,14 +20,14 @@ export function UI(game) {
 
 		<aside ?disabled=${!game.started}>
 			<div>
-				<h2>AI ${HealthBar(player2.health)}</h2>
+				<h2>Player ${player2.number} ${HealthBar(player2.health)}</h2>
 				<ul class="MinionBar">
 					${MinionList(player2, false)}
 				</ul>
 				${GoldBar(player2.Gold)}
 			</div>
 			<div>
-				<h2>Player ${HealthBar(player1.health)}</h2>
+				<h2>Player ${player1.number} ${HealthBar(player1.health)}</h2>
 				<ul class="MinionBar">
 					${MinionList(player1, false)}
 				</ul>
@@ -34,7 +39,7 @@ export function UI(game) {
 			<ul data-player2>
 				${MinionList(player2, true)}
 			</ul>
-			<ul data-player>
+			<ul data-player1>
 				${MinionList(player1, true)}
 			</ul>
 		</main>
@@ -80,26 +85,19 @@ function minionTypeToEmoji(type) {
 	return map[type] || type
 }
 
-function sendAction(action) {
-	const el = document.querySelector('rumble-lobby')
-	if (!el) throw new Error('Missing <rumble-lobby> element')
-	if (!el.gamesSocket) throw new Error('Missing game socket')
-	el.gamesSocket?.send(JSON.stringify(action))
-}
-
 function minion(minion) {
 	const canDeploy = !minion.deployed && minion.Player.query(Gold).amount >= minion.cost
 	const height = minion.Game.Board.height
 	const topPercentage = ((height - minion.y) / height) * 100
 
 	const onClick = () => {
-		// console.log('trigger action deploy minion', minion)
-		// sendAction({type: 'deployMinion', id: minion.id})
-		minion.deploy()
+		console.log('minion onclick')
+		minion.Game.runAction({type: 'deployMinion', id: minion.id})
 	}
 
 	return html`<li
-		class=${`Minion ${minion.Player.ai ? 'ai' : null}`}
+		class="Minion"
+		data-player-number=${minion.Player.number}
 		data-y=${minion.y}
 		style=${`top: ${topPercentage}%`}
 	>

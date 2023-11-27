@@ -1,6 +1,6 @@
-import {html, render} from './utils.js'
+import {render, html} from 'uhtml/keyed'
 import {signal} from 'usignal'
-import {socket} from './multiplayer.js'
+import {lobbySocket} from './multiplayer.js'
 
 /*
  * Listens for "presence" events from the websocket server
@@ -12,7 +12,7 @@ export class LivePresence extends HTMLElement {
 
 		// Count the number of connections to the main socket.
 		this.count = signal(0)
-		socket.addEventListener('message', (event) => {
+		lobbySocket.addEventListener('message', (event) => {
 			const msg = JSON.parse(event.data)
 			if (msg.type === 'presence') {
 				this.count.value = msg.count

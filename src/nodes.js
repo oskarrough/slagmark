@@ -1,6 +1,8 @@
 import {Node, Loop, Task, Query, QueryAll, Closest} from 'vroum'
-import {render, random, uuid} from './utils.js'
+import {render} from 'uhtml/keyed'
+import {random} from './utils.js'
 import {UI} from './ui.js'
+import * as actions from './actions.js'
 
 export class GameLoop extends Loop {
 	Board = Query(Board)
@@ -8,14 +10,16 @@ export class GameLoop extends Loop {
 	Minions = QueryAll(Minion)
 	Renderer = Query(Renderer)
 
-	constructor(props) {
-		super()
-		// The DOM element to render to
-		this.element = props.element
-	}
+	// DOM element to render to
+	element = null
 
 	build() {
-		return [Player.new(), Player.new({ai: true}), Board.new(), Renderer.new()]
+		return [
+			// Player.new({number: 1}),
+			// Player.new({number: 2}),
+			Board.new(),
+			Renderer.new(),
+		]
 	}
 
 	mount() {
@@ -36,6 +40,21 @@ export class GameLoop extends Loop {
 
 	destroy() {
 		this.query(Renderer).render()
+	}
+
+	runAction(action, broadcast = true) {
+		console.log('runAction', action)
+
+		// run locally
+		const handler = actions[action.type]
+		if (!handler) throw new Error(`Missing action: ${action.type}`)
+		handler(this, action)
+
+		// Send to other parties
+		if (broadcast) {
+			const socket = this.element.parentElement.lobbyEl.gamesSocket
+			socket.send(JSON.stringify(action))
+		}
 	}
 }
 
@@ -59,15 +78,16 @@ export class Player extends Task {
 	Game = Closest(GameLoop)
 	Minions = QueryAll(Minion)
 	Gold = Query(Gold)
-	health = 3
 
-	constructor(props) {
-		super()
-		this.ai = props?.ai ?? false
-	}
+	health = 5
+	number = 0 // in the context of a single game
 
 	build() {
-		return [Gold.new(), Minion.new(), Minion.new(), Minion.new(), Minion.new(), RefillMinions.new()]
+		return [
+			Gold.new(),
+			RefillMinions.new(),
+			// Minion.new(), Minion.new(), Minion.new(), Minion.new()
+		]
 	}
 
 	afterCycle() {
@@ -115,35 +135,36 @@ export class RefillMinions extends Task {
 	}
 }
 
-const MINION_TYPES = ['rock', 'paper', 'scissors']
-
 export class Minion extends Task {
+	// Dependencies
 	Game = Closest(GameLoop)
 	Player = Closest(Player)
-
+	// Task schedule
 	delay = 0
 	duration = 0
 	interval = 1000
 	repeat = Infinity
 	// Props
+	id = null
 	minionType = ''
-	speed = 1
-	y = 0
 	cost = 1
+	y = -1
+	speed = 1
+	minionTypes = ['rock', 'paper', 'scissors']
 
-	constructor() {
-		super()
-		this.minionType = random(MINION_TYPES)
-		this.id = uuid()
-	}
+	// constructor() {
+	// 	super()
+	// 	this.id = uuid()
+	// 	this.minionType = random(this.MINION_TYPES)
+	// }
 
 	tick() {
 		if (!this.deployed || this.shouldDisconnect) return
 
-		// Variables needed to move later.
-		const direction = this.Player.ai ? 'down' : 'up'
-		const startY = direction === 'down' ? this.Game.Board.height : 0
-		const finalY = direction === 'down' ? 0 : this.Game.Board.height
+		// Check if we need to go up or down.
+		const goingUp = this.Player.number === 1
+		const startY = goingUp ? 0 : this.Game.Board.height
+		const finalY = goingUp ? this.Game.Board.height : 0
 
 		// Fight any enemies on same Y, and remove the loser.
 		const opponent = this.Game.Players.find((p) => p !== this.Player)
@@ -160,8 +181,7 @@ export class Minion extends Task {
 			opponent.health--
 			this.shouldDisconnect = true
 		} else {
-			// Else we keep moving.
-			this.move(this.Player.ai ? -1 : 1)
+			this.move(goingUp ? 1 : -1)
 		}
 	}
 
@@ -174,13 +194,13 @@ export class Minion extends Task {
 	deploy() {
 		const gold = this.Player.Gold
 		if (gold.amount < this.cost) {
-			console.log(`ACTION deploy', 'You need ${this.cost} gold to deploy this minion`)
+			console.log(`You need ${this.cost} gold to deploy this minion`)
 			return
 		}
 		gold.decrement(this.cost)
-		this.y = this.Player.ai ? this.Game.Board.height : 0
+		this.y = this.Player.number === 1 ? 0 : this.Game.Board.height
 		this.deployed = this.Game.elapsedTime
-		console.log('node minion deploy', this.Player.ai ? 'AI' : 'Player', this.minionType, this.y)
+		console.log(`Player ${this.Player.number} deployed Minion ${this.minionType} on ${this.y}`)
 	}
 
 	move(direction = 1) {
@@ -192,8 +212,7 @@ export class Minion extends Task {
 	 * @argument {Minion} opponent
 	 */
 	fight(opponent) {
-		const isAI = this.Player.ai
-		console.log('ACTION fight', this.y, isAI ? 'AI' : 'Player', this.minionType, 'vs', opponent.minionType)
+		console.log('Fight', this.y, `Player ${this.Player.number}`, this.minionType, 'vs', opponent.minionType)
 		const winningCombos = {
 			rock: 'scissors',
 			paper: 'rock',
