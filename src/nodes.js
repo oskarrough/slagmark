@@ -7,21 +7,23 @@ import * as actions from './actions.js'
 /** @typedef {import('./actions.js').Action} Action */
 
 export class Countdown extends Task {
+	Game = Closest(GameLoop)
+
+	/** @type {string|number} */
+	count = 'Waiting...'
+
 	delay = 1000
 	duration = 0
 	interval = 1000
-	repeat = 4
+	repeat = 4 // put it on higher than you'd like because of the "delay"
 
 	tick() {
-		const count = this.repeat - 1 - this.cycles
-		// if (this.cycles === 0) {
-		// 	this.root.pause()
-		// }
-		if (count > 0) {
-			console.log(count)
+		this.count = this.repeat - 1 - this.cycles
+		if (this.count > 0) {
 		} else {
-			console.log('play')
-			// this.root.play()
+			this.Game.Players.forEach((player) => {
+				player.add(Gold.new())
+			})
 		}
 	}
 }
@@ -132,13 +134,13 @@ export class Player extends Task {
 	Minions = QueryAll(Minion)
 	Gold = Query(Gold)
 
-	health = 5
+	health = 3
 	number = 0 // in the context of a single game
 
 	build() {
 		return [
-			Gold.new(),
-			RefillMinions.new(),
+			// Gold.new(),
+			// RefillMinions.new(),
 			// Minion.new(), Minion.new(), Minion.new(), Minion.new()
 		]
 	}

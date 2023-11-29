@@ -9,20 +9,27 @@ export function UI(game) {
 	const player1 = players[0]
 	const player2 = players[1]
 	const countdown = game.query(Countdown)
-	const disabled = countdown || !game.started
+	const disabled = players.length < 2 || Boolean(countdown)
 
 	if (players.length < 2) {
-		return html`<p>Waiting for players... ${players.length} out of 2 ready</p>`
+		return html` <header>
+			<p class="Countdown">
+				<span>
+					Waiting for players... ${players.length}/2<br />
+					<label>Share this URL to join: <input readonly value=${location.href} /></label>
+				</span>
+			</p>
+		</header>`
 	}
 
 	return html`
 		<header>
 			<nav>${Menu(game)}</nav>
+			${countdown ? html`<p class="Countdown"><span>${countdown.count}</span></p>` : ''}
 		</header>
 
-		<aside ?disabled=${countdown}>
+		<aside ?disabled=${disabled}>
 			<div>
-				${countdown ? html`<p>Countdown ${countdown.repeat - 1 - countdown.cycles}</p>` : html`Play!`}
 				<h2>Player ${player2.number} ${HealthBar(player2.health)}</h2>
 				<ul class="MinionBar">
 					${MinionList(player2, false)}
@@ -54,12 +61,13 @@ function Menu(game) {
 	const toggle = () => (game.paused ? game.play() : game.pause())
 	const quit = () => {
 		game.stop()
+		history.replaceState({}, '', '/')
 		location.reload()
 	}
 	return html`
 		<menu>
 			<button type="button" onclick=${toggle}>${game.paused ? 'Play' : 'Pause'}</button>
-			<button type="button" onclick=${quit}>Quit</button>
+			<button hidden type="button" onclick=${quit}>Quit</button>
 			<p style="min-width: 5rem"><small>FPS ${fps}</small></p>
 			<p style="min-width: 3.5rem"><small>${roundOne(game.elapsedTime / 1000)}s</small></p>
 		</menu>
@@ -89,7 +97,7 @@ function minionTypeToEmoji(type) {
 }
 
 function minion(minion) {
-	const canDeploy = !minion.deployed && minion.Player.query(Gold).amount >= minion.cost
+	const canDeploy = !minion.deployed && minion.Player.query(Gold)?.amount >= minion.cost
 	const height = minion.Game.Board.height
 	const topPercentage = ((height - minion.y) / height) * 100
 

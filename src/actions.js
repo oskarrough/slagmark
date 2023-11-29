@@ -1,6 +1,6 @@
 import {Player, Minion, Countdown} from './nodes.js'
 
-/** 
+/**
  * @typedef {import('./nodes.js').GameLoop} Game
  */
 
@@ -11,10 +11,37 @@ import {Player, Minion, Countdown} from './nodes.js'
  */
 
 /**
+ * @typedef {object} InitialPlayer
+ * @prop {string} id
+ * @prop {Number} number
+ * @prop {InitialMinion[]} minions
+ */
+
+/**
+ * @typedef {object} InitialMinion
+ * @prop {string} id
+ * @prop {string} minionType
+ */
+
+/**
+ * @typedef {object} PlayerConnectedAction
+ * @prop {string} type
+ * @prop {string} playerId
+ * @prop {InitialPlayer[]} players
+ */
+
+/**
+ * @typedef {object} PlayerDisconnectedAction
+ * @prop {string} type
+ * @prop {string} playerId
+ * @prop {InitialPlayer[]} players
+ */
+
+/**
  * The 'action' here a kind of serialized mini-version of the game state to get started.
  * We turn it into real nodes here.
  * @param {Game} game
- * @param {{players: {id: string, number: Number, minions: {id: string, minionType: string}[]}[]}} action
+ * @param {PlayerConnectedAction} action
  */
 export function playerConnected(game, action) {
 	action.players.forEach((miniPlayer) => {
@@ -25,6 +52,15 @@ export function playerConnected(game, action) {
 		})
 		game.add(player)
 	})
+}
+
+/**
+ * @param {Game} game
+ * @param {PlayerDisconnectedAction} action
+ */
+export function playerDisconnected(game, action) {
+	const player = game.Players.find((player) => player.id === action.playerId)
+	player.disconnect()
 }
 
 /**
@@ -44,15 +80,6 @@ export function addNewMinion(game, action) {
 	const player = game.Players.find((player) => player.id === action.playerId)
 	const minion = Minion.new()
 	player.add(minion)
-}
-
-/**
- * @param {Game} game
- * @param {{playerId: string, players: []}} action
- */
-export function playerDisconnected(game, action) {
-	const player = game.Players.find((player) => player.id === action.playerId)
-	player.disconnect()
 }
 
 /**

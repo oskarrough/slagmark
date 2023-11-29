@@ -21,8 +21,11 @@ export class LiveLobby extends HTMLElement {
 
 		// Will be set in joinRoom()
 		this.gamesSocket = null
-	}
 
+		const urlParams = new URLSearchParams(window.location.search)
+		if (urlParams.has('room')) this.joinRoom(urlParams.get('room'))
+	}
+	
 	onLobbyMessage(event) {
 		const msg = JSON.parse(event.data)
 		if (msg.type === 'connections') {
@@ -61,6 +64,7 @@ export class LiveLobby extends HTMLElement {
 		})
 		this.gamesSocket.addEventListener('message', this.onGameMessage.bind(this))
 		this.parentElement.newGame(this.gamesSocket)
+		history.replaceState({room: id}, id, `?room=${id}`)
 	}
 
 	leaveRoom() {
@@ -74,15 +78,14 @@ export class LiveLobby extends HTMLElement {
 		const rooms = Object.entries(this.rooms.value).map(([id, count]) => ({id, count}))
 		const totalConnections = Object.entries(this.rooms.value).reduce((acc, [id, count]) => acc + count, 0)
 		const tpl = html`
-			<details open>
+			<details ?open=${!Boolean(this.gamesSocket)}>
 				<summary>
-					Lobby (<live-presence></live-presence> online, ${rooms.length} games, ${totalConnections} playing)
+					Lobby (<live-presence></live-presence> online, ${totalConnections} playing)
 				</summary>
 				<ul>
 					${this.renderRooms(rooms)}
 				</ul>
 			</details>
-			<br />
 			<p>
 				${this.gamesSocket
 					? html`You are in: ${this.gamesSocket?.room}
