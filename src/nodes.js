@@ -6,49 +6,6 @@ import * as actions from './actions.js'
 
 /** @typedef {import('./actions.js').Action} Action */
 
-export class Countdown extends Task {
-	Game = Closest(GameLoop)
-
-	/** @type {string|number} */
-	count = 'Waiting...'
-
-	delay = 1000
-	duration = 0
-	interval = 1000
-	repeat = 4 // put it on higher than you'd like because of the "delay"
-
-	tick() {
-		this.count = this.repeat - 1 - this.cycles
-		if (this.count > 0) {
-		} else {
-			this.Game.Players.forEach((player) => {
-				player.add(Gold.new())
-			})
-		}
-	}
-}
-
-/**
- * @typedef {object} LogEntry
- * @prop {Action} action
- * @prop {number} now - timestamp
- */
-
-export class Log extends Node {
-	/** @type {LogEntry[]} */
-	logs = []
-
-	/** @arg {Action} action */
-	push(action) {
-		const log = {action, now: Date.now()}
-		this.logs.push(log)
-	}
-
-	print() {
-		console.log(this.logs)
-	}
-}
-
 export class GameLoop extends Loop {
 	Board = Query(Board)
 	Players = QueryAll(Player)
@@ -61,6 +18,7 @@ export class GameLoop extends Loop {
 
 	build() {
 		return [
+			// Players are (now) inserted once a client connects to the game.
 			// Player.new({number: 1}),
 			// Player.new({number: 2}),
 			Board.new(),
@@ -113,20 +71,9 @@ export class GameLoop extends Loop {
 	}
 }
 
-class Renderer extends Task {
-	Game = Closest(GameLoop)
-
-	tick() {
-		this.render()
-	}
-
-	render() {
-		if (!this.Game?.element) throw new Error('missing DOM element to render to')
-		// const start = performance.now()
-		render(this.Game.element, UI(this.root))
-		// const end = performance.now()
-		// console.log(`render time = ${end - start}ms`)
-	}
+export class Board extends Node {
+	width = 1
+	height = 10
 }
 
 export class Player extends Task {
@@ -147,8 +94,9 @@ export class Player extends Task {
 
 	afterCycle() {
 		if (this.health <= 0) {
-			console.log(`${this.constructor.name} lost`)
-			alert(`${this.constructor.name} lost`)
+			const msg = `${this.constructor.name} ${this.number} lost`
+			console.log(msg)
+			alert(msg)
 			this.Game.stop()
 		}
 	}
@@ -188,10 +136,12 @@ export class RefillMinions extends Task {
 	tick() {
 		const undeployedMinions = this.Player.Minions.filter((m) => !m.deployed)?.length
 		if (undeployedMinions < this.maxAmount) {
-			this.Game.runAction({type: 'addNewMinion', playerId: this.Player.id})
+			this.Game.runAction({type: 'addNewMinion', playerId: this.Player.id, minionType: random(MINION_TYPES)})
 		}
 	}
 }
+
+export const MINION_TYPES = ['rock', 'paper', 'scissors']
 
 export class Minion extends Task {
 	// Dependencies
@@ -208,7 +158,7 @@ export class Minion extends Task {
 	cost = 1
 	y = -1
 	speed = 1
-	minionTypes = ['rock', 'paper', 'scissors']
+	minionTypes = MINION_TYPES
 
 	constructor() {
 		super()
@@ -286,7 +236,61 @@ export class Minion extends Task {
 	}
 }
 
-export class Board extends Node {
-	width = 1
-	height = 10
+/** Used for the initial countdown before a game starts */
+export class GameCountdown extends Task {
+	Game = Closest(GameLoop)
+
+	/** @type {string|number} */
+	count = null
+
+	delay = 1000
+	duration = 0
+	interval = 1000
+	repeat = 4 // put it on higher than you'd like because of the "delay"
+
+	tick() {
+		this.count = this.repeat - 1 - this.cycles
+		if (this.count > 0) {
+			// count
+		} else {
+			// final tick
+			this.Game.Players.forEach((player) => {
+				player.add(Gold.new())
+				player.add(RefillMinions.new())
+			})
+		}
+	}
+}
+
+export class Log extends Node {
+	/** @typedef {{ action: Action, now: Number}} LogEntry */
+	/** @type {LogEntry[]} */
+	logs = []
+
+	/** @arg {Action} action */
+	push(action) {
+		const log = {action, now: Date.now()}
+		this.logs.push(log)
+	}
+
+	print() {
+		console.log(this.logs)
+	}
+}
+
+/** A utility task that renders the GameLoop constantly to a DOM node via the UI function */
+class Renderer extends Task {
+	Game = Closest(GameLoop)
+
+	tick() {
+		this.render()
+	}
+
+	render() {
+		if (!this.Game?.element) throw new Error('missing DOM element to render to')
+		// const start = performance.now()
+		render(this.Game.element, UI(this.root))
+		// const end = performance.now()
+		// console.log(`render time = ${end - start}ms`)
+	}
 }

@@ -186,7 +186,7 @@ ul.GoldBar,
 slag-mark-ui > main .Minion {
 	position: absolute;
 	transform: translateY(-50%);
-	/* transition: top 1000ms linear; */
+	transition: top 1000ms linear;
 	left: 0.5rem;
 }
 slag-mark-ui > main [data-player] .Minion {
@@ -233,8 +233,9 @@ summary {
 	z-index: 1;
 	top: 50%;
 	transform: translateY(-50%);
-	left: 0.5rem;
-	right: 0.5rem;
+	/* bottom: 1.5rem; */
+	left: 1.5rem;
+	right: 1.5rem;
 	text-align: center;
 	font-size: 3rem;
 	line-height: 1;

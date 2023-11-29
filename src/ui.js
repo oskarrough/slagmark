@@ -1,6 +1,6 @@
 import {roundOne} from './utils.js'
 import {html} from 'uhtml'
-import {Countdown, Player, Gold} from './nodes.js'
+import {GameCountdown, Player, Gold} from './nodes.js'
 
 export function UI(game) {
 	if (!game?.children?.length) return html`<p>Waiting for game...</p>`
@@ -8,42 +8,24 @@ export function UI(game) {
 	const players = game.queryAll(Player)
 	const player1 = players[0]
 	const player2 = players[1]
-	const countdown = game.query(Countdown)
+	const countdown = game.query(GameCountdown)
 	const disabled = players.length < 2 || Boolean(countdown)
-
-	if (players.length < 2) {
-		return html` <header>
-			<p class="Countdown">
-				<span>
-					Waiting for players... ${players.length}/2<br />
-					<label>Share this URL to join: <input readonly value=${location.href} /></label>
-				</span>
-			</p>
-		</header>`
-	}
 
 	return html`
 		<header>
 			<nav>${Menu(game)}</nav>
-			${countdown ? html`<p class="Countdown"><span>${countdown.count}</span></p>` : ''}
+
+			${players.length < 2 &&
+			html` <p class="Countdown">
+				<span>
+					Waiting for players... ${players.length}/2<br />
+					<label>Share this URL to join: <input readonly value=${location.href} /></label>
+				</span>
+			</p>`}
+			${countdown?.count > 0 ? html`<p class="Countdown"><span>${countdown.count}</span></p>` : ''}
 		</header>
 
-		<aside ?disabled=${disabled}>
-			<div>
-				<h2>Player ${player2.number} ${HealthBar(player2.health)}</h2>
-				<ul class="MinionBar">
-					${MinionList(player2, false)}
-				</ul>
-				${GoldBar(player2.Gold)}
-			</div>
-			<div>
-				<h2>Player ${player1.number} ${HealthBar(player1.health)}</h2>
-				<ul class="MinionBar">
-					${MinionList(player1, false)}
-				</ul>
-				${GoldBar(player1.Gold)}
-			</div>
-		</aside>
+		<aside ?disabled=${disabled}>${PlayerDisplay(player2)} ${PlayerDisplay(player1)}</aside>
 
 		<main>
 			<ul data-player2>
@@ -74,9 +56,22 @@ function Menu(game) {
 	`
 }
 
+function PlayerDisplay(player) {
+	if (!player) return html`Waiting for player...`
+	return html`
+		<div>
+			<h2>Player ${player.number} ${HealthBar(player.health)}</h2>
+			<ul class="MinionBar">
+				${MinionList(player, false)}
+			</ul>
+			${GoldBar(player.Gold)}
+		</div>
+	`
+}
+
 /* Returns a list of HTML minions */
 function MinionList(player, deployed) {
-	let list = player.Minions
+	let list = player?.Minions
 	if (!list?.length) return null
 	if (deployed) {
 		list = list.filter((m) => m.deployed)

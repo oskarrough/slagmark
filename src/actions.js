@@ -1,8 +1,14 @@
 import {Player, Minion, GameCountdown} from './nodes.js'
 
 /**
- * All "action" functions exported here accept two arguments:
- * 1) the Game loop 2) an Action object. They can modify the game all they want.
+ * All "action" functions exported here follow a few rules:
+ *
+ * They accept two arguments:
+ * 1) the Game loop 2) an Action object.
+ *
+ * They can modify the game all they want.
+ *
+ * They can not do anything random. Sorry. For randomthings, send it with the action object.
  */
 
 /** @typedef {import('./nodes.js').GameLoop} Game */
@@ -54,13 +60,14 @@ export function deployMinion(game, action) {
 }
 
 /**
- * Adds a new, random minion to a player
+ * Adds a new minion to a player
  * @param {Game} game
- * @param {Action<{playerId: string}>} action
+ * @param {Action<{playerId: string, minionType: string}>} action
  */
 export function addNewMinion(game, action) {
 	const player = game.Players.find((player) => player.id === action.playerId)
 	const minion = Minion.new()
+	minion.minionType = action.minionType
 	player.add(minion)
 }
 
