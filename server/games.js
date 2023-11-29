@@ -1,7 +1,7 @@
 import {random, uuid} from '../src/utils'
 
-/** @typedef {import("partykit/server").Server} Server */
-/** @typedef {import("partykit/server").Party} Party */
+/** @typedef {import('partykit/server').Server} Server */
+/** @typedef {import('partykit/server').Party} Party */
 
 /**
  * Games server. This is used to communicate inside a single room/game.
@@ -12,6 +12,7 @@ export default class PartyServer {
 		/** @type {Party} */
 		this.party = party
 
+		/** @type {Map<string, import('../src/actions').InitialPlayer>} */
 		this.players = new Map()
 	}
 
@@ -71,6 +72,7 @@ export default class PartyServer {
 	/**
 	 * A data-representation of a player. Not the real node.
 	 * @param {string} id
+	 * @returns {import('../src/actions').InitialPlayer}
 	 */
 	createPlayer(id) {
 		return {

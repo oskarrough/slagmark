@@ -1,71 +1,52 @@
-import {Player, Minion, Countdown} from './nodes.js'
+import {Player, Minion, GameCountdown} from './nodes.js'
 
 /**
- * @typedef {import('./nodes.js').GameLoop} Game
+ * All "action" functions exported here accept two arguments:
+ * 1) the Game loop 2) an Action object. They can modify the game all they want.
  */
 
-/**
- * @typedef {object} Action
- * @prop {string} type - the snakeCase name of an action defined in ./actions.js
- * Other props also allowed
- */
+/** @typedef {import('./nodes.js').GameLoop} Game */
 
 /**
- * @typedef {object} InitialPlayer
- * @prop {string} id
- * @prop {Number} number
- * @prop {InitialMinion[]} minions
+ * @template {{ [key: string]: any}} T
+ * @typedef {{ type: string } & T} Action
  */
 
-/**
- * @typedef {object} InitialMinion
- * @prop {string} id
- * @prop {string} minionType
- */
+/** @typedef {{id: string, number: number, minions: InitialMinion[]}} InitialPlayer */
+/** @typedef {{id: string, minionType: string}} InitialMinion */
 
 /**
- * @typedef {object} PlayerConnectedAction
- * @prop {string} type
- * @prop {string} playerId
- * @prop {InitialPlayer[]} players
- */
-
-/**
- * @typedef {object} PlayerDisconnectedAction
- * @prop {string} type
- * @prop {string} playerId
- * @prop {InitialPlayer[]} players
- */
-
-/**
- * The 'action' here a kind of serialized mini-version of the game state to get started.
- * We turn it into real nodes here.
+ * Called when a client connects to websockets.
  * @param {Game} game
- * @param {PlayerConnectedAction} action
+ * @param {Action<{playerId: string, players: InitialPlayer[]}>} action
  */
 export function playerConnected(game, action) {
-	action.players.forEach((miniPlayer) => {
-		if (game.Players.find((p) => p.id === miniPlayer.id)) return
-		const player = Player.new({id: miniPlayer.id, number: miniPlayer.number})
-		miniPlayer.minions.forEach((miniMinion) => {
-			player.add(Minion.new({id: miniMinion.id, minionType: miniMinion.minionType}))
-		})
-		game.add(player)
-	})
+	for (const player of action.players) {
+		// If the player was already in the game, skip
+		if (game.Players.find((p) => p.id === player.id)) continue
+		// Else create a new player, with minions.
+		const p = Player.new({id: player.id, number: player.number})
+		for (const {id, minionType} of player.minions) {
+			p.add(Minion.new({id, minionType}))
+		}
+		game.add(p)
+	}
 }
 
 /**
+ * Called when a client disconnects websockets.
  * @param {Game} game
- * @param {PlayerDisconnectedAction} action
+ * @param {Action<{playerId: string, players: InitialPlayer[]}>} action
  */
 export function playerDisconnected(game, action) {
 	const player = game.Players.find((player) => player.id === action.playerId)
-	player.disconnect()
+	player?.disconnect()
 }
 
 /**
+ * Deploys a minion to the slagmark.
  * @param {Game} game
- * @param {{id: string}} action
+ * @param {Action<{id: string}>} action
  */
 export function deployMinion(game, action) {
 	const minion = game.Minions.find((m) => m.id === action.id)
@@ -73,8 +54,9 @@ export function deployMinion(game, action) {
 }
 
 /**
+ * Adds a new, random minion to a player
  * @param {Game} game
- * @param {{playerId: string}} action
+ * @param {Action<{playerId: string}>} action
  */
 export function addNewMinion(game, action) {
 	const player = game.Players.find((player) => player.id === action.playerId)
@@ -84,9 +66,8 @@ export function addNewMinion(game, action) {
 
 /**
  * @param {Game} game
- * @param {{playerId: string, players: []}} action
  */
-export function startGameCountdown(game, action) {
-	const countdown = Countdown.new()
+export function startGameCountdown(game) {
+	const countdown = GameCountdown.new()
 	game.add(countdown)
 }
