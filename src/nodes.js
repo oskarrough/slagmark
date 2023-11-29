@@ -16,6 +16,9 @@ export class GameLoop extends Loop {
 	// DOM element to render to
 	element = null
 
+	// Also known as the websocket connection id.
+	playerId = null
+
 	build() {
 		return [
 			// Players are (now) inserted once a client connects to the game.

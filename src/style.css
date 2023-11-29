@@ -42,7 +42,7 @@ slag-mark {
 	place-items: center;
 	flex-flow: column;
 	overflow: hidden;
-	min-height: calc(100vh - 200px);
+	min-height: 100vh;
 }
 
 button {
@@ -68,27 +68,30 @@ slag-mark-ui {
 	margin: auto;
 	padding: 0.5rem;
 	display: grid;
-	grid-template-rows: min-content 1fr;
-	/* 16 is the magic number that avoids aside jumping */
-	grid-template-columns: minmax(16rem, max-content) minmax(3rem, 1fr);
-	gap: 1rem;
+	grid-template-columns: 1fr 1fr;
+	grid-template-rows: fit-content 1fr fit-content;
+	grid-template-areas:
+		'header header'
+		'aside main'
+		'footer footer';
+	gap: 0.5rem;
 }
 
 slag-mark-ui > header {
-	grid-area: 1 / 1;
-	grid-column: span 2;
+	grid-area: header;
 }
 
 slag-mark-ui > aside {
-	grid-area: 2 / 1;
+	grid-area: aside;
 	display: flex;
+	/* flex: 1; */
 	flex-flow: column nowrap;
 	align-items: center;
-	gap: 2rem;
+	/* gap: 2rem; */
 	justify-content: space-between;
-	margin: auto 0;
+	/* margin: auto 0; */
 
-	& > div {
+	& > slag-player {
 		width: 100%;
 		display: flex;
 		flex-flow: column nowrap;
@@ -96,9 +99,9 @@ slag-mark-ui > aside {
 }
 
 slag-mark-ui > main {
-	grid-area: 2 / 2;
+	grid-area: main;
 	flex: 1;
-
+	flex-shrink: 0;
 	display: flex;
 	flex-flow: column nowrap;
 	position: relative;
@@ -143,6 +146,7 @@ ul.GoldBar,
 .MinionBar {
 	padding: 0.5rem 0.5rem 0.6rem;
 	border-bottom: 0;
+	min-height: 4.2rem;
 }
 
 .GoldBar {
@@ -184,6 +188,7 @@ ul.GoldBar,
 
 /* Deployed minions */
 slag-mark-ui > main .Minion {
+	font-size: 3rem;
 	position: absolute;
 	transform: translateY(-50%);
 	transition: top 1000ms linear;
@@ -239,6 +244,7 @@ summary {
 	text-align: center;
 	font-size: 3rem;
 	line-height: 1;
+	transition: all 200ms var(--easing1);
 }
 
 .Countdown span {

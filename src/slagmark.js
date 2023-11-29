@@ -15,11 +15,13 @@ export class SlagMark extends HTMLElement {
 		this.appendChild(this.uiEl)
 	}
 
-	newGame(gamesSocket) {
-		console.log('newGame')
+	newGame(gamesSocket, roomId) {
 		if (this.game) this.game.stop()
-		this.game = GameLoop.new({element: this.uiEl})
+		this.game = GameLoop.new({element: this.uiEl, playerId: gamesSocket.id})
 		this.game?.start()
+
+		history.replaceState({room: roomId}, roomId, `?room=${roomId}`)
+		console.log('newGame', roomId)
 	}
 
 	async quitGame() {

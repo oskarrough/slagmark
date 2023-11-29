@@ -25,7 +25,7 @@ export class LiveLobby extends HTMLElement {
 		const urlParams = new URLSearchParams(window.location.search)
 		if (urlParams.has('room')) this.joinRoom(urlParams.get('room'))
 	}
-	
+
 	onLobbyMessage(event) {
 		const msg = JSON.parse(event.data)
 		if (msg.type === 'connections') {
@@ -38,9 +38,9 @@ export class LiveLobby extends HTMLElement {
 	}
 
 	onGameMessage(event) {
+		/** @type {import('./nodes.js').GameLoop} */
 		const game = this.parentElement.game
 		const action = JSON.parse(event.data)
-
 		if (action.type === 'info') {
 			// @todo show to user?
 			console.info('👋', action.content)
@@ -50,7 +50,7 @@ export class LiveLobby extends HTMLElement {
 	}
 
 	startNewGame() {
-		console.log('createNewGame')
+		console.log('start new game')
 		if (this.gamesSocket) this.leaveRoom()
 		this.joinRoom(friendlyId())
 	}
@@ -63,8 +63,7 @@ export class LiveLobby extends HTMLElement {
 			room: id,
 		})
 		this.gamesSocket.addEventListener('message', this.onGameMessage.bind(this))
-		this.parentElement.newGame(this.gamesSocket)
-		history.replaceState({room: id}, id, `?room=${id}`)
+		this.parentElement.newGame(this.gamesSocket, id)
 	}
 
 	leaveRoom() {

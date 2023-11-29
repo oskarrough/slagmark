@@ -3,25 +3,23 @@ import {html} from 'uhtml'
 import {GameCountdown, Player, Gold} from './nodes.js'
 
 export function UI(game) {
-	if (!game?.children?.length) return html`<p>Waiting for game...</p>`
-
 	const players = game.queryAll(Player)
 	const player1 = players[0]
 	const player2 = players[1]
 	const countdown = game.query(GameCountdown)
 	const disabled = players.length < 2 || Boolean(countdown)
 
+	if (players.length < 1) return html`<p>Loading...</p>`
+
 	return html`
 		<header>
 			<nav>${Menu(game)}</nav>
 
-			${players.length < 2 &&
-			html` <p class="Countdown">
-				<span>
-					Waiting for players... ${players.length}/2<br />
-					<label>Share this URL to join: <input readonly value=${location.href} /></label>
-				</span>
-			</p>`}
+			${players.length < 2
+				? html` <p class="Countdown">
+						<span> </span>
+				  </p>`
+				: html``}
 			${countdown?.count > 0 ? html`<p class="Countdown"><span>${countdown.count}</span></p>` : ''}
 		</header>
 
@@ -57,29 +55,27 @@ function Menu(game) {
 }
 
 function PlayerDisplay(player) {
-	if (!player) return html`Waiting for player...`
+	if (!player)
+		return html`
+			Waiting for player...<br />
+			<label>Share this URL to join: <input readonly value=${location.href} /></label>
+		`
 	return html`
-		<div>
+		<slag-player>
 			<h2>Player ${player.number} ${HealthBar(player.health)}</h2>
 			<ul class="MinionBar">
-				${MinionList(player, false)}
+				${player.Minions.filter((m) => !m.deployed).map((m) => MinionAvatar(m))}
 			</ul>
 			${GoldBar(player.Gold)}
-		</div>
+		</slag-player>
 	`
 }
 
 /* Returns a list of HTML minions */
-function MinionList(player, deployed) {
-	let list = player?.Minions
+function MinionList(player) {
+	let list = player?.Minions.filter((m) => m.deployed)
 	if (!list?.length) return null
-	if (deployed) {
-		list = list.filter((m) => m.deployed)
-	} else if (deployed === false) {
-		list = list.filter((m) => !m.deployed)
-	}
-	if (!list.length) return null
-	return html`${list.map((m) => minion(m))}`
+	return html`${list.map((m) => DeployedMinion(m))}`
 }
 
 function minionTypeToEmoji(type) {
@@ -91,15 +87,9 @@ function minionTypeToEmoji(type) {
 	return map[type] || type
 }
 
-function minion(minion) {
-	const canDeploy = !minion.deployed && minion.Player.query(Gold)?.amount >= minion.cost
+function DeployedMinion(minion) {
 	const height = minion.Game.Board.height
-	const topPercentage = ((height - minion.y) / height) * 100
-
-	const onClick = () => {
-		console.log('minion onclick')
-		minion.Game.runAction({type: 'deployMinion', id: minion.id})
-	}
+	const topPercentage = minion.deployed ? ((height - minion.y) / height) * 100 : 0
 
 	return html`<li
 		class="Minion"
@@ -107,10 +97,23 @@ function minion(minion) {
 		data-y=${minion.y}
 		style=${`top: ${topPercentage}%`}
 	>
-		<button type="button" ?disabled=${!canDeploy} onclick=${onClick}>
+		${minionTypeToEmoji(minion.minionType)}
+		<span>${minion.y}</span>
+	</li>`
+}
+
+function MinionAvatar(minion) {
+	const canDeploy = !minion.deployed && minion.Player.query(Gold)?.amount >= minion.cost
+
+	const deploy = () => {
+		minion.Game.runAction({type: 'deployMinion', id: minion.id})
+	}
+
+	return html`<li class="Minion Minion--avatar" data-player-number=${minion.Player.number}>
+		<button type="button" ?disabled=${!canDeploy} onclick=${deploy}>
 			${minionTypeToEmoji(minion.minionType)}
 		</button>
-		<span>${minion.deployed ? minion.y : minion.cost}</span>
+		<span>${minion.cost}</span>
 	</li>`
 }
 
