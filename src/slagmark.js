@@ -28,5 +28,8 @@ export class SlagMark extends HTMLElement {
 		await this.game.stop()
 		this.game.Renderer.render()
 		this.game = null
+
+		history.replaceState({}, '', '/')
+		location.reload()
 	}
 }

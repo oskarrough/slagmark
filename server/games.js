@@ -11,52 +11,44 @@ export default class PartyServer {
 	constructor(party) {
 		/** @type {Party} */
 		this.party = party
-		this.players = []
+
+		this.players = new Map()
 	}
 
 	onConnect(conn, ctx) {
-		let count = 0
-		for (const c of this.party.getConnections()) {
-			count++
-		}
-
 		this.updateConnections('connect', conn)
-		conn.send(JSON.stringify({type: 'info', content: `You are Player ${count}`}))
-		this.broadcastInfo(`Welcome Player ${count} to ${this.party.id}`, [conn.id])
 
-		if (count > 2) {
-			this.broadcastInfo('Game is already full, sorry!')
-			return
+		if (this.players.size > 2) return this.broadcastInfo('Game is already full, sorry!')
+
+		// Add new player
+		const player = this.createPlayer(conn.id)
+		this.players.set(conn.id, player)
+
+		// Notify everyone
+		const msg = JSON.stringify({
+			type: 'playerConnected',
+			playerId: player.id,
+			players: Array.from(this.players.values()),
+		})
+		this.party.broadcast(msg)
+		// conn.send(JSON.stringify({type: 'info', content: `You are player ${player.number}`})
+
+		// Start countdown once game is full
+		if (this.players.size === 2) {
+			this.party.broadcast(JSON.stringify({type: 'startGameCountdown'}))
 		}
 
-		const player = {
-			id: conn.id, // uuid()
-			number: count,
-			minions: Array(4)
-				.fill()
-				.map((_) => {
-					return {
-						id: uuid(),
-						minionType: random(['rock', 'paper', 'scissors']),
-					}
-				}),
-		}
-
-		console.log('onConnect', this.players.length, 'players', 'count', count)
-		this.players.push(player)
-		this.party.broadcast(
-			JSON.stringify({type: 'playerConnected', playerId: player.id, players: this.players}),
-		)
+		// conn.send(JSON.stringify({type: 'info', content: `You are Player ${player.number}, ${player.id}`}))
+		// this.broadcastInfo(`Player ${player.number} joined ${this.party.id}`)
 	}
 
 	onClose(conn) {
-		this.broadcastInfo(`Bye! ${conn.id} left the room`)
 		this.updateConnections('disconnect', conn)
-		const playerIndex = this.players.findIndex((p) => p.id === conn.id)
-		if (playerIndex !== 0) this.players.splice(playerIndex, 1)
-		this.party.broadcast(
-			JSON.stringify({type: 'playerDisconnected', playerId: conn.id, players: this.players}),
-		)
+		this.players.delete(conn.id)
+		// Notify everyone
+		this.broadcastInfo(`Bye! ${conn.id} left the room`)
+		const msg = JSON.stringify({type: 'playerDisconnected', playerId: conn.id, players: this.players})
+		this.party.broadcast(msg)
 	}
 
 	onMessage(string, conn) {
@@ -74,5 +66,24 @@ export default class PartyServer {
 
 	broadcastInfo(content, excludelist = []) {
 		this.party.broadcast(JSON.stringify({type: 'info', content}), excludelist)
+	}
+
+	/**
+	 * A data-representation of a player. Not the real node.
+	 * @param {string} id
+	 */
+	createPlayer(id) {
+		return {
+			id,
+			number: this.players.size + 1,
+			minions: Array(4)
+				.fill()
+				.map((_) => {
+					return {
+						id: uuid(),
+						minionType: random(['rock', 'paper', 'scissors']),
+					}
+				}),
+		}
 	}
 }

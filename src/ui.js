@@ -1,6 +1,6 @@
 import {roundOne} from './utils.js'
 import {html} from 'uhtml'
-import {Player, Gold} from './nodes.js'
+import {Countdown, Player, Gold} from './nodes.js'
 
 export function UI(game) {
 	if (!game?.children?.length) return html`<p>Waiting for game...</p>`
@@ -8,17 +8,27 @@ export function UI(game) {
 	const players = game.queryAll(Player)
 	const player1 = players[0]
 	const player2 = players[1]
+	const countdown = game.query(Countdown)
+	const disabled = players.length < 2 || Boolean(countdown)
 
 	if (players.length < 2) {
-		return html`<p>Waiting for players... ${players.length} out of 2 ready</p>`
+		return html` <header>
+			<p class="Countdown">
+				<span>
+					Waiting for players... ${players.length}/2<br />
+					<label>Share this URL to join: <input readonly value=${location.href} /></label>
+				</span>
+			</p>
+		</header>`
 	}
 
 	return html`
 		<header>
 			<nav>${Menu(game)}</nav>
+			${countdown ? html`<p class="Countdown"><span>${countdown.count}</span></p>` : ''}
 		</header>
 
-		<aside ?disabled=${!game.started}>
+		<aside ?disabled=${disabled}>
 			<div>
 				<h2>Player ${player2.number} ${HealthBar(player2.health)}</h2>
 				<ul class="MinionBar">
@@ -51,12 +61,13 @@ function Menu(game) {
 	const toggle = () => (game.paused ? game.play() : game.pause())
 	const quit = () => {
 		game.stop()
+		history.replaceState({}, '', '/')
 		location.reload()
 	}
 	return html`
 		<menu>
 			<button type="button" onclick=${toggle}>${game.paused ? 'Play' : 'Pause'}</button>
-			<button type="button" onclick=${quit}>Quit</button>
+			<button hidden type="button" onclick=${quit}>Quit</button>
 			<p style="min-width: 5rem"><small>FPS ${fps}</small></p>
 			<p style="min-width: 3.5rem"><small>${roundOne(game.elapsedTime / 1000)}s</small></p>
 		</menu>
@@ -86,7 +97,7 @@ function minionTypeToEmoji(type) {
 }
 
 function minion(minion) {
-	const canDeploy = !minion.deployed && minion.Player.query(Gold).amount >= minion.cost
+	const canDeploy = !minion.deployed && minion.Player.query(Gold)?.amount >= minion.cost
 	const height = minion.Game.Board.height
 	const topPercentage = ((height - minion.y) / height) * 100
 
