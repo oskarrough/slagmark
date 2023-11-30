@@ -261,3 +261,12 @@ summary {
 .Countdown label {
 	font-size: 1rem;
 }
+
+input[type='text'] {
+	font-size: 1em;
+	background: var(--player2);
+	color: var(--text);
+	font-family: inherit;
+	width: 25em;
+	max-width: 100%;
+}

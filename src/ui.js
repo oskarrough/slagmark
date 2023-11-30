@@ -10,6 +10,10 @@ export function UI(game) {
 	const disabled = players.length < 2 || Boolean(countdown)
 
 	if (players.length < 1) return html`<p>Loading...</p>`
+	if (players.length < 2)
+		return html`<p>
+			Need one more player. <label>Share this URL to join: <input type="text" readonly value=${location.href} /></label>
+		</p>`
 
 	return html`
 		<header>
@@ -19,7 +23,7 @@ export function UI(game) {
 				? html` <p class="Countdown">
 						<span> </span>
 				  </p>`
-				: html``}
+				: ''}
 			${countdown?.count > 0 ? html`<p class="Countdown"><span>${countdown.count}</span></p>` : ''}
 		</header>
 
@@ -55,11 +59,7 @@ function Menu(game) {
 }
 
 function PlayerDisplay(player) {
-	if (!player)
-		return html`
-			Waiting for player...<br />
-			<label>Share this URL to join: <input readonly value=${location.href} /></label>
-		`
+	if (!player) return html``
 	return html`
 		<slag-player>
 			<h2>Player ${player.number} ${HealthBar(player.health)}</h2>
@@ -71,7 +71,6 @@ function PlayerDisplay(player) {
 	`
 }
 
-/* Returns a list of HTML minions */
 function MinionList(player) {
 	let list = player?.Minions.filter((m) => m.deployed)
 	if (!list?.length) return null
