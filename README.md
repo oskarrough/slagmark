@@ -36,7 +36,15 @@ bun run dev
 - `bun run deploy:backend` (required any time server/* files are changed)
 - the `main` branch deploys to https://slagmark.0sk.ar via Cloudflare pages (Oskar's account)
 
-## Also see
+## Inspiration
 
-- https://github.com/oskarrough/webhealer/
-- https://github.com/oskarrough/slaytheweb/
+- [Legion TD 2](https://beta.legiontd2.com/)
+- [Totally Accurate Battle Simulator](https://landfall.se/totally-accurate-battle-simulator)
+- [Super Auto Pets](https://teamwoodgames.com/)
+- [Backpack Battles](https://playwithfurcifer.itch.io/backpack-battles)
+
+## Also from ooh games
+
+- [Slay the Web](https://github.com/oskarrough/slaytheweb/)
+- [Web Healer](https://github.com/oskarrough/webhealer/)
+
