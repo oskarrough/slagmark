@@ -1,4 +1,7 @@
-@import url('./assets/webfonts.css');
+@font-face {
+	font-family: 'Meilen';
+	src: './assets/meilen-black.woff2'
+}
 
 *,
 *::before,
@@ -25,6 +28,10 @@
 	font-family: Meilen, system-ui;
 	font-size: 1rem;
 	line-height: 1.5;
+}
+
+pre {
+	font-family: inherit;
 }
 
 @media (min-width: 37.5rem) {
@@ -270,3 +277,4 @@ input[type='text'] {
 	width: 25em;
 	max-width: 100%;
 }
+
