@@ -1,6 +1,6 @@
 @font-face {
 	font-family: 'Meilen';
-	src: './assets/meilen-black.woff2'
+	src: url('./assets/meilen-black.woff2');
 }
 
 *,
