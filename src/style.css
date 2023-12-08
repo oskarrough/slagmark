@@ -56,15 +56,17 @@ body {
 	background-repeat: no-repeat;
 	background-size: cover;
 	filter: brightness(0.7);
+	/* opacity: 0.2; */
 }
 
-slay-intro-scene {
+slay-intro-scene,
+slay-exit-scene {
 	display: flex;
 	flex-flow: column nowrap;
 	margin: 10vh 2vw 0;
 }
 
-slay-intro-scene h1 {
+h1 {
 	--shadow: hsl(0deg 0% 0%);
 	margin: auto;
 	/* min, preferred, max */
@@ -241,7 +243,9 @@ ul.GoldBar,
 .Minion button:hover {
 	transform: scale(1.1);
 	transition-duration: 100ms;
+	animation: bounce 0.8s ease infinite;
 }
+
 
 /* Deployed minions */
 slag-mark-ui > main .Minion {

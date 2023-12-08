@@ -31,9 +31,12 @@ menu button {
 	/* animation: bounce 0.8s var(--easing2) infinite; */
 }
 
+button {
+	cursor: pointer;
+}
+
 menu a:hover,
 menu button:hover {
-	cursor: pointer;
 	/* animation: bounce 0.8s ease infinite; */
 	/* border-color: hsl(12deg 17% 53% / 80%); */
 	border-color: var(--yellow);
@@ -66,6 +69,15 @@ menu button:active {
 	}
 
 	50% {
-		transform: translateY(0%) translateX(0%) scaleX(0.95) scaleY(1.03);
+		transform: translateY(0%) translateX(0%) scaleX(0.90) scaleY(1.08);
 	}
+}
+
+menu[tr] {
+	position: fixed;
+	top: 0.5rem;
+	right: 0.5rem;
+	z-index: 10;
+	width: auto;
+	margin: 0;
 }
