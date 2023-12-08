@@ -33,6 +33,6 @@ export function beep(n, volume = 1) {
 	audio.autoplay = true
 	audio.volume = volume
 	document.body.appendChild(audio)
-	audio.src = `/public/sfx/cute-bleeps-${n}.wav`
+	audio.src = `/sfx/cute-bleeps-${n}.wav`
 	audio.addEventListener('ended', audio.remove)
 }
