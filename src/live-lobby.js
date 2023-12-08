@@ -23,7 +23,11 @@ export class LiveLobby extends HTMLElement {
 		this.gamesSocket = null
 
 		const urlParams = new URLSearchParams(window.location.search)
-		if (urlParams.has('room')) this.joinRoom(urlParams.get('room'))
+		if (urlParams.has('room')) {
+			this.joinRoom(urlParams.get('room'))
+		} else if (this.hasAttribute('autocreate')) {
+			this.startNewGame()
+		}
 	}
 
 	onLobbyMessage(event) {
@@ -88,7 +92,7 @@ export class LiveLobby extends HTMLElement {
 			<p>
 				${this.gamesSocket
 					? html`You are in: ${this.gamesSocket?.room}
-							<button onclick=${() => this.leaveRoom()}>Leave</button> `
+							<button hidden onclick=${() => this.leaveRoom()}>Leave</button> `
 					: html`<button onclick=${() => this.startNewGame()}>Start New Game</button>`}
 			</p>
 		`
