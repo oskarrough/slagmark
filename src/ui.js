@@ -12,7 +12,8 @@ export function UI(game) {
 	if (players.length < 1) return html`<p>Loading...</p>`
 	if (players.length < 2)
 		return html`<p>
-			Need one more player. <label>Share this URL to join: <input type="text" readonly value=${location.href} /></label>
+			Need one more player.
+			<label>Share this URL to join: <input type="text" readonly value=${location.href} /></label>
 		</p>`
 
 	return html`
@@ -44,17 +45,17 @@ function Menu(game) {
 	const fps = roundOne(1000 / game.deltaTime)
 	const toggle = () => (game.paused ? game.play() : game.pause())
 	const quit = () => {
+		// @todo use scene manager
 		game.stop()
 		history.replaceState({}, '', '/')
 		location.reload()
 	}
 	return html`
-		<menu>
+		<p>
 			<button type="button" onclick=${toggle}>${game.paused ? 'Play' : 'Pause'}</button>
-			<button hidden type="button" onclick=${quit}>Quit</button>
 			<p style="min-width: 5rem"><small>FPS ${fps}</small></p>
 			<p style="min-width: 3.5rem"><small>${roundOne(game.elapsedTime / 1000)}s</small></p>
-		</menu>
+		</p>
 	`
 }
 
@@ -126,7 +127,12 @@ function GoldBar(gold) {
 
 function HealthBar(health) {
 	if (!health) return html`<ul class="HealthBar"></ul>`
-	const hearts = Array(health).fill('♥️')
+	let hearts = []
+	try {
+		hearts = Array(health).fill('♥️')
+	} catch (err) {
+		debugger
+	}
 	return html`<ul class="HealthBar">
 		${hearts.map((n) => html`<li>${n}</li>`)}
 	</ul>`

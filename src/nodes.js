@@ -1,5 +1,5 @@
-import {Node, Loop, Task, Query, QueryAll, Closest} from 'vroum'
-import {render} from 'uhtml/keyed'
+import {Node, Loop, Task, Query, QueryAll, Closest, Reactive} from 'vroum'
+import {html, render} from 'uhtml/keyed'
 import {uuid, random} from './utils.js'
 import {UI} from './ui.js'
 import * as actions from './actions.js'
@@ -30,21 +30,15 @@ export class GameLoop extends Loop {
 		]
 	}
 
+	// shortcut for this.subscribe('start', fn)
+	//	this.Renderer.render()
+	$start = () => {}
+	$stop = () => {}
+	$play = () => {}
+	$pause = () => {}
+
 	mount() {
 		this.Log.push({type: 'newGameLoop'})
-		this.subscribe('start', () => {
-			this.Renderer.render()
-		})
-		this.subscribe('stop', () => {
-			console.log('stop!')
-			this.Renderer.render()
-		})
-		this.subscribe('play', () => {
-			this.Renderer.render()
-		})
-		this.subscribe('pause', () => {
-			this.Renderer.render()
-		})
 	}
 
 	destroy() {

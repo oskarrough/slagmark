@@ -1,34 +1,52 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" style="background: black">
 	<head>
 		<meta charset="UTF-8" />
 		<link rel="icon" href="data:;base64,iVBORw0KGgo=" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>Slagmark</title>
 	</head>
-	<body>
+	<body style="opacity: 0">
 
-		<article hidden class="Splash">
-			<h1>
-				<span>Gold is flowing,</span> <span>your minions await.</span><br/>
-				<span>Strategically deploy your</span>
-				<strong>🪨📄✂️</strong>
-				<span> and witness the slagmark.</span>
-			</h1>
-		</article>
+		<slag-scenes></slag-scenes>
 
-		<slag-mark>
-			<live-lobby></live-lobby>
-		</slag-mark>
+		<!-- <slay-intro-scene> -->
+		<!-- 	<h1>Slagmark 🌐</h1> -->
+		<!-- 	<menu> -->
+		<!-- 		<a href="#">Single Player †</a> -->
+		<!-- 		<a href="#">Multiplayer ††</a> -->
+		<!-- 		<button data-beep="28" type="button">Quit ╳</button> -->
+		<!-- 	</menu> -->
+
+		<!-- 	<div class="Background"></div> -->
+		<!-- </slay-intro-scene> -->
+
+		<!-- <slay-test-scene> -->
+		<!-- 	<slag-mark> -->
+		<!-- 		<live-lobby></live-lobby> -->
+		<!-- 	</slag-mark> -->
+		<!-- </slay-test-scene> -->
+
+		<!-- <audio src="/public/sfx/cute-bleeps-28.wav" controls></audio> -->
+
+		<!-- <article class="Splash"> -->
+		<!-- 	<h1> -->
+		<!-- 		<span>Gold is flowing,</span> <span>your minions await.</span><br/> -->
+		<!-- 		<span>Strategically deploy your</span> -->
+		<!-- 		<strong>🪨📄✂️</strong> -->
+		<!-- 		<span> and witness the slagmark.</span> -->
+		<!-- 	</h1> -->
+		<!-- </article> -->
 
 		<!-- <live-cursors></live-cursors> -->
 
-		<p hidden style="opacity: 0.5; margin: 0.5rem">
-			<small>
+		<footer hidden style="opacity: 0.5; margin: 0.5rem">
+			<p>
 				Pssst: this is an experiment from <em>Ooh Games</em> in creating small games for the web.
-				<a href="https://matrix.to/#/#ooh-games:matrix.org">Come say hi</a>, help make it fun!
-			</small>
-		</p>
+				<a href="https://matrix.to/#/#ooh-games:matrix.org">Come say hi</a>, help make it fun! ---
+				<a href="https://github.com/oskarrough/slagmark" rel="noreferrer" target="_blank">Source 🗨&rarr;</a>
+			</p>
+		</footer>
 
 		<script type="module" src="/src/main.js"></script>
 	</body>

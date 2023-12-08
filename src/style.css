@@ -1,3 +1,5 @@
+@import url('./styles/menu.css');
+
 @font-face {
 	font-family: 'Meilen';
 	src: url('./assets/meilen-black.woff2');
@@ -17,24 +19,20 @@
 	--player1: #4b3636;
 	--player2: #522f82;
 	--red: #d72525;
-
+	--green: hsl(123deg 57% 42%);
 	--easing1: cubic-bezier(0.165, 0.84, 0.4, 1);
 	--easing2: cubic-bezier(0.3, 0, 0, 1.3);
 	--easing3: cubic-bezier(0.86, 0, 0.07, 1);
 	--easing4: cubic-bezier(0.25, 1.4, 0.18, 1);
 
-	background: var(--bg);
-	color: var(--text);
 	font-family: Meilen, system-ui;
 	font-size: 1rem;
 	line-height: 1.5;
+	background: var(--bg);
+	color: var(--text);
 }
 
-pre {
-	font-family: inherit;
-}
-
-@media (min-width: 37.5rem) {
+@media (min-width: 50rem) {
 	:root {
 		font-size: 1.25rem;
 	}
@@ -42,6 +40,58 @@ pre {
 
 body {
 	margin: 0;
+	overflow: hidden;
+}
+
+.Background {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	z-index: -1;
+	background: url(/public/bg.webp);
+	background: url(/public/bg2.jpg);
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: cover;
+	filter: brightness(0.7);
+}
+
+slay-intro-scene {
+	display: flex;
+	flex-flow: column nowrap;
+	margin: 10vh 2vw 0;
+}
+
+slay-intro-scene h1 {
+	--shadow: hsl(0deg 0% 0%);
+	margin: auto;
+	/* min, preferred, max */
+	font-size: clamp(3rem, 6vw, 6rem);
+	text-shadow:
+		0px -6px 0 var(--shadow),
+		0px -6px 0 var(--shadow),
+		0px 6px 0 var(--shadow),
+		0px 6px 0 var(--shadow),
+		-6px 0px 0 var(--shadow),
+		6px 0px 0 var(--shadow),
+		-6px 0px 0 var(--shadow),
+		6px 0px 0 var(--shadow),
+		-6px -6px 0 var(--shadow),
+		6px -6px 0 var(--shadow),
+		-6px 6px 0 var(--shadow),
+		6px 6px 0 var(--shadow),
+		-6px 18px 0 var(--shadow),
+		0px 18px 0 var(--shadow),
+		6px 18px 0 var(--shadow),
+		0 19px 1px rgba(0, 0, 0, 0.1),
+		0 0 6px rgba(0, 0, 0, 0.1),
+		0 6px 3px rgba(0, 0, 0, 0.3),
+		0 12px 6px rgba(0, 0, 0, 0.2),
+		0 18px 18px rgba(0, 0, 0, 0.25),
+		0 24px 24px rgba(0, 0, 0, 0.2),
+		0 36px 36px rgba(0, 0, 0, 0.15);
 }
 
 slag-mark {
@@ -212,16 +262,6 @@ slag-mark-ui > main [data-player] .Minion {
 	transition: all 100ms;
 }
 
-menu {
-	padding: 0rem;
-	display: flex;
-	flex-flow: row wrap;
-
-	& button:last-of-type + p {
-		margin-left: auto;
-	}
-}
-
 summary {
 	user-select: none;
 }
@@ -277,4 +317,3 @@ input[type='text'] {
 	width: 25em;
 	max-width: 100%;
 }
-

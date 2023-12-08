@@ -1,0 +1,71 @@
+menu {
+	margin: 2rem auto;
+	display: flex;
+	flex-flow: column wrap;
+	gap: 0.4rem;
+	width: 100%;
+	max-width: 26rem;
+	background: var(--bg);
+	border-radius: 0.3rem;
+	padding: 0.5rem;
+	border-top: 1px solid hsl(300deg 1% 13%);
+	border-left: 2px solid hsl(300deg 1% 10%);
+	border-right: 2px solid hsl(300deg 1% 10%);
+	border-bottom: 5px solid hsl(300deg 1% 6%);
+}
+
+menu a,
+menu button {
+	background: none;
+	color: var(--text);
+	border: 1px solid hsl(12deg 8% 12% / 80%);
+	background: hsla(0deg 0% 60% / 10%);
+	text-decoration: none;
+	min-height: 3rem;
+	display: flex;
+	place-items: center;
+	place-content: center;
+	border-radius: 4px;
+	transition: background 150ms;
+	/* animation: bounce 0.8s ease infinite; */
+	/* animation: bounce 0.8s var(--easing2) infinite; */
+}
+
+menu a:hover,
+menu button:hover {
+	cursor: pointer;
+	/* animation: bounce 0.8s ease infinite; */
+	/* border-color: hsl(12deg 17% 53% / 80%); */
+	border-color: var(--yellow);
+	filter: hue-rotate(280deg);
+	background: linear-gradient(120deg, hsl(146deg 100% 73% / 16%), transparent);
+	/* animation: bounce 0.7s ease infinite; */
+}
+
+menu a:active,
+menu button:active {
+	background: hsla(146deg 100% 73% / 16%);
+}
+
+/* filter: drop-shadow( 0px 2px 3px rgba(0, 0, 0, .4)); */
+
+@keyframes boing {
+	0%,
+	100% {
+		transform: translateY(-50%) translateX(90%) scaleX(1) scaleY(1);
+	}
+	50% {
+		transform: translateY(-50%) translateX(-60%) scaleX(0.95) scaleY(1.1);
+	}
+}
+
+@keyframes bounce {
+	0%,
+	100% {
+		transform: translateY(0%) translateX(0%) scaleX(1) scaleY(1);
+	}
+
+	50% {
+		transform: translateY(0%) translateX(0%) scaleX(0.95) scaleY(1.03);
+	}
+}
