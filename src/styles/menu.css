@@ -7,11 +7,19 @@ menu {
 	max-width: 26rem;
 	background: var(--bg);
 	border-radius: 0.3rem;
-	padding: 0.5rem;
+	padding: 0.2rem;
 	border-top: 1px solid hsl(300deg 1% 13%);
 	border-left: 2px solid hsl(300deg 1% 10%);
 	border-right: 2px solid hsl(300deg 1% 10%);
 	border-bottom: 5px solid hsl(300deg 1% 6%);
+}
+
+menu > * {
+	display: flex;
+	place-items: center;
+	place-content: center;
+	min-height: 3rem;
+	border-radius: 4px;
 }
 
 menu a,
@@ -21,14 +29,14 @@ menu button {
 	border: 1px solid hsl(12deg 8% 12% / 80%);
 	background: hsla(0deg 0% 60% / 10%);
 	text-decoration: none;
-	min-height: 3rem;
-	display: flex;
-	place-items: center;
-	place-content: center;
-	border-radius: 4px;
 	transition: background 150ms;
 	/* animation: bounce 0.8s ease infinite; */
 	/* animation: bounce 0.8s var(--easing2) infinite; */
+}
+
+menu label[custom] {
+	gap: 0.3em;
+	background: hsla(0deg 0% 10% / 30%);
 }
 
 button {
@@ -39,7 +47,7 @@ menu a:hover,
 menu button:hover {
 	/* animation: bounce 0.8s ease infinite; */
 	/* border-color: hsl(12deg 17% 53% / 80%); */
-	border-color: var(--yellow);
+	/* border-color: var(--yellow); */
 	filter: hue-rotate(280deg);
 	background: linear-gradient(120deg, hsl(146deg 100% 73% / 16%), transparent);
 	/* animation: bounce 0.7s ease infinite; */
@@ -48,6 +56,7 @@ menu button:hover {
 menu a:active,
 menu button:active {
 	background: hsla(146deg 100% 73% / 16%);
+	border: 1px inset hsl(12deg 8% 12% / 80%);
 }
 
 /* filter: drop-shadow( 0px 2px 3px rgba(0, 0, 0, .4)); */
@@ -74,9 +83,9 @@ menu button:active {
 }
 
 menu[tr] {
-	position: fixed;
+	position: absolute;
 	top: 0.5rem;
-	right: 0.5rem;
+	left: 0.5rem;
 	z-index: 10;
 	width: auto;
 	margin: 0;

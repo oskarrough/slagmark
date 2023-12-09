@@ -33,7 +33,9 @@ export class GameLoop extends Loop {
 	// shortcut for this.subscribe('start', fn)
 	//	this.Renderer.render()
 	$start = () => {}
-	$stop = () => {}
+	$stop = () => {
+		this.runAction({type: 'gameEnded'})
+	}
 	$play = () => {}
 	$pause = () => {}
 
@@ -81,21 +83,46 @@ export class Player extends Task {
 	health = 3
 	number = 0 // in the context of a single game
 
+	afterCycle() {
+		if (this.health <= 0) {
+			console.log('after cycle lost ', this.game)
+			const msg = `${this.constructor.name} ${this.number} lost`
+			console.log(msg)
+			this.Game.stop()
+			// window.confirm(msg)
+		}
+	}
+}
+
+class DeployRandomMinion extends Task {
+	delay = 4000
+	interval = 3000
+	duration = 0
+
+	tick() {
+		const gold = this.parent.Gold?.amount
+		const minions = this.parent.children.filter(m => m instanceof Minion).filter(m => !m.deployed && m.cost <= gold)
+		const minion = random(minions)
+		if (minion) {
+			this.parent.Game.runAction({type: 'deployMinion', id: minion?.id})
+		}
+	}
+}
+
+export class AIPlayer extends Player {
 	build() {
+		this.id = uuid()
+
 		return [
 			// Gold.new(),
-			// RefillMinions.new(),
-			// Minion.new(), Minion.new(), Minion.new(), Minion.new()
+			// By letting this create the minions, it goes through websockets..
+			RefillMinions.new(),
+			DeployRandomMinion.new()
 		]
 	}
 
-	afterCycle() {
-		if (this.health <= 0) {
-			const msg = `${this.constructor.name} ${this.number} lost`
-			console.log(msg)
-			alert(msg)
-			this.Game.stop()
-		}
+	mount() {
+		console.log('ai was mounted')
 	}
 }
 

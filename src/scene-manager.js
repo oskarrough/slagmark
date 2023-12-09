@@ -1,27 +1,35 @@
 import gsap from 'gsap'
-import {Node, QueryAll, Reactive} from 'vroum'
+import {Node, Reactive} from 'vroum'
 import {html, render} from 'uhtml'
+import {signal, effect} from 'usignal'
 
 export class Scene extends Node {}
 
 export class SceneManager extends Node {
-	Scenes = QueryAll(Scene)
-	// ['intro', 'single', 'multi']
 	currentScene = Reactive()
 
 	update(changed) {
 		const el = document.querySelector('slag-scenes')
-		const scene = changed.currentScene
-		if (scene === 'intro') render(el, IntroScene()) && IntroScene.animation()
-		if (scene === 'single') render(el, SinglePlayerScene()) && fadein()
-		if (scene === 'multi') render(el, MultiplayerScene()) && fadein()
-		if (scene === 'exit') render(el, ExitScene()) && ExitScene.animation()
+		const scene = this.children.find((s) => s.id === changed.currentScene)
+		if (scene.id === 'intro') render(el, IntroScene()) && IntroScene.animation()
+		if (scene.id === 'single') render(el, SinglePlayerScene()) && MultiplayerScene.animation()
+		if (scene.id === 'multi') render(el, MultiplayerScene()) && MultiplayerScene.animation()
+		if (scene.id === 'exit') render(el, ExitScene()) && ExitScene.animation()
 	}
 }
 
-function fadein() {
-	const tl = gsap.timeline()
-	tl.to('body', {autoAlpha: 1, duration: 1})
+function Toggler() {
+	function handler({target}) {
+		window.slagmarkVolume = target.checked ? 0.1 : 0
+	}
+	return html`
+		<label custom
+			>
+			<input type="checkbox" checked onchange=${handler} />
+			<span class="control control--checked">●</span>
+			<span class="control control--unchecked">○</span> Sound
+		</label>
+	`
 }
 
 function IntroScene() {
@@ -33,13 +41,13 @@ function IntroScene() {
 		history.pushState({}, '', url)
 	}
 	return html`
-		<slay-intro-scene>
+		<slag-scene>
 			<h1>Slagmark 🌐</h1>
 			<slag-menu>
 				<menu>
 					<button type="button" onclick=${() => (manager.currentScene = 'single')}>Single Player †</button>
 					<button type="button" onclick=${() => (manager.currentScene = 'multi')}>
-					Multiplayer (<small><live-presence /> live</small>)
+						Multiplayer (<small><live-presence /> live</small>)
 					</button>
 					<button
 						type="button"
@@ -49,44 +57,54 @@ function IntroScene() {
 					>
 						╳
 					</button>
+					${Toggler()}
 				</menu>
 			</slag-menu>
-		</slay-intro-scene>
+		</slag-scene>
 	`
 }
+
 function SinglePlayerScene() {
 	return html`
-		<slay-scene>
+		<slag-scene>
 			<menu tr><button type="button" onclick=${() => (manager.currentScene = 'intro')}>↺</button></menu>
 			<slag-mark>
 				<live-lobby autocreate></live-lobby>
+				<slag-mark-ai></slag-mark-ai>
 			</slag-mark>
-			<slag-mark>
-				<live-lobby></live-lobby>
-			</slag-mark>
-		</slay-scene>
+		</slag-scene>
 	`
 }
 
 function MultiplayerScene() {
+	// <button onclick=${() => (manager.currentScene = 'single')}>Play alone?</button>
 	return html`
-		<slay-scene>
+		<slag-scene>
 			<menu tr><button type="button" onclick=${() => (manager.currentScene = 'intro')}>↺</button></menu>
 			<slag-mark>
-				<live-lobby autocreate></live-lobby>
+				<live-lobby></live-lobby>
 			</slag-mark>
-		</slay-scene>
+		</slag-scene>
 	`
+}
+MultiplayerScene.animation = () => {
+	return gsap
+		.timeline()
+		.set('body', {opacity: 1})
+		.to('.Background', {autoAlpha: 0.2, scale: 1.2, duration: 1.5})
+		.from('h1', {autoAlpha: 0, y: '-10%', duration: 0.8, ease: 'power2.out'}, '-=1.4')
+		.from('menu', {autoAlpha: 0, y: -20, duration: 0.6, ease: 'power2.out'}, '-=1.3')
+		.from('menu > *', {stagger: 0.05, y: -5, autoAlpha: 0, duration: 0.25, ease: 'power2.out'}, '-=1.2')
 }
 
 function ExitScene() {
 	return html`
-		<slay-exit-scene>
+		<slag-exit-scene>
 			<h1>Slagmark 🌐</h1>
 			<menu>
 				<button type="button" onclick=${() => (manager.currentScene = 'intro')}>↺</button>
 			</menu>
-		</slay-exit-scene>
+		</slag-exit-scene>
 	`
 }
 

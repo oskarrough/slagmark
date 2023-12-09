@@ -1,11 +1,14 @@
 import {roundOne} from './utils.js'
 import {html} from 'uhtml'
-import {GameCountdown, Player, Gold} from './nodes.js'
+import {GameCountdown, Player, Gold, AIPlayer} from './nodes.js'
 
 export function UI(game) {
 	const players = game.queryAll(Player)
-	const player1 = players[0]
-	const player2 = players[1]
+
+	// decide who is "you" and who is the opponent
+	const player1 = players[0] instanceof AIPlayer ? players[1] : players[0]
+	const player2 = players[0] instanceof AIPlayer ? players[0] : players[1]
+
 	const countdown = game.query(GameCountdown)
 	const disabled = players.length < 2 || Boolean(countdown)
 
@@ -20,11 +23,7 @@ export function UI(game) {
 		<header>
 			<nav>${Menu(game)}</nav>
 
-			${players.length < 2
-				? html` <p class="Countdown">
-						<span> </span>
-				  </p>`
-				: ''}
+			${players.length < 2 ? html` <p class="Countdown"><span> </span></p>` : ''}
 			${countdown?.count > 0 ? html`<p class="Countdown"><span>${countdown.count}</span></p>` : ''}
 		</header>
 
@@ -44,12 +43,6 @@ export function UI(game) {
 function Menu(game) {
 	const fps = roundOne(1000 / game.deltaTime)
 	const toggle = () => (game.paused ? game.play() : game.pause())
-	const quit = () => {
-		// @todo use scene manager
-		game.stop()
-		history.replaceState({}, '', '/')
-		location.reload()
-	}
 	return html`
 		<p>
 			<button type="button" onclick=${toggle}>${game.paused ? 'Play' : 'Pause'}</button>
@@ -61,9 +54,10 @@ function Menu(game) {
 
 function PlayerDisplay(player) {
 	if (!player) return html``
+	const ai = player instanceof AIPlayer
 	return html`
 		<slag-player>
-			<h2>Player ${player.number} ${HealthBar(player.health)}</h2>
+			<h2>${ai ? 'AI' : `Player ${player.number}`} ${HealthBar(player.health)}</h2>
 			<ul class="MinionBar">
 				${player.Minions.filter((m) => !m.deployed).map((m) => MinionAvatar(m))}
 			</ul>
@@ -126,13 +120,8 @@ function GoldBar(gold) {
 }
 
 function HealthBar(health) {
-	if (!health) return html`<ul class="HealthBar"></ul>`
-	let hearts = []
-	try {
-		hearts = Array(health).fill('♥️')
-	} catch (err) {
-		debugger
-	}
+	if (!Number.isFinite(health) || health < 1) return html`<ul class="HealthBar"></ul>`
+	const hearts = Array(health).fill('♥️')
 	return html`<ul class="HealthBar">
 		${hearts.map((n) => html`<li>${n}</li>`)}
 	</ul>`
