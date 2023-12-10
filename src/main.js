@@ -4,7 +4,7 @@ import {LiveLobby} from './elements/live-lobby.js'
 import {LiveCursors} from './elements/live-cusors.js'
 import {LivePresence} from './elements/live-presence.js'
 import {CombatLog} from './elements/combat-log.js'
-import {SceneManager} from './scene-manager.js'
+import {SceneManager} from './elements/scene-manager.js'
 import {Intro, SinglePlayer, Multiplayer, Exit} from './scenes.js'
 
 // This is vite's way of importing CSS? Why?
@@ -30,18 +30,15 @@ export const manager = SceneManager.new({
 		Exit,
 	},
 })
-manager.add(Intro.new())
 manager.connect()
-
 window.slagmark.manager = manager
 
 // Choose and render the starting scene
-// const url = new URLSearchParams(location.search)
-// const room = url.get('room')
-// if (room === 'single') {
-// 	manager.scene = 'Single'
-// } else if (room) {
-// 	manager.scene = 'Multi'
-// } else {
-// 	manager.scene = 'Intro'
-// }
+
+const url = new URLSearchParams(location.search)
+const room = url.get('room')
+if (room) {
+	manager.scene = 'Multiplayer'
+} else {
+	manager.scene = 'Intro'
+}

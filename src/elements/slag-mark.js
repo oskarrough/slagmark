@@ -38,7 +38,6 @@ export class SlagMark extends HTMLElement {
 	async quitGame() {
 		console.log('quitGame', this.game)
 		await this.game?.stop()
-		// this.game.Renderer.render()
 		this.game = null
 		history.replaceState({}, '', '/')
 		location.reload()

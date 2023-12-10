@@ -15,13 +15,14 @@ export class SceneManager extends Node {
 	scenes = {}
 
 	init() {
-		this.element = document.querySelector('slag-scenes')
+		this.element = document.querySelector('slagmark-scene-manager')
 	}
 
 	update(changed) {
 		const scene = this.scenes[changed.scene]
 		if (!scene) throw new Error('Missing scene: ' + changed.scene)
-		this.children[0].replace(scene.new())
+		this.children?.length ? this.children[0].replace(scene.new()) : this.add(scene.new())
+		// this.children[0].replace(scene.new())
 	}
 }
 

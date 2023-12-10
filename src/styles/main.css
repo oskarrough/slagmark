@@ -12,6 +12,10 @@
 	margin: 0;
 }
 
+p em {
+	color: whitesmoke;
+}
+
 :root {
 	--bg: hsl(166deg 100% 12%);
 	--bg2: hsl(166deg 100% 8%);
@@ -90,7 +94,7 @@ h1 {
 		0 36px 36px rgba(0, 0, 0, 0.15);
 }
 
-slag-scenes {
+slagmark-scene-manager {
 	position: relative;
 	height: 90vh;
 	display: flex;
@@ -98,11 +102,11 @@ slag-scenes {
 	/* margin: 2vw; */
 }
 
-slag-scenes > * {
+slagmark-scene-manager > * {
 	flex: 1;
 	display: flex;
 	flex-flow: column;
-	margin-top: min(5rem,  10vh);
+	margin-top: min(5rem, 10vh);
 }
 
 slag-mark {
@@ -256,7 +260,6 @@ ul.GoldBar,
 	animation: bounce 0.8s ease infinite;
 }
 
-
 /* Deployed minions */
 slag-mark-ui > main .Minion {
 	font-size: 3rem;
@@ -332,10 +335,24 @@ input[type='text'] {
 	max-width: 100%;
 }
 
-label[custom] { user-select: none; cursor: pointer; }
-label[custom] input { pointer-events: none; position: absolute; opacity: 0;}
-label[custom] input:not(:checked) ~ .control--checked { display: none; }
-label[custom] input:not(:checked) ~ .control--unchecked { display: initial; }
-label[custom] input:checked ~ .control--checked { display: initial; }
-label[custom] input:checked ~ .control--unchecked { display: none; }
-
+label[custom] {
+	user-select: none;
+	cursor: pointer;
+}
+label[custom] input {
+	pointer-events: none;
+	position: absolute;
+	opacity: 0;
+}
+label[custom] input:not(:checked) ~ .control--checked {
+	display: none;
+}
+label[custom] input:not(:checked) ~ .control--unchecked {
+	display: initial;
+}
+label[custom] input:checked ~ .control--checked {
+	display: initial;
+}
+label[custom] input:checked ~ .control--unchecked {
+	display: none;
+}

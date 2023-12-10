@@ -1,6 +1,6 @@
 import gsap from 'gsap'
 import {html} from 'uhtml'
-import {Scene} from './scene-manager.js'
+import {Scene} from './elements/scene-manager.js'
 
 export class Intro extends Scene {
 	render() {

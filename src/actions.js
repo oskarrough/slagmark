@@ -87,3 +87,8 @@ export function gameOver(game) {
 	game.gameover = true
 	game.pause()
 }
+
+// does this sync pauses?!
+export function stop(game) {
+	game.pause()
+}

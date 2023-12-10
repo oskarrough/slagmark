@@ -91,7 +91,7 @@ export class LiveLobby extends HTMLElement {
 			</details>
 			<p>
 				${this.gamesSocket
-					? html`You are in: ${this.gamesSocket?.room}
+					? html`You are in: <em>${this.gamesSocket?.room}</em>
 							<button hidden onclick=${() => this.leaveRoom()}>Leave</button> `
 					: html`<button onclick=${() => this.openNewGame()}>Open New Game</button>`}
 			</p>

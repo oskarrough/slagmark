@@ -14,10 +14,12 @@ export function UI(game) {
 
 	if (players.length < 1) return html`<p>Loading...</p>`
 	if (players.length < 2)
-		return html`<p>
-			Need one more player.
-			<label>Share this URL to join: <input type="text" readonly value=${location.href} /></label>
-		</p>`
+		return html`<div>
+			<p>
+				Need one more player.<br/><br/>
+				<label>Share this URL with someone to join: <input type="text" readonly value=${location.href} /></label>
+			</p>
+		</div> `
 
 	return html`
 		<header>

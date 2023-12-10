@@ -38,12 +38,12 @@ export class GameLoop extends Loop {
 	}
 
 	// shortcut for this.subscribe('start', fn)
-	//	this.Renderer.render()
 	$start = () => {
 		this.Logger.push({type: 'start'})
 	}
 	$stop = () => {
-		this.runAction({type: 'stop'})
+		this.Logger.push({type: 'stop'})
+		// this.runAction({type: 'stop'})
 	}
 	$play = () => {
 		this.Logger.push({type: 'play'})
@@ -53,7 +53,7 @@ export class GameLoop extends Loop {
 	}
 
 	destroy() {
-		this.query(Renderer).render()
+		this.query(Renderer).tick()
 	}
 
 	/**
