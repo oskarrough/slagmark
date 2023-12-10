@@ -74,7 +74,16 @@ export function addNewMinion(game, action) {
 /**
  * @param {Game} game
  */
-export function startGameCountdown(game) {
-	const countdown = GameCountdown.new()
+export function startGameCountdown(game, action) {
+	const countdown = GameCountdown.new({repeat: action.countFrom || 4})
 	game.add(countdown)
+}
+
+
+/**
+ * @param {Game} game
+ */
+export function gameOver(game) {
+	game.gameover = true
+	game.pause()
 }

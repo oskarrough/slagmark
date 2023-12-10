@@ -12,23 +12,17 @@ export class Intro extends Scene {
 			url.search = params.toString()
 			history.pushState({}, '', url)
 		}
+		const mgtm = this.Manager
 		return html`
 			<slag-scene>
 				<h1>Slagmark 🌐</h1>
 				<slag-menu>
 					<menu>
-						<button type="button" onclick=${() => (this.parent.scene = 'SinglePlayer')}>
-							Single Player †
-						</button>
-						<button type="button" onclick=${() => (this.parent.scene = 'Multiplayer')}>
+						<button type="button" onclick=${() => (mgtm.scene = 'SinglePlayer')}>Single Player †</button>
+						<button type="button" onclick=${() => (mgtm.scene = 'Multiplayer')}>
 							Multiplayer (<small><live-presence /> live</small>)
 						</button>
-						<button
-							type="button"
-							onclick=${() => (this.parent.scene = 'Exit')}
-							data-beepover="29"
-							data-beep="28"
-						>
+						<button type="button" onclick=${() => (mgtm.scene = 'Exit')} data-beepover="29" data-beep="28">
 							╳
 						</button>
 						${SoundToggle()}
@@ -54,7 +48,7 @@ export class SinglePlayer extends Scene {
 		return html`
 			<slag-scene>
 				<menu tr>
-					<button type="button" onclick=${() => (this.parent.scene = 'Intro')}>↺</button>
+					<button type="button" onclick=${() => (this.Manager.scene = 'Intro')}>↺</button>
 				</menu>
 				<slag-mark>
 					<live-lobby autocreate></live-lobby>
@@ -70,7 +64,7 @@ export class Multiplayer extends Scene {
 		return html`
 			<slag-scene>
 				<menu tr>
-					<button type="button" onclick=${() => (this.parent.scene = 'Intro')}>↺</button>
+					<button type="button" onclick=${() => (this.Manager.scene = 'Intro')}>↺</button>
 				</menu>
 				<slag-mark>
 					<live-lobby></live-lobby>
@@ -93,19 +87,19 @@ export class Multiplayer extends Scene {
 export class Exit extends Scene {
 	render() {
 		return html`
-			<slag-exit-scene>
+			<slag-scene>
 				<h1>Slagmark 🌐</h1>
 				<menu>
-					<button type="button" onclick=${() => (this.parent.scene = 'Intro')}>↺</button>
+					<button type="button" onclick=${() => (this.Manager.scene = 'Intro')}>↺</button>
 				</menu>
-			</slag-exit-scene>
+			</slag-scene>
 		`
 	}
 	animate() {
 		return gsap
 			.timeline()
-			.to('h1', {y: '-10%', autoAlpha: 0, duration: 1, ease: 'power2.out'}, '<')
-			.to('.Background', {autoAlpha: 0.2, scale: 1.2, duration: 1}, '<')
+			.to('h1', {y: '-10%', autoAlpha: 0, duration: 0.6, ease: 'power2.out'}, '<')
+			.to('.Background', {autoAlpha: 0.2, scale: 1.2, duration: 1}, '-=0.6')
 	}
 }
 

@@ -7,16 +7,10 @@ import {CombatLog} from './elements/combat-log.js'
 import {SceneManager} from './scene-manager.js'
 import {Intro, SinglePlayer, Multiplayer, Exit} from './scenes.js'
 
-const SCENES = {
-	Intro,
-	SinglePlayer,
-	Multiplayer,
-	Exit,
-}
-
 // This is vite's way of importing CSS? Why?
 import './styles/main.css'
 
+// For debugging
 window.slagmark = window.slagmark || {}
 
 // Register our web components
@@ -28,13 +22,14 @@ customElements.define('live-presence', LivePresence)
 customElements.define('combat-log', CombatLog)
 
 // Create the scene manager unique to this game.
-export const manager = SceneManager.new()
-manager.update = (changed) => {
-	const scene = SCENES[changed.scene]
-	console.log(changed.scene, scene.constructor.name)
-	manager.children[0].replace(scene.new())
-	console.log('replaced', manager.children)
-}
+export const manager = SceneManager.new({
+	scenes: {
+		Intro,
+		SinglePlayer,
+		Multiplayer,
+		Exit,
+	},
+})
 manager.add(Intro.new())
 manager.connect()
 

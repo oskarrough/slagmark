@@ -97,9 +97,9 @@ export class Player extends Task {
 			console.log('after cycle lost ', this.Game)
 			const msg = `${this.constructor.name} ${this.number} lost`
 			console.log(msg)
-			this.Game.gameover = true
-			this.Game.pause()
-			this.Game.stop()
+			this.Game.runAction({type: 'gameOver'})
+			// this.Game.pause()
+			// this.Game.stop()
 			// window.confirm(msg)
 		}
 	}
