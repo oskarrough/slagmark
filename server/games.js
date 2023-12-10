@@ -1,4 +1,4 @@
-import {random, uuid} from '../src/utils'
+import {random, uuid} from '../src/stdlib/utils'
 
 /** @typedef {import('partykit/server').Server} Server */
 /** @typedef {import('partykit/server').Party} Party */

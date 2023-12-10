@@ -1,6 +1,6 @@
 import throttle from 'lodash/throttle'
 import {render, html} from 'uhtml/keyed'
-import {lobbySocket} from '../multiplayer.js'
+import {lobbySocket} from '../stdlib/multiplayer.js'
 
 const sendObject = (pos) => lobbySocket.send(JSON.stringify(pos))
 const throttledSend = throttle(sendObject, 16, {trailing: true})

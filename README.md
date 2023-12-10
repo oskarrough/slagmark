@@ -22,6 +22,8 @@ This is a realtime, multiplayer game made for the web. Where possible, and if no
 
 Inside `src` you'll find the frontend. It's using [vroum](https://gitlab.com/jfalxa/vroum) + actions for game logic. Everything is organised into a tree of scheduable tasks and nodes. I can recommend it. For rendering we do web components + [uhtml](https://webreflection.github.io/uhtml/).
 
+As far as possible, things that could be reused for the next game are put in `src/stdlib`.
+
 For the multiplayer we use websockets. Inside `server` we have a couple of Cloudflare workers made with [partykit](https://www.partykit.io/).
 
 ## Development
@@ -47,4 +49,3 @@ bun run dev
 
 - [Slay the Web](https://github.com/oskarrough/slaytheweb/)
 - [Web Healer](https://github.com/oskarrough/webhealer/)
-

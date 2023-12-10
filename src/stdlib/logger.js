@@ -1,6 +1,6 @@
 import {Node} from 'vroum'
 
-/** @typedef {import('./actions.js').Action} Action */
+/** @typedef {import('../actions.js').Action} Action */
 /** @typedef {{now: number, action: Action}} LogEntry */
 
 export class Logger extends Node {

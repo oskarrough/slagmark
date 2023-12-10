@@ -94,7 +94,7 @@ h1 {
 		0 36px 36px rgba(0, 0, 0, 0.15);
 }
 
-slagmark-scene-manager {
+stage-manager {
 	position: relative;
 	height: 90vh;
 	display: flex;
@@ -102,7 +102,7 @@ slagmark-scene-manager {
 	/* margin: 2vw; */
 }
 
-slagmark-scene-manager > * {
+stage-manager > * {
 	flex: 1;
 	display: flex;
 	flex-flow: column;

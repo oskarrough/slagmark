@@ -1,4 +1,4 @@
-import {roundOne} from './utils.js'
+import {roundOne} from './stdlib/utils.js'
 import {html} from 'uhtml'
 import {GameCountdown, Player, Gold, AIPlayer} from './nodes.js'
 
@@ -16,8 +16,10 @@ export function UI(game) {
 	if (players.length < 2)
 		return html`<div>
 			<p>
-				Need one more player.<br/><br/>
-				<label>Share this URL with someone to join: <input type="text" readonly value=${location.href} /></label>
+				Need one more player.<br /><br />
+				<label
+					>Share this URL with someone to join: <input type="text" readonly value=${location.href}
+				/></label>
 			</p>
 		</div> `
 

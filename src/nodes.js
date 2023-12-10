@@ -1,8 +1,8 @@
 import {Node, Loop, Task, Query, QueryAll, Closest} from 'vroum'
-import {uuid, random} from './utils.js'
+import {uuid, random} from './stdlib/utils.js'
 import * as actions from './actions.js'
-import {Logger} from './logger.js'
-import {Renderer} from './renderer.js'
+import {Logger} from './stdlib/logger.js'
+import {Renderer} from './stdlib/renderer.js'
 
 /** @typedef {import('./actions.js').Action} Action */
 
@@ -101,24 +101,6 @@ export class Player extends Task {
 			// this.Game.pause()
 			// this.Game.stop()
 			// window.confirm(msg)
-		}
-	}
-}
-
-class DeployRandomMinion extends Task {
-	Player = Closest(Player)
-	delay = 4000
-	interval = 3000
-	duration = 0
-
-	tick() {
-		const gold = this.Player.Gold?.amount
-		const minions = this.Player.Minions
-			.filter((m) => m instanceof Minion)
-			.filter((m) => !m.deployed && m.cost <= gold)
-		const minion = random(minions)
-		if (minion) {
-			this.Player.Game.runAction({type: 'deployMinion', id: minion?.id})
 		}
 	}
 }
@@ -296,6 +278,25 @@ export class GameCountdown extends Task {
 				player.add(Gold.new())
 				player.add(RefillMinions.new())
 			})
+		}
+	}
+}
+
+
+class DeployRandomMinion extends Task {
+	Player = Closest(Player)
+	delay = 4000
+	interval = 3000
+	duration = 0
+
+	tick() {
+		const gold = this.Player.Gold?.amount
+		const minions = this.Player.Minions
+			.filter((m) => m instanceof Minion)
+			.filter((m) => !m.deployed && m.cost <= gold)
+		const minion = random(minions)
+		if (minion) {
+			this.Player.Game.runAction({type: 'deployMinion', id: minion?.id})
 		}
 	}
 }

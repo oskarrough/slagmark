@@ -5,33 +5,30 @@ import {render, html} from 'uhtml'
  * Usage: mgtm = SceneManager.new({scenes: {MyScene, AnotherScene}})
  * mgtm.scene = 'AnotherScene' -> mgtm.update() -> scene.mount()
  */
-export class SceneManager extends Node {
+export class Stage extends Node {
 	Scenes = QueryAll(Scene)
-	
+
+	element = null
+
 	/** The current scene */
 	scene = Reactive()
 
 	/* A map of the available scene node classes */
 	scenes = {}
 
-	init() {
-		this.element = document.querySelector('slagmark-scene-manager')
-	}
-
 	update(changed) {
 		const scene = this.scenes[changed.scene]
 		if (!scene) throw new Error('Missing scene: ' + changed.scene)
 		this.children?.length ? this.children[0].replace(scene.new()) : this.add(scene.new())
-		// this.children[0].replace(scene.new())
 	}
 }
 
 export class Scene extends Node {
-	Manager = Closest(SceneManager)
+	Stage = Closest(Stage)
 
 	mount() {
 		console.log('scene mount', this.constructor.name)
-		render(this.Manager.element, () => this.render())
+		render(this.Stage.element, () => this.render())
 		this.animate()
 	}
 

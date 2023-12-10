@@ -1,6 +1,6 @@
 import gsap from 'gsap'
 import {html} from 'uhtml'
-import {Scene} from './elements/scene-manager.js'
+import {Scene} from './stdlib/scenes.js'
 
 export class Intro extends Scene {
 	render() {
@@ -12,7 +12,7 @@ export class Intro extends Scene {
 			url.search = params.toString()
 			history.pushState({}, '', url)
 		}
-		const mgtm = this.Manager
+		const mgtm = this.Stage
 		return html`
 			<slag-scene>
 				<h1>Slagmark 🌐</h1>
@@ -48,11 +48,10 @@ export class SinglePlayer extends Scene {
 		return html`
 			<slag-scene>
 				<menu tr>
-					<button type="button" onclick=${() => (this.Manager.scene = 'Intro')}>↺</button>
+					<button type="button" onclick=${() => (this.Stage.scene = 'Intro')}>↺</button>
 				</menu>
-				<slag-mark>
+				<slag-mark ai>
 					<live-lobby autocreate></live-lobby>
-					<slag-mark-ai></slag-mark-ai>
 				</slag-mark>
 			</slag-scene>
 		`
@@ -64,7 +63,7 @@ export class Multiplayer extends Scene {
 		return html`
 			<slag-scene>
 				<menu tr>
-					<button type="button" onclick=${() => (this.Manager.scene = 'Intro')}>↺</button>
+					<button type="button" onclick=${() => (this.Stage.scene = 'Intro')}>↺</button>
 				</menu>
 				<slag-mark>
 					<live-lobby></live-lobby>
@@ -90,7 +89,15 @@ export class Exit extends Scene {
 			<slag-scene>
 				<h1>Slagmark 🌐</h1>
 				<menu>
-					<button type="button" onclick=${() => (this.Manager.scene = 'Intro')}>↺</button>
+					<button type="button" onclick=${() => (this.Stage.scene = 'Intro')}>↺</button>
+					<p>
+						This is game design & development in progress.<br />
+						<br/>
+						Want to join or contribute? <br />
+						- <a href="https://github.com/oskarrough/slagmark">github.com/oskarrough/slagmark source code</a><br /
+						><br />
+						⬚⬚⬚
+					</p>
 				</menu>
 			</slag-scene>
 		`
@@ -105,11 +112,11 @@ export class Exit extends Scene {
 
 function SoundToggle() {
 	function handler({target}) {
-		window.slagmarkVolume = target.checked ? 0.1 : 0
+		window.slagmark.volume = target.checked ? 0.1 : 0
 	}
 	return html`
 		<label custom>
-			<input type="checkbox" ?checked=${window.slagmarkVolume} onchange=${handler} />
+			<input type="checkbox" ?checked=${window.slagmark.volume} onchange=${handler} />
 			<span class="control control--checked">●</span>
 			<span class="control control--unchecked">○</span> Sound
 		</label>

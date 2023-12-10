@@ -1,8 +1,8 @@
 import PartySocket from 'partysocket'
 import {render, html} from 'uhtml/keyed'
 import {effect, signal} from 'usignal'
-import {friendlyId} from '../utils.js'
-import {lobbySocket, PARTYKIT_URL} from '../multiplayer.js'
+import {friendlyId} from '../stdlib/utils.js'
+import {lobbySocket, PARTYKIT_URL} from '../stdlib/multiplayer.js'
 
 /**
  * The lobby manages the "rooms" (or games) that are currently active.

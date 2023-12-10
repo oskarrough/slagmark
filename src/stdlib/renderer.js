@@ -1,7 +1,7 @@
 import {Task, Closest} from 'vroum'
 import {render} from 'uhtml'
-import {GameLoop} from './nodes.js'
-import {UI} from './ui.js'
+import {GameLoop} from '../nodes.js'
+import {UI} from '../ui.js'
 
 /** A utility task that renders the GameLoop constantly to a DOM node via the UI function */
 export class Renderer extends Task {

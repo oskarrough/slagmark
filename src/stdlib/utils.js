@@ -1,5 +1,5 @@
 // collections, objects, predicates, teams
-import words from './assets/words-smaller.json' assert {type: 'json'}
+import words from '../assets/words-smaller.json' assert {type: 'json'}
 
 export function friendlyId() {
 	return random(words.predicates) + '-' + random(words.objects)

@@ -1,5 +1,5 @@
 // The volume is stored in this global variable.
-window.slagmarkVolume = 0
+window.slagmark = Object.assign(window.slagmark || {}, {volume: 0})
 
 /**
  * Plays a beep sound
@@ -17,7 +17,7 @@ export function beep(file, volume) {
 	if (!file) return
 	const audio = document.createElement('audio')
 	audio.autoplay = true
-	audio.volume = volume || window.slagmarkVolume
+	audio.volume = volume || window.slagmark.volume
 	document.body.appendChild(audio)
 	audio.src = `./sfx/${file}`
 	audio.addEventListener('ended', audio.remove)
