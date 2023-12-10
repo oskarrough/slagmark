@@ -5,13 +5,13 @@ export class SlagMenu extends HTMLElement {
 		this.addEventListener('mouseover', (event) => {
 			const target = event.target.closest('a, button')
 			if (!target) return
-			const x = target.dataset.beepover || 26
+			const x = `bleep-${target.dataset.beepover || 26}.wav`
 			beep(x)
 		})
 		this.addEventListener('click', (event) => {
 			const target = event.target.closest('a, button')
 			if (!target) return
-			const x = target.dataset.beep || 30
+			const x = `bleep-${target.dataset.beep || 30}.wav`
 			beep(x)
 		})
 	}
