@@ -2,6 +2,10 @@ import {roundOne} from './stdlib/utils.js'
 import {html} from 'uhtml'
 import {GameCountdown, Player, Gold, AIPlayer} from './nodes.js'
 
+function addAi(game) {
+	game.runAction({type: 'spawnAI'})
+}
+
 export function UI(game) {
 	const players = game.queryAll(Player)
 
@@ -21,6 +25,7 @@ export function UI(game) {
 					>Share this URL with someone to join: <input type="text" readonly value=${location.href}
 				/></label>
 			</p>
+			<p><button onclick=${() => addAi(game)} type="button">Play against a computer bot instead</button></p>
 		</div> `
 
 	return html`
@@ -59,7 +64,7 @@ function PlayerDisplay(player) {
 	if (!player) return html``
 	const ai = player instanceof AIPlayer
 	return html`
-		<slag-player>
+		<slag-player ?disabled=${ai}>
 			<h2>${ai ? 'AI' : `Player ${player.number}`} ${HealthBar(player.health)}</h2>
 			<ul class="MinionBar">
 				${player.Minions.filter((m) => !m.deployed).map((m) => MinionAvatar(m))}

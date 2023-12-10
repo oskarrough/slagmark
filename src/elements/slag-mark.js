@@ -29,8 +29,7 @@ export class SlagMark extends HTMLElement {
 		this.game?.start()
 
 		if (this.hasAttribute('ai')) {
-			this.game.add(AIPlayer.new({number: 2}))
-			this.game.runAction({type: 'startGameCountdown'})
+			this.game.runAction({type: 'spawnAI'})
 		}
 
 		history.replaceState({room: roomId}, roomId, `?room=${roomId}`)

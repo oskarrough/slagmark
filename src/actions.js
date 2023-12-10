@@ -1,4 +1,4 @@
-import {Player, Minion, GameCountdown} from './nodes.js'
+import {Player, AIPlayer, Minion, GameCountdown} from './nodes.js'
 
 /**
  * All "action" functions exported here follow a few rules:
@@ -91,4 +91,9 @@ export function gameOver(game) {
 // does this sync pauses?!
 export function stop(game) {
 	game.pause()
+}
+
+export function spawnAI(game) {
+	game.add(AIPlayer.new({number: 2}))
+	game.runAction({type: 'startGameCountdown'})
 }

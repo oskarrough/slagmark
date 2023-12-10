@@ -56,6 +56,16 @@ export class SinglePlayer extends Scene {
 			</slag-scene>
 		`
 	}
+	animate() {
+		return gsap
+			.timeline()
+			.set('body', {opacity: 1})
+			.to('.Background', {autoAlpha: 0.2, scale: 1.2, duration: 1.5})
+			.from('h1', {autoAlpha: 0, y: '-10%', duration: 0.8, ease: 'power2.out'}, '-=1.4')
+			.from('menu', {autoAlpha: 0, y: -20, duration: 0.6, ease: 'power2.out'}, '-=1.3')
+			.from('menu > *', {stagger: 0.05, y: -5, autoAlpha: 0, duration: 0.25, ease: 'power2.out'}, '-=1.2')
+			.from('slag-mark-ui', {autoAlpha: 0, y: 20, duration: 1, ease: 'power2.out'}, '-=0.2')
+	}
 }
 
 export class Multiplayer extends Scene {

@@ -188,6 +188,14 @@ slag-mark-ui > aside[disabled] {
 	filter: grayscale(1);
 }
 
+slag-player[disabled] {
+	cursor: not-allowed;
+}
+
+slag-player[disabled] button {
+	pointer-events: none;
+}
+
 slag-mark-ui ul {
 	padding: 0;
 	list-style: none;
@@ -255,9 +263,8 @@ ul.GoldBar,
 }
 
 .Minion button:hover {
-	transform: scale(1.1);
 	transition-duration: 100ms;
-	animation: bounce 0.8s ease infinite;
+	animation: bounce 0.8s ease infinite forwards;
 }
 
 /* Deployed minions */
