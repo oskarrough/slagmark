@@ -1,4 +1,4 @@
-import {GameLoop, AIPlayer} from './nodes.js'
+import {GameLoop, AIPlayer} from '../nodes.js'
 
 /**
  * Coordinates the communication between all our things:
@@ -9,12 +9,11 @@ import {GameLoop, AIPlayer} from './nodes.js'
 	*/
 export class SlagMark extends HTMLElement {
 	connectedCallback() {
-		// window.slagmark = {el: this}
-		// console.log('window.slagmark', window.slagmark)
+		window.slagmark = {el: this}
+		console.log('you can now debug window.slagmark', window.slagmark)
 		this.lobbyEl = this.querySelector('live-lobby')
 		this.uiEl = document.createElement('slag-mark-ui')
 		this.appendChild(this.uiEl)
-
 		this.aiEl = this.querySelector('slag-mark-ai')
 	}
 
@@ -38,8 +37,7 @@ export class SlagMark extends HTMLElement {
 
 	async quitGame() {
 		console.log('quitGame', this.game)
-		if (!this.game) return
-		await this.game.stop()
+		await this.game?.stop()
 		// this.game.Renderer.render()
 		this.game = null
 		history.replaceState({}, '', '/')

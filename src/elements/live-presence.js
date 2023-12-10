@@ -1,6 +1,6 @@
 import {render, html} from 'uhtml/keyed'
 import {signal} from 'usignal'
-import {lobbySocket} from './multiplayer.js'
+import {lobbySocket} from '../multiplayer.js'
 
 /*
  * Listens for "presence" events from the websocket server

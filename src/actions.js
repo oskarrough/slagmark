@@ -14,7 +14,7 @@ import {Player, Minion, GameCountdown} from './nodes.js'
 /** @typedef {import('./nodes.js').GameLoop} Game */
 
 /**
- * @template {{ [key: string]: any}} T
+ * @template T
  * @typedef {{ type: string } & T} Action
  */
 

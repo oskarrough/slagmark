@@ -1,8 +1,8 @@
-import {Node, Loop, Task, Query, QueryAll, Closest, Reactive} from 'vroum'
-import {html, render} from 'uhtml/keyed'
+import {Node, Loop, Task, Query, QueryAll, Closest} from 'vroum'
 import {uuid, random} from './utils.js'
-import {UI} from './ui.js'
 import * as actions from './actions.js'
+import {Logger} from './logger.js'
+import {Renderer} from './renderer.js'
 
 /** @typedef {import('./actions.js').Action} Action */
 
@@ -11,13 +11,16 @@ export class GameLoop extends Loop {
 	Players = QueryAll(Player)
 	Minions = QueryAll(Minion)
 	Renderer = Query(Renderer)
-	Log = Query(Log)
+	Logger = Query(Logger)
 
 	// DOM element to render to
 	element = null
 
 	// Also known as the websocket connection id.
 	playerId = null
+
+	// Inidicator for the UI when to switch scene
+	gameover = false
 
 	build() {
 		return [
@@ -26,21 +29,27 @@ export class GameLoop extends Loop {
 			// Player.new({number: 2}),
 			Board.new(),
 			Renderer.new(),
-			Log.new(),
+			Logger.new(),
 		]
+	}
+
+	mount() {
+		this.Logger.push({type: 'mount'})
 	}
 
 	// shortcut for this.subscribe('start', fn)
 	//	this.Renderer.render()
-	$start = () => {}
-	$stop = () => {
-		this.runAction({type: 'gameEnded'})
+	$start = () => {
+		this.Logger.push({type: 'start'})
 	}
-	$play = () => {}
-	$pause = () => {}
-
-	mount() {
-		this.Log.push({type: 'newGameLoop'})
+	$stop = () => {
+		this.runAction({type: 'stop'})
+	}
+	$play = () => {
+		this.Logger.push({type: 'play'})
+	}
+	$pause = () => {
+		this.Logger.push({type: 'pause'})
 	}
 
 	destroy() {
@@ -53,7 +62,7 @@ export class GameLoop extends Loop {
 	 * @arg {Boolean} broadcast - set to false to disable broadcasting the action to other peers
 	 */
 	runAction(action, broadcast = true) {
-		console.log('runAction', action)
+		console.log('action', action)
 
 		// run locally
 		const handler = actions[action.type]
@@ -66,7 +75,7 @@ export class GameLoop extends Loop {
 			socket.send(JSON.stringify(action))
 		}
 
-		this.Log.push(action)
+		this.Logger.push(action)
 	}
 }
 
@@ -85,9 +94,11 @@ export class Player extends Task {
 
 	afterCycle() {
 		if (this.health <= 0) {
-			console.log('after cycle lost ', this.game)
+			console.log('after cycle lost ', this.Game)
 			const msg = `${this.constructor.name} ${this.number} lost`
 			console.log(msg)
+			this.Game.gameover = true
+			this.Game.pause()
 			this.Game.stop()
 			// window.confirm(msg)
 		}
@@ -95,16 +106,19 @@ export class Player extends Task {
 }
 
 class DeployRandomMinion extends Task {
+	Player = Closest(Player)
 	delay = 4000
 	interval = 3000
 	duration = 0
 
 	tick() {
-		const gold = this.parent.Gold?.amount
-		const minions = this.parent.children.filter(m => m instanceof Minion).filter(m => !m.deployed && m.cost <= gold)
+		const gold = this.Player.Gold?.amount
+		const minions = this.Player.Minions
+			.filter((m) => m instanceof Minion)
+			.filter((m) => !m.deployed && m.cost <= gold)
 		const minion = random(minions)
 		if (minion) {
-			this.parent.Game.runAction({type: 'deployMinion', id: minion?.id})
+			this.Player.Game.runAction({type: 'deployMinion', id: minion?.id})
 		}
 	}
 }
@@ -117,7 +131,7 @@ export class AIPlayer extends Player {
 			// Gold.new(),
 			// By letting this create the minions, it goes through websockets..
 			RefillMinions.new(),
-			DeployRandomMinion.new()
+			DeployRandomMinion.new(),
 		]
 	}
 
@@ -283,38 +297,5 @@ export class GameCountdown extends Task {
 				player.add(RefillMinions.new())
 			})
 		}
-	}
-}
-
-export class Log extends Node {
-	/** @typedef {{ action: Action, now: Number}} LogEntry */
-	/** @type {LogEntry[]} */
-	logs = []
-
-	/** @arg {Action} action */
-	push(action) {
-		const log = {action, now: Date.now()}
-		this.logs.push(log)
-	}
-
-	print() {
-		console.log(this.logs)
-	}
-}
-
-/** A utility task that renders the GameLoop constantly to a DOM node via the UI function */
-class Renderer extends Task {
-	Game = Closest(GameLoop)
-
-	tick() {
-		this.render()
-	}
-
-	render() {
-		if (!this.Game?.element) throw new Error('missing DOM element to render to')
-		// const start = performance.now()
-		render(this.Game.element, UI(this.root))
-		// const end = performance.now()
-		// console.log(`render time = ${end - start}ms`)
 	}
 }

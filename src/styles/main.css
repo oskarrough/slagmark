@@ -1,8 +1,8 @@
-@import url('./styles/menu.css');
+@import url('./menu.css');
 
 @font-face {
 	font-family: 'Meilen';
-	src: url('./assets/meilen-black.woff2');
+	src: url('/meilen-black.woff2');
 }
 
 *,

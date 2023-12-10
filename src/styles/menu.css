@@ -89,4 +89,10 @@ menu[tr] {
 	z-index: 10;
 	width: auto;
 	margin: 0;
+	flex-flow: row;
+}
+
+menu[tr] > * {
+	min-width: 3rem;
+	min-height: 3rem;
 }

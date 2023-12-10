@@ -22,7 +22,6 @@ export function UI(game) {
 	return html`
 		<header>
 			<nav>${Menu(game)}</nav>
-
 			${players.length < 2 ? html` <p class="Countdown"><span> </span></p>` : ''}
 			${countdown?.count > 0 ? html`<p class="Countdown"><span>${countdown.count}</span></p>` : ''}
 		</header>
@@ -72,15 +71,6 @@ function MinionList(player) {
 	return html`${list.map((m) => DeployedMinion(m))}`
 }
 
-function minionTypeToEmoji(type) {
-	const map = {
-		rock: '🪨',
-		paper: '📄',
-		scissors: '✂️',
-	}
-	return map[type] || type
-}
-
 function DeployedMinion(minion) {
 	const height = minion.Game.Board.height
 	const topPercentage = minion.deployed ? ((height - minion.y) / height) * 100 : 0
@@ -125,4 +115,18 @@ function HealthBar(health) {
 	return html`<ul class="HealthBar">
 		${hearts.map((n) => html`<li>${n}</li>`)}
 	</ul>`
+}
+
+/**
+ * Turns a minion type into an emoji
+ * @param {string} type
+ * @returns {string} emoji
+ */
+function minionTypeToEmoji(type) {
+	const map = {
+		rock: '🪨',
+		paper: '📄',
+		scissors: '✂️',
+	}
+	return map[type] || type
 }

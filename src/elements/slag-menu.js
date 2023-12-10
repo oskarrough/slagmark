@@ -1,4 +1,4 @@
-import {beep} from './audio.js'
+import {beep} from '../audio.js'
 
 export class SlagMenu extends HTMLElement {
 	connectedCallback() {
