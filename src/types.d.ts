@@ -2,7 +2,10 @@ export {}
 
 declare global {
 	interface Window {
-		slagmark: object,
+		slagmark: {
+			manager: SlagmarkManager,
+			el: HTMLElement
+		},
 		slagmarkVolume: number
 	}
 }

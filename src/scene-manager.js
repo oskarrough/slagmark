@@ -1,31 +1,28 @@
 import {Node, Reactive} from 'vroum'
-import {render} from 'uhtml'
-import {IntroScene, SinglePlayerScene, MultiplayerScene, ExitScene} from './scenes.js'
-
-const sceneComponents = {
-	intro: IntroScene,
-	single: SinglePlayerScene,
-	multi: MultiplayerScene,
-	exit: ExitScene,
-}
-
-export class Scene extends Node {}
+import {render, html} from 'uhtml'
 
 export class SceneManager extends Node {
 	scene = Reactive()
 
 	update(changed) {
-		const scene = this.children.find((s) => s.id === changed.scene)
-		this.renderScene(scene)
+		console.log('scene update', changed.scene)
 	}
 
-	renderScene(scene) {
-		console.log('rendering scene:', scene.id)
-		const sceneComponent = sceneComponents[scene.id]
-		if (sceneComponent) {
-			const el = document.querySelector('slag-scenes')
-			render(el, () => sceneComponent({manager: this, scene}))
-			sceneComponent.animation && sceneComponent.animation()
-		}
+	init() {
+		this.element = document.querySelector('slag-scenes')
 	}
+}
+
+/**
+ * When a scene is added to the SceneManager, it will call mount() -> render() -> animate()
+ */
+export class Scene extends Node {
+	mount() {
+		console.log('scene mount', this.constructor.name)
+		render(this.parent.element, () => this.render())
+		this.animate()
+	}
+
+	render() { return html`` }
+	animate() { return gsap.timeline() }
 }
