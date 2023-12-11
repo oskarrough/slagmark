@@ -157,7 +157,7 @@ export class RefillMinions extends Task {
 	tick() {
 		const undeployedMinions = this.Player.Minions.filter((m) => !m.deployed)?.length
 		if (undeployedMinions < this.maxAmount) {
-			this.Game.runAction({type: 'addNewMinion', playerId: this.Player.id, minionType: random(MINION_TYPES)})
+			this.Game.runAction({type: 'createMinion', playerId: this.Player.id, minionType: random(MINION_TYPES)})
 		}
 	}
 }

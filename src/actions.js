@@ -50,6 +50,18 @@ export function playerDisconnected(game, action) {
 }
 
 /**
+ * Adds a new minion to a player
+ * @param {Game} game
+ * @param {Action<{playerId: string, minionType: string}>} action
+ */
+export function createMinion(game, action) {
+	const player = game.Players.find((player) => player.id === action.playerId)
+	const minion = Minion.new()
+	minion.minionType = action.minionType
+	player.add(minion)
+}
+
+/**
  * Deploys a minion to the slagmark.
  * @param {Game} game
  * @param {Action<{id: string}>} action
@@ -57,18 +69,6 @@ export function playerDisconnected(game, action) {
 export function deployMinion(game, action) {
 	const minion = game.Minions.find((m) => m.id === action.id)
 	minion?.deploy()
-}
-
-/**
- * Adds a new minion to a player
- * @param {Game} game
- * @param {Action<{playerId: string, minionType: string}>} action
- */
-export function addNewMinion(game, action) {
-	const player = game.Players.find((player) => player.id === action.playerId)
-	const minion = Minion.new()
-	minion.minionType = action.minionType
-	player.add(minion)
 }
 
 /**
