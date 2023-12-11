@@ -82,10 +82,13 @@ export function startGameCountdown(game, action) {
 
 /**
  * @param {Game} game
+ * @param {Action<{playerId: string, playerNumber: number}>} action
  */
-export function gameOver(game) {
-	game.gameover = true
+export function gameOver(game, action) {
+	game.gameOver = true
 	game.pause()
+	const msg = `Player ${action.playerNumber} (${action.playerId}) lost!`
+	console.log(msg)
 }
 
 // does this sync pauses?!

@@ -12,17 +12,23 @@ export class Intro extends Scene {
 			url.search = params.toString()
 			history.pushState({}, '', url)
 		}
-		const mgtm = this.Stage
 		return html`
 			<slag-scene>
 				<h1>Slagmark 🌐</h1>
 				<slag-menu>
 					<menu>
-						<button type="button" onclick=${() => (mgtm.scene = 'SinglePlayer')}>Single Player †</button>
-						<button type="button" onclick=${() => (mgtm.scene = 'Multiplayer')}>
+						<button type="button" onclick=${() => (this.Stage.scene = 'SinglePlayer')}>
+							Single Player †
+						</button>
+						<button type="button" onclick=${() => (this.Stage.scene = 'Multiplayer')}>
 							Multiplayer (<small><live-presence /> live</small>)
 						</button>
-						<button type="button" onclick=${() => (mgtm.scene = 'Exit')} data-beepover="29" data-beep="28">
+						<button
+							type="button"
+							onclick=${() => (this.Stage.scene = 'Exit')}
+							data-beepover="29"
+							data-beep="28"
+						>
 							╳
 						</button>
 						${SoundToggle()}
@@ -47,6 +53,7 @@ export class SinglePlayer extends Scene {
 	render() {
 		return html`
 			<slag-scene>
+				<h1>Slagmark 🌐</h1>
 				<menu tr>
 					<button type="button" onclick=${() => (this.Stage.scene = 'Intro')}>↺</button>
 				</menu>
@@ -61,8 +68,8 @@ export class SinglePlayer extends Scene {
 			.timeline()
 			.set('body', {opacity: 1})
 			.to('.Background', {autoAlpha: 0.2, scale: 1.2, duration: 1.5})
-			.from('h1', {autoAlpha: 0, y: '-10%', duration: 0.8, ease: 'power2.out'}, '-=1.4')
-			.from('menu', {autoAlpha: 0, y: -20, duration: 0.6, ease: 'power2.out'}, '-=1.3')
+			.to('h1', {y: '-10%', autoAlpha: 0, duration: 0.5, ease: 'power2.out'}, '<')
+			.from('menu', {autoAlpha: 0, y: -20, duration: 0.4, ease: 'power2.out'}, '-=1.3')
 			.from('menu > *', {stagger: 0.05, y: -5, autoAlpha: 0, duration: 0.25, ease: 'power2.out'}, '-=1.2')
 			.from('slag-mark-ui', {autoAlpha: 0, y: 20, duration: 1, ease: 'power2.out'}, '-=0.2')
 	}
@@ -72,6 +79,7 @@ export class Multiplayer extends Scene {
 	render() {
 		return html`
 			<slag-scene>
+				<h1>Slagmark 🌐</h1>
 				<menu tr>
 					<button type="button" onclick=${() => (this.Stage.scene = 'Intro')}>↺</button>
 				</menu>
@@ -87,8 +95,8 @@ export class Multiplayer extends Scene {
 			.timeline()
 			.set('body', {opacity: 1})
 			.to('.Background', {autoAlpha: 0.2, scale: 1.2, duration: 1.5})
-			.from('h1', {autoAlpha: 0, y: '-10%', duration: 0.8, ease: 'power2.out'}, '-=1.4')
-			.from('menu', {autoAlpha: 0, y: -20, duration: 0.6, ease: 'power2.out'}, '-=1.3')
+			.to('h1', {y: '-10%', autoAlpha: 0, duration: 0.5, ease: 'power2.out'}, '<')
+			.from('menu', {autoAlpha: 0, y: -20, duration: 0.4, ease: 'power2.out'}, '-=1.3')
 			.from('menu > *', {stagger: 0.05, y: -5, autoAlpha: 0, duration: 0.25, ease: 'power2.out'}, '-=1.2')
 	}
 }
@@ -101,12 +109,12 @@ export class Exit extends Scene {
 				<menu>
 					<button type="button" onclick=${() => (this.Stage.scene = 'Intro')}>↺</button>
 					<p>
-						This is game design & development in progress.<br />
+						This is game idea in design & development.<br />
 						<br/>
 						Want to join or contribute? <br />
-						- <a href="https://github.com/oskarrough/slagmark">github.com/oskarrough/slagmark source code</a><br /
+						  &rarr; <a href="https://github.com/oskarrough/slagmark">github.com/oskarrough/slagmark<a/> source code<br /
 						><br />
-						⬚⬚⬚
+						⬚⬚⬚⬚⬚⬚⬚⬚⬚⬚⬚⬚⬚⬚⬚⬚⬚⬚⬚⬚
 					</p>
 				</menu>
 			</slag-scene>

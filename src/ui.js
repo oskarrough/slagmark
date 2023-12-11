@@ -16,6 +16,16 @@ export function UI(game) {
 	const countdown = game.query(GameCountdown)
 	const disabled = players.length < 2 || Boolean(countdown)
 
+	if (game.gameOver)
+		return html`
+			<article>
+				<h1>Gameover †</h1>
+				<p>Player 1 health: ${player1.health}</p>
+				<p>Player 2 health: ${player2.health}</p>
+				<p>Elapsed: ${roundOne(game.elapsedTime / 1000)}s</p>
+				<p>😊</p>
+			</article>
+		`
 	if (players.length < 1) return html`<p>Loading...</p>`
 	if (players.length < 2)
 		return html`<div>

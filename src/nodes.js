@@ -20,7 +20,7 @@ export class GameLoop extends Loop {
 	playerId = null
 
 	// Inidicator for the UI when to switch scene
-	gameover = false
+	gameOver = false
 
 	build() {
 		return [
@@ -43,17 +43,18 @@ export class GameLoop extends Loop {
 	}
 	$stop = () => {
 		this.Logger.push({type: 'stop'})
-		// this.runAction({type: 'stop'})
+		this.Renderer.tick()
 	}
 	$play = () => {
 		this.Logger.push({type: 'play'})
 	}
 	$pause = () => {
 		this.Logger.push({type: 'pause'})
+		this.Renderer.tick()
 	}
 
 	destroy() {
-		this.query(Renderer).tick()
+		this.Renderer.tick()
 	}
 
 	/**
@@ -72,7 +73,12 @@ export class GameLoop extends Loop {
 		// Send to other parties
 		if (broadcast) {
 			const socket = this.element.parentElement.lobbyEl.gamesSocket
-			socket.send(JSON.stringify(action))
+			try {
+				const msg = JSON.stringify(action)
+				socket.send(msg)
+			} catch (err) {
+				console.log(err, action)
+			}
 		}
 
 		this.Logger.push(action)
@@ -89,18 +95,13 @@ export class Player extends Task {
 	Minions = QueryAll(Minion)
 	Gold = Query(Gold)
 
-	health = 3
+	health = 1
 	number = 0 // in the context of a single game
 
 	afterCycle() {
 		if (this.health <= 0) {
-			console.log('after cycle lost ', this.Game)
-			const msg = `${this.constructor.name} ${this.number} lost`
-			console.log(msg)
-			this.Game.runAction({type: 'gameOver'})
-			// this.Game.pause()
-			// this.Game.stop()
-			// window.confirm(msg)
+			const gameOverAction = {type: 'gameOver', playerId: this.id, playerNumber: this.number}
+			this.Game.runAction(gameOverAction)
 		}
 	}
 }
