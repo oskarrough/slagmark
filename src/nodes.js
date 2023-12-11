@@ -190,8 +190,9 @@ export class Minion extends Task {
 	tick() {
 		if (!this.deployed || this.shouldDisconnect) return
 
-		// Check if we need to go up or down.
+		// Decide if we need to go up or down.
 		const goingUp = this.Player.number === 1
+
 		const startY = goingUp ? 0 : this.Game.Board.height
 		const finalY = goingUp ? this.Game.Board.height : 0
 

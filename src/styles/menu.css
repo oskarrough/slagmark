@@ -14,6 +14,17 @@ menu {
 	border-bottom: 5px solid hsl(300deg 1% 6%);
 }
 
+menu[horizontal] {
+	flex-flow: row;
+}
+
+menu[horizontal] > * {
+	min-height: 1.5rem;
+}
+menu[horizontal] p {
+	display: flex;
+}
+
 menu > * {
 	display: flex;
 	place-items: center;
