@@ -100,9 +100,14 @@ export class Player extends Task {
 
 	afterCycle() {
 		if (this.health <= 0) {
-			const gameOverAction = {type: 'gameOver', playerId: this.id, playerNumber: this.number}
+			const gameOverAction = {type: 'gameOver', serializedPlayer: this.serialize()}
 			this.Game.runAction(gameOverAction)
 		}
+	}
+
+	serialize() {
+		const {id, number, health} = this
+		return {id,number,health, gold: this.Gold?.amount}
 	}
 }
 
