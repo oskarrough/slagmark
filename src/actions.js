@@ -1,4 +1,4 @@
-import {Player, Minion, GameCountdown} from './nodes.js'
+import {Player, AIPlayer, Minion, GameCountdown} from './nodes.js'
 
 /**
  * All "action" functions exported here follow a few rules:
@@ -14,7 +14,7 @@ import {Player, Minion, GameCountdown} from './nodes.js'
 /** @typedef {import('./nodes.js').GameLoop} Game */
 
 /**
- * @template {{ [key: string]: any}} T
+ * @template T
  * @typedef {{ type: string } & T} Action
  */
 
@@ -74,7 +74,29 @@ export function addNewMinion(game, action) {
 /**
  * @param {Game} game
  */
-export function startGameCountdown(game) {
-	const countdown = GameCountdown.new()
+export function startGameCountdown(game, action) {
+	const countdown = GameCountdown.new({repeat: action.countFrom || 4})
 	game.add(countdown)
+}
+
+
+/**
+ * @param {Game} game
+ * @param {Action<{playerId: string, playerNumber: number}>} action
+ */
+export function gameOver(game, action) {
+	game.gameOver = true
+	game.pause()
+	const msg = `Player ${action.playerNumber} (${action.playerId}) lost!`
+	console.log(msg)
+}
+
+// does this sync pauses?!
+export function stop(game) {
+	game.pause()
+}
+
+export function spawnAI(game) {
+	game.add(AIPlayer.new({number: 2}))
+	game.runAction({type: 'startGameCountdown'})
 }

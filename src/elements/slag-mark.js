@@ -1,21 +1,22 @@
-import {GameLoop, AIPlayer} from './nodes.js'
+import {GameLoop, AIPlayer} from '../nodes.js'
 
 /**
  * Coordinates the communication between all our things:
  - The <slag-mark-ui>
  - The <live-lobby>
- - Optional <slag-mark-ai>
  - The two websocket servers 
 	*/
 export class SlagMark extends HTMLElement {
 	connectedCallback() {
-		// window.slagmark = {el: this}
-		// console.log('window.slagmark', window.slagmark)
+		window.slagmark.el = this
+		console.log('you can now debug window.slagmark', window.slagmark)
+
+		// We require a child <live-lobby> element for now.
 		this.lobbyEl = this.querySelector('live-lobby')
+
+		// We create <slag-mark-ui> and insert it. The UI() is rendered here.
 		this.uiEl = document.createElement('slag-mark-ui')
 		this.appendChild(this.uiEl)
-
-		this.aiEl = this.querySelector('slag-mark-ai')
 	}
 
 	disconnectedCallback() {
@@ -27,9 +28,8 @@ export class SlagMark extends HTMLElement {
 		this.game = GameLoop.new({element: this.uiEl, playerId: gamesSocket.id})
 		this.game?.start()
 
-		if (this.aiEl) {
-			this.game.add(AIPlayer.new({number: 2}))
-			this.game.runAction({type: 'startGameCountdown'})
+		if (this.hasAttribute('ai')) {
+			this.game.runAction({type: 'spawnAI'})
 		}
 
 		history.replaceState({room: roomId}, roomId, `?room=${roomId}`)
@@ -38,9 +38,7 @@ export class SlagMark extends HTMLElement {
 
 	async quitGame() {
 		console.log('quitGame', this.game)
-		if (!this.game) return
-		await this.game.stop()
-		// this.game.Renderer.render()
+		await this.game?.stop()
 		this.game = null
 		history.replaceState({}, '', '/')
 		location.reload()

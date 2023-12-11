@@ -78,7 +78,7 @@ menu button:active {
 	}
 
 	50% {
-		transform: translateY(0%) translateX(0%) scaleX(0.90) scaleY(1.08);
+		transform: translateY(-20%) translateX(0%) scaleX(0.90) scaleY(1.18);
 	}
 }
 
@@ -89,4 +89,15 @@ menu[tr] {
 	z-index: 10;
 	width: auto;
 	margin: 0;
+	flex-flow: row;
+}
+
+menu[tr] > * {
+	min-width: 3rem;
+	min-height: 3rem;
+}
+
+menu > p {
+	display: block;
+	margin: 0.5rem;
 }

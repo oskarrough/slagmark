@@ -1,6 +1,10 @@
-import {roundOne} from './utils.js'
+import {roundOne} from './stdlib/utils.js'
 import {html} from 'uhtml'
 import {GameCountdown, Player, Gold, AIPlayer} from './nodes.js'
+
+function addAi(game) {
+	game.runAction({type: 'spawnAI'})
+}
 
 export function UI(game) {
 	const players = game.queryAll(Player)
@@ -12,17 +16,31 @@ export function UI(game) {
 	const countdown = game.query(GameCountdown)
 	const disabled = players.length < 2 || Boolean(countdown)
 
+	if (game.gameOver)
+		return html`
+			<article>
+				<h1>Gameover †</h1>
+				<p>Player 1 health: ${player1.health}</p>
+				<p>Player 2 health: ${player2.health}</p>
+				<p>Elapsed: ${roundOne(game.elapsedTime / 1000)}s</p>
+				<p>😊</p>
+			</article>
+		`
 	if (players.length < 1) return html`<p>Loading...</p>`
 	if (players.length < 2)
-		return html`<p>
-			Need one more player.
-			<label>Share this URL to join: <input type="text" readonly value=${location.href} /></label>
-		</p>`
+		return html`<div>
+			<p>
+				Need one more player.<br /><br />
+				<label
+					>Share this URL with someone to join: <input type="text" readonly value=${location.href}
+				/></label>
+			</p>
+			<p><button onclick=${() => addAi(game)} type="button">Play against a computer bot instead</button></p>
+		</div> `
 
 	return html`
 		<header>
 			<nav>${Menu(game)}</nav>
-
 			${players.length < 2 ? html` <p class="Countdown"><span> </span></p>` : ''}
 			${countdown?.count > 0 ? html`<p class="Countdown"><span>${countdown.count}</span></p>` : ''}
 		</header>
@@ -56,7 +74,7 @@ function PlayerDisplay(player) {
 	if (!player) return html``
 	const ai = player instanceof AIPlayer
 	return html`
-		<slag-player>
+		<slag-player ?disabled=${ai}>
 			<h2>${ai ? 'AI' : `Player ${player.number}`} ${HealthBar(player.health)}</h2>
 			<ul class="MinionBar">
 				${player.Minions.filter((m) => !m.deployed).map((m) => MinionAvatar(m))}
@@ -70,15 +88,6 @@ function MinionList(player) {
 	let list = player?.Minions.filter((m) => m.deployed)
 	if (!list?.length) return null
 	return html`${list.map((m) => DeployedMinion(m))}`
-}
-
-function minionTypeToEmoji(type) {
-	const map = {
-		rock: '🪨',
-		paper: '📄',
-		scissors: '✂️',
-	}
-	return map[type] || type
 }
 
 function DeployedMinion(minion) {
@@ -125,4 +134,18 @@ function HealthBar(health) {
 	return html`<ul class="HealthBar">
 		${hearts.map((n) => html`<li>${n}</li>`)}
 	</ul>`
+}
+
+/**
+ * Turns a minion type into an emoji
+ * @param {string} type
+ * @returns {string} emoji
+ */
+function minionTypeToEmoji(type) {
+	const map = {
+		rock: '🪨',
+		paper: '📄',
+		scissors: '✂️',
+	}
+	return map[type] || type
 }

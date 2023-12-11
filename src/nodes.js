@@ -1,8 +1,8 @@
-import {Node, Loop, Task, Query, QueryAll, Closest, Reactive} from 'vroum'
-import {html, render} from 'uhtml/keyed'
-import {uuid, random} from './utils.js'
-import {UI} from './ui.js'
+import {Node, Loop, Task, Query, QueryAll, Closest} from 'vroum'
+import {uuid, random} from './stdlib/utils.js'
 import * as actions from './actions.js'
+import {Logger} from './stdlib/logger.js'
+import {Renderer} from './stdlib/renderer.js'
 
 /** @typedef {import('./actions.js').Action} Action */
 
@@ -11,13 +11,16 @@ export class GameLoop extends Loop {
 	Players = QueryAll(Player)
 	Minions = QueryAll(Minion)
 	Renderer = Query(Renderer)
-	Log = Query(Log)
+	Logger = Query(Logger)
 
 	// DOM element to render to
 	element = null
 
 	// Also known as the websocket connection id.
 	playerId = null
+
+	// Inidicator for the UI when to switch scene
+	gameOver = false
 
 	build() {
 		return [
@@ -26,25 +29,32 @@ export class GameLoop extends Loop {
 			// Player.new({number: 2}),
 			Board.new(),
 			Renderer.new(),
-			Log.new(),
+			Logger.new(),
 		]
 	}
 
-	// shortcut for this.subscribe('start', fn)
-	//	this.Renderer.render()
-	$start = () => {}
-	$stop = () => {
-		this.runAction({type: 'gameEnded'})
-	}
-	$play = () => {}
-	$pause = () => {}
-
 	mount() {
-		this.Log.push({type: 'newGameLoop'})
+		this.Logger.push({type: 'mount'})
+	}
+
+	// shortcut for this.subscribe('start', fn)
+	$start = () => {
+		this.Logger.push({type: 'start'})
+	}
+	$stop = () => {
+		this.Logger.push({type: 'stop'})
+		this.Renderer.tick()
+	}
+	$play = () => {
+		this.Logger.push({type: 'play'})
+	}
+	$pause = () => {
+		this.Logger.push({type: 'pause'})
+		this.Renderer.tick()
 	}
 
 	destroy() {
-		this.query(Renderer).render()
+		this.Renderer.tick()
 	}
 
 	/**
@@ -53,7 +63,7 @@ export class GameLoop extends Loop {
 	 * @arg {Boolean} broadcast - set to false to disable broadcasting the action to other peers
 	 */
 	runAction(action, broadcast = true) {
-		console.log('runAction', action)
+		console.log('action', action)
 
 		// run locally
 		const handler = actions[action.type]
@@ -63,10 +73,15 @@ export class GameLoop extends Loop {
 		// Send to other parties
 		if (broadcast) {
 			const socket = this.element.parentElement.lobbyEl.gamesSocket
-			socket.send(JSON.stringify(action))
+			try {
+				const msg = JSON.stringify(action)
+				socket.send(msg)
+			} catch (err) {
+				console.log(err, action)
+			}
 		}
 
-		this.Log.push(action)
+		this.Logger.push(action)
 	}
 }
 
@@ -80,31 +95,13 @@ export class Player extends Task {
 	Minions = QueryAll(Minion)
 	Gold = Query(Gold)
 
-	health = 3
+	health = 1
 	number = 0 // in the context of a single game
 
 	afterCycle() {
 		if (this.health <= 0) {
-			console.log('after cycle lost ', this.game)
-			const msg = `${this.constructor.name} ${this.number} lost`
-			console.log(msg)
-			this.Game.stop()
-			// window.confirm(msg)
-		}
-	}
-}
-
-class DeployRandomMinion extends Task {
-	delay = 4000
-	interval = 3000
-	duration = 0
-
-	tick() {
-		const gold = this.parent.Gold?.amount
-		const minions = this.parent.children.filter(m => m instanceof Minion).filter(m => !m.deployed && m.cost <= gold)
-		const minion = random(minions)
-		if (minion) {
-			this.parent.Game.runAction({type: 'deployMinion', id: minion?.id})
+			const gameOverAction = {type: 'gameOver', playerId: this.id, playerNumber: this.number}
+			this.Game.runAction(gameOverAction)
 		}
 	}
 }
@@ -117,7 +114,7 @@ export class AIPlayer extends Player {
 			// Gold.new(),
 			// By letting this create the minions, it goes through websockets..
 			RefillMinions.new(),
-			DeployRandomMinion.new()
+			DeployRandomMinion.new(),
 		]
 	}
 
@@ -286,35 +283,21 @@ export class GameCountdown extends Task {
 	}
 }
 
-export class Log extends Node {
-	/** @typedef {{ action: Action, now: Number}} LogEntry */
-	/** @type {LogEntry[]} */
-	logs = []
 
-	/** @arg {Action} action */
-	push(action) {
-		const log = {action, now: Date.now()}
-		this.logs.push(log)
-	}
-
-	print() {
-		console.log(this.logs)
-	}
-}
-
-/** A utility task that renders the GameLoop constantly to a DOM node via the UI function */
-class Renderer extends Task {
-	Game = Closest(GameLoop)
+class DeployRandomMinion extends Task {
+	Player = Closest(Player)
+	delay = 4000
+	interval = 3000
+	duration = 0
 
 	tick() {
-		this.render()
-	}
-
-	render() {
-		if (!this.Game?.element) throw new Error('missing DOM element to render to')
-		// const start = performance.now()
-		render(this.Game.element, UI(this.root))
-		// const end = performance.now()
-		// console.log(`render time = ${end - start}ms`)
+		const gold = this.Player.Gold?.amount
+		const minions = this.Player.Minions
+			.filter((m) => m instanceof Minion)
+			.filter((m) => !m.deployed && m.cost <= gold)
+		const minion = random(minions)
+		if (minion) {
+			this.Player.Game.runAction({type: 'deployMinion', id: minion?.id})
+		}
 	}
 }

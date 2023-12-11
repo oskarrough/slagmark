@@ -1,8 +1,8 @@
 import PartySocket from 'partysocket'
 import {render, html} from 'uhtml/keyed'
 import {effect, signal} from 'usignal'
-import {friendlyId} from './friendly-id.js'
-import {lobbySocket, PARTYKIT_URL} from './multiplayer.js'
+import {friendlyId} from '../stdlib/utils.js'
+import {lobbySocket, PARTYKIT_URL} from '../stdlib/multiplayer.js'
 
 /**
  * The lobby manages the "rooms" (or games) that are currently active.
@@ -26,7 +26,7 @@ export class LiveLobby extends HTMLElement {
 		if (urlParams.has('room')) {
 			this.joinRoom(urlParams.get('room'))
 		} else if (this.hasAttribute('autocreate')) {
-			this.startNewGame()
+			this.openNewGame()
 		}
 	}
 
@@ -42,7 +42,7 @@ export class LiveLobby extends HTMLElement {
 	}
 
 	onGameMessage(event) {
-		/** @type {import('./nodes.js').GameLoop} */
+		/** @type {import('../nodes.js').GameLoop} */
 		const game = this.parentElement.game
 		const action = JSON.parse(event.data)
 		if (action.type === 'info') {
@@ -53,7 +53,7 @@ export class LiveLobby extends HTMLElement {
 		}
 	}
 
-	startNewGame() {
+	openNewGame() {
 		console.log('start new game')
 		if (this.gamesSocket) this.leaveRoom()
 		this.joinRoom(friendlyId())
@@ -91,9 +91,9 @@ export class LiveLobby extends HTMLElement {
 			</details>
 			<p>
 				${this.gamesSocket
-					? html`You are in: ${this.gamesSocket?.room}
+					? html`You are in: <em>${this.gamesSocket?.room}</em>
 							<button hidden onclick=${() => this.leaveRoom()}>Leave</button> `
-					: html`<button onclick=${() => this.startNewGame()}>Start New Game</button>`}
+					: html`<button onclick=${() => this.openNewGame()}>Open New Game</button>`}
 			</p>
 		`
 		render(this, tpl)
