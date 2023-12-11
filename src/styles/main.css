@@ -54,8 +54,12 @@ body {
 	overflow: hidden;
 }
 
+[hidden] {
+	display: none;
+}
+
 .Background {
-	position: absolute;
+	position: fixed;
 	top: 0;
 	left: 0;
 	right: 0;
@@ -146,7 +150,8 @@ slag-mark-ui {
 	margin: auto;
 	padding: 0.5rem;
 	display: grid;
-	grid-template-columns: 1fr 1fr;
+	/* grid-template-columns: 1fr 1fr; */
+	grid-template-columns: minmax(13.5rem, 1fr) 1fr;
 	/* grid-template-rows: fit-content 1fr fit-content; */
 	grid-template-areas:
 		'header header'

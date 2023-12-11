@@ -58,7 +58,7 @@ export class SinglePlayer extends Scene {
 					<button type="button" onclick=${() => (this.Stage.scene = 'Intro')}>↺</button>
 				</menu>
 				<slag-mark ai>
-					<live-lobby autocreate></live-lobby>
+					<live-lobby hidden autocreate></live-lobby>
 				</slag-mark>
 			</slag-scene>
 		`
