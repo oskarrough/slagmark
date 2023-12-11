@@ -1,17 +1,30 @@
+slag-box,
 menu {
-	margin: 2rem auto;
+	background: var(--bg);
+	border-radius: 0.3rem;
+	border-top: 1px solid hsl(300deg 1% 13%);
+	border-left: 2px solid hsl(300deg 1% 10%);
+	border-right: 2px solid hsl(300deg 1% 10%);
+	border-bottom: 5px solid hsl(300deg 1% 6%);
+}
+
+slag-box {
+	display: block;
+	background: hsl(185deg 100% 12%);
+	flex: 1;
+	padding: 1rem;
+}
+
+.RoomList {}
+
+menu {
+	margin: 2rem auto 0;
 	display: flex;
 	flex-flow: column wrap;
 	gap: 0.4rem;
 	width: 100%;
 	max-width: 26rem;
-	background: var(--bg);
-	border-radius: 0.3rem;
 	padding: 0.2rem;
-	border-top: 1px solid hsl(300deg 1% 13%);
-	border-left: 2px solid hsl(300deg 1% 10%);
-	border-right: 2px solid hsl(300deg 1% 10%);
-	border-bottom: 5px solid hsl(300deg 1% 6%);
 }
 
 menu[horizontal] {
@@ -43,6 +56,11 @@ menu button {
 	transition: background 150ms;
 	/* animation: bounce 0.8s ease infinite; */
 	/* animation: bounce 0.8s var(--easing2) infinite; */
+}
+
+menu button[disabled] {
+	cursor: not-allowed;
+	opacity: 0.3;
 }
 
 menu label[custom] {
@@ -89,7 +107,7 @@ menu button:active {
 	}
 
 	50% {
-		transform: translateY(-20%) translateX(0%) scaleX(0.90) scaleY(1.18);
+		transform: translateY(-20%) translateX(0%) scaleX(0.9) scaleY(1.18);
 	}
 }
 

@@ -29,7 +29,7 @@ export function UI(game) {
 			</article>
 		`
 	if (players.length < 2)
-		return html`<div>
+		return html`<slag-box>
 			<p>
 				Need one more player.<br /><br />
 				<label
@@ -40,7 +40,7 @@ export function UI(game) {
 			<p>
 				Or.. <button onclick=${() => addAi(game)} type="button">Play against a computer bot</button> instead.
 			</p>
-		</div> `
+		</slag-box>`
 
 	return html`
 		<header>
