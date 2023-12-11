@@ -82,19 +82,17 @@ export class LiveLobby extends HTMLElement {
 		const totalConnections = Object.entries(this.rooms.value).reduce((acc, [id, count]) => acc + count, 0)
 		const tpl = html`
 			<details ?open=${!Boolean(this.gamesSocket)}>
-				<summary>
-					Lobby (<live-presence></live-presence> online, ${totalConnections} playing)
-				</summary>
+				<summary>Lobby (<live-presence></live-presence> online, ${totalConnections} playing)</summary>
 				<ul>
 					${this.renderRooms(rooms)}
 				</ul>
 			</details>
-			<p>
-				${this.gamesSocket
-					? html`You are in: <em>${this.gamesSocket?.room}</em>
-							<button hidden onclick=${() => this.leaveRoom()}>Leave</button> `
-					: html`<button onclick=${() => this.openNewGame()}>Open New Game</button>`}
-			</p>
+			${this.gamesSocket
+				? html`<p>
+						You are in: <em>${this.gamesSocket?.room}</em>
+						<button hidden onclick=${() => this.leaveRoom()}>Leave</button>
+					</p>`
+				: html`<menu><button onclick=${() => this.openNewGame()}>Open New Game</button></menu>`}
 		`
 		render(this, tpl)
 	}
@@ -109,7 +107,7 @@ export class LiveLobby extends HTMLElement {
 						? html` <button onclick=${() => this.joinRoom(room.id)}>Join</button> `
 						: null}
 				</li>
-			`,
+			`
 		)}`
 	}
 }
