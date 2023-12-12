@@ -112,9 +112,9 @@ export class Exit extends Scene {
 						This is game idea in design & development.<br />
 						<br/>
 						Want to join or contribute? <br />
-						  &rarr; <a href="https://github.com/oskarrough/slagmark">github.com/oskarrough/slagmark<a/> source code<br /
+						  &rarr; <a href="https://github.com/oskarrough/slagmark">source<a/><br /
 						><br />
-						⬚⬚⬚⬚⬚⬚⬚⬚⬚⬚⬚⬚⬚⬚⬚⬚⬚⬚⬚⬚
+						⬚⬚⬚⬚⬚⬚⬚⬚⬚
 					</p>
 				</menu>
 			</slag-scene>
