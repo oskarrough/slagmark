@@ -27,7 +27,7 @@ export class Scene extends Node {
 	Stage = Closest(Stage)
 
 	mount() {
-		console.log('scene mount', this.constructor.name)
+		// console.log('scene mount', this.constructor.name)
 		render(this.Stage.element, () => this.render())
 		this.animate()
 	}

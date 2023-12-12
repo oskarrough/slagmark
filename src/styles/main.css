@@ -300,6 +300,10 @@ slag-mark-ui > main .Minion {
 	left: 0.5rem;
 }
 
+.Minion[fighting] {
+	scale: 3;
+}
+
 .Cursor {
 	position: absolute;
 	z-index: 1;

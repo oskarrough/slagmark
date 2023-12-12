@@ -3,7 +3,7 @@ import {uuid, random} from './stdlib/utils.js'
 import * as actions from './actions.js'
 import {Logger} from './stdlib/logger.js'
 import {Renderer} from './stdlib/renderer.js'
-import { beep } from './stdlib/audio.js'
+import {beep} from './stdlib/audio.js'
 
 /** @typedef {import('./actions.js').Action} Action */
 
@@ -186,16 +186,18 @@ export class Minion extends Task {
 	// Props
 	id = null
 	minionType = ''
-	cost = 2
+	cost = 1
 	y = -1
-	minionTypes = MINION_TYPES
 
-	// speed = 1
+	minionTypes = MINION_TYPES
+	defaultSpeed = 1
+
 	get speed() {
-		if (this.minionType === 'rock') return 0.8
-		if (this.minionType === 'paper') return 1.2
-		return 1
-}
+		const s = this.defaultSpeed 
+		if (this.minionType === 'rock') return s * 0.8
+		if (this.minionType === 'paper') return s * 1.2
+		return s
+	}
 
 	constructor() {
 		super()
@@ -206,7 +208,7 @@ export class Minion extends Task {
 	/* @param {Minion} enemy */
 	shouldFight(enemy) {
 		const bufferZone = 0.5
-		return !enemy.isFighting && Math.abs(this.y - enemy.y) <= bufferZone
+		return !enemy.queryAll(Fight)?.length && Math.abs(this.y - enemy.y) <= bufferZone
 	}
 
 	tick() {
@@ -222,22 +224,19 @@ export class Minion extends Task {
 		const opponent = this.Game.Players.find((p) => p !== this.Player)
 		if (this.y !== startY && this.y !== finalY) {
 			const enemies = opponent.Minions.filter((m) => this.shouldFight(m))
-			if (enemies?.length) this.isFighting = true
 			for (const enemy of enemies) {
-				enemy.isFighting = true
-				const loser = this.fight(enemy)
-				loser.shouldDisconnect = true
-				enemy.isFighting = false
-					beep('bleep-30.wav')
+				const fight = Fight.new({enemy})
+				this.add(fight)
+				// enemy.add(Fight.new({enemy: this}))
 			}
-			this.isFighting = false
 		}
 
 		const reachedOppositeEnd = (goingUp && this.y >= finalY) || (!goingUp && this.y <= finalY)
-		if (!reachedOppositeEnd) {
+		const fighting = this.queryAll(Fight)?.length
+		if (!reachedOppositeEnd && !fighting) {
 			this.move(goingUp ? 1 : -1)
 		} else {
-			opponent.health--
+			// opponent.health--
 			this.shouldDisconnect = true
 			console.log('lost health')
 			beep('bleep-28.wav')
@@ -258,35 +257,61 @@ export class Minion extends Task {
 		gold.decrement(this.cost)
 		this.y = this.Player.number === 1 ? 0 : this.Game.Board.height
 		this.deployed = this.Game.elapsedTime
-		console.log(`Player ${this.Player.number} deployed Minion ${this.minionType} on ${this.y}`)
+		// console.log(`Player ${this.Player.number} deployed Minion ${this.minionType} on ${this.y}`)
 		beep('bleep-26.wav')
 	}
 
 	move(direction = 1) {
 		const D = this.Game.deltaTime / 1000
-		// const T = this.Game.elapsedTime
-		// const V = D / T //(or D = V * T)
-		// this.y = this.y + V * direction
 		this.y += this.speed * D * direction
 	}
+}
 
+export class Fight extends Task {
+	Minion = Closest(Minion)
+
+	delay = 0
+	duration = 2000
+	// interval = 500
+	repeat = 1
+
+	/** @type {Minion} */
+	enemy = null
+
+	mount() {
+		console.log('fight mount', this.Minion?.minionType, 'vs', this.enemy?.minionType, this)
+		beep('bleep-30.wav')
+	}
+	
+	tick() {
+		console.log('fight tick')
+		this.fight()
+	}
+
+	afterCycle() {
+		console.log('fight afterCycle')
+		// const loser = this.fight(this.enemy)
+		// loser.shouldDisconnect = true
+	}
+	
 	/**
-	 * Returns the losing minion, if draw return a random winner
+	 * Returns the losing minion, if tie it picks a random loser
 	 * @argument {Minion} opponent
 	 */
-	fight(opponent) {
-		console.log('Fight', this.y, `Player ${this.Player.number}`, this.minionType, 'vs', opponent.minionType)
+	fight() {
+		const enemy = this.enemy
+		console.log('Fight', this.y, `Player ${this.Player.number}`, this.minionType, 'vs', enemy.minionType)
 		const winningCombos = {
 			rock: 'scissors',
 			paper: 'rock',
 			scissors: 'paper',
 		}
-		if (winningCombos[this.minionType] === opponent.minionType) {
-			return opponent
-		} else if (winningCombos[opponent.minionType] === this.minionType) {
+		if (winningCombos[this.minionType] === enemy.minionType) {
+			return enemy
+		} else if (winningCombos[enemy.minionType] === this.minionType) {
 			return this
 		} else {
-			return random([this, opponent])
+			return random([this, enemy])
 		}
 	}
 }
@@ -319,14 +344,14 @@ export class GameCountdown extends Task {
 
 class DeployRandomMinion extends Task {
 	Player = Closest(Player)
-	delay = 4000
-	interval = 3000
+	delay = 0
+	interval = 1200
 	duration = 0
 
 	tick() {
 		const gold = this.Player.Gold?.amount
 		const minions = this.Player.Minions.filter((m) => m instanceof Minion).filter(
-			(m) => !m.deployed && m.cost <= gold
+			(m) => !m.deployed && m.cost <= gold,
 		)
 		const minion = random(minions)
 		if (minion) {
