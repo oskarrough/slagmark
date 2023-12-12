@@ -65,12 +65,13 @@ body {
 	right: 0;
 	bottom: 0;
 	z-index: -1;
-	background: url(/public/bg.webp);
+	/* background: url(/public/bg.webp); */
+	/* background: url(/public/cover3.jpg); */
 	background: url(/public/bg2.jpg);
 	background-position: center;
 	background-repeat: no-repeat;
 	background-size: cover;
-	filter: brightness(0.7);
+	filter: brightness(0.8);
 	/* opacity: 0.2; */
 }
 
