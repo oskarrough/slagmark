@@ -186,10 +186,16 @@ export class Minion extends Task {
 	// Props
 	id = null
 	minionType = ''
-	cost = 1
+	cost = 2
 	y = -1
-	speed = 0.001
 	minionTypes = MINION_TYPES
+
+	// speed = 1
+	get speed() {
+		if (this.minionType === 'rock') return 0.8
+		if (this.minionType === 'paper') return 1.2
+		return 1
+}
 
 	constructor() {
 		super()
@@ -257,7 +263,7 @@ export class Minion extends Task {
 	}
 
 	move(direction = 1) {
-		const D = this.Game.deltaTime
+		const D = this.Game.deltaTime / 1000
 		// const T = this.Game.elapsedTime
 		// const V = D / T //(or D = V * T)
 		// this.y = this.y + V * direction
