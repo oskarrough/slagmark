@@ -29,18 +29,22 @@ export function UI(game) {
 			</article>
 		`
 	if (players.length < 2)
-		return html`<slag-box>
-			<p>
-				Need one more player.<br /><br />
-				<label
-					>Share this URL with someone to join: <input type="text" readonly value=${location.href}
-				/></label>
-			</p>
-			<br />
-			<p>
-				Or.. <button onclick=${() => addAi(game)} type="button">Play against a computer bot</button> instead.
-			</p>
-		</slag-box>`
+		return html`<header>
+			<slag-box>
+				<h2>Waiting for one more player&hellip;</h2>
+				<br/>
+				<p>
+					<label
+						>Share this URL for someone to join: <input type="text" readonly value=${location.href}
+					/></label>
+				</p>
+				<br />
+				<p>Or&hellip;</p>
+				<menu>
+					<button onclick=${() => addAi(game)} type="button">Play against the computer</button>
+				</menu>
+			</slag-box>
+		</header>`
 
 	return html`
 		<header>
@@ -102,11 +106,7 @@ function DeployedMinion(minion) {
 	const height = minion.Game.Board.height
 	const topPercentage = minion.deployed ? ((height - minion.y) / height) * 100 : 0
 	// const label = html`<span>${roundOne(minion.y)}/${roundOne(topPercentage)}%</span>`
-	return html`<li
-		class="Minion"
-		style=${`top: ${topPercentage}%`}
-		data-player-number=${minion.Player.number}
-	>
+	return html`<li class="Minion" style=${`top: ${topPercentage}%`} data-player-number=${minion.Player.number}>
 		${minionTypeToEmoji(minion.minionType)}
 	</li>`
 }
