@@ -3,6 +3,7 @@ import {uuid, random} from './stdlib/utils.js'
 import * as actions from './actions.js'
 import {Logger} from './stdlib/logger.js'
 import {Renderer} from './stdlib/renderer.js'
+import { beep } from './stdlib/audio.js'
 
 /** @typedef {import('./actions.js').Action} Action */
 
