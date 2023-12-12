@@ -172,26 +172,34 @@ export class RefillMinions extends Task {
 export const MINION_TYPES = ['rock', 'paper', 'scissors']
 
 export class Minion extends Task {
-	// Dependencies
 	Game = Closest(GameLoop)
 	Player = Closest(Player)
+
 	// Task schedule
-	delay = 0
-	duration = 0
-	interval = 1000
-	repeat = Infinity
+	// delay = 0
+	// duration = 0
+	// interval = 60
+	// interval = 1000
+	// repeat = Infinity
+
 	// Props
 	id = null
 	minionType = ''
 	cost = 1
 	y = -1
-	speed = 1
+	speed = 0.001
 	minionTypes = MINION_TYPES
 
 	constructor() {
 		super()
 		this.id = uuid()
 		this.minionType = random(this.minionTypes)
+	}
+
+	/* @param {Minion} enemy */
+	shouldFight(enemy) {
+		const bufferZone = 0.5
+		return !enemy.isFighting && Math.abs(this.y - enemy.y) <= bufferZone
 	}
 
 	tick() {
@@ -206,25 +214,31 @@ export class Minion extends Task {
 		// Fight any enemies on same Y, and remove the loser.
 		const opponent = this.Game.Players.find((p) => p !== this.Player)
 		if (this.y !== startY && this.y !== finalY) {
-			const enemies = opponent.Minions.filter((m) => m.y === this.y)
+			const enemies = opponent.Minions.filter((m) => this.shouldFight(m))
+			if (enemies?.length) this.isFighting = true
 			for (const enemy of enemies) {
+				enemy.isFighting = true
 				const loser = this.fight(enemy)
 				loser.shouldDisconnect = true
+				enemy.isFighting = false
+					beep('bleep-30.wav')
 			}
+			this.isFighting = false
 		}
 
-		// If we reached the opposite end, opponent player loses a life, and we leave the board.
-		if (this.y === finalY) {
+		const reachedOppositeEnd = (goingUp && this.y >= finalY) || (!goingUp && this.y <= finalY)
+		if (!reachedOppositeEnd) {
+			this.move(goingUp ? 1 : -1)
+		} else {
 			opponent.health--
 			this.shouldDisconnect = true
-		} else {
-			this.move(goingUp ? 1 : -1)
+			console.log('lost health')
+			beep('bleep-28.wav')
 		}
 	}
 
 	afterCycle() {
-		if (!this.deployed) return
-		if (this.shouldDisconnect) this.disconnect()
+		if (this.deployed && this.shouldDisconnect) this.disconnect()
 	}
 
 	/** Deploys to the starting side of the parent Player's board. */
@@ -238,10 +252,15 @@ export class Minion extends Task {
 		this.y = this.Player.number === 1 ? 0 : this.Game.Board.height
 		this.deployed = this.Game.elapsedTime
 		console.log(`Player ${this.Player.number} deployed Minion ${this.minionType} on ${this.y}`)
+		beep('bleep-26.wav')
 	}
 
 	move(direction = 1) {
-		this.y = this.y + this.speed * direction
+		const D = this.Game.deltaTime
+		// const T = this.Game.elapsedTime
+		// const V = D / T //(or D = V * T)
+		// this.y = this.y + V * direction
+		this.y += this.speed * D * direction
 	}
 
 	/**

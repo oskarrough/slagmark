@@ -296,11 +296,7 @@ slag-mark-ui > main .Minion {
 	font-size: 3rem;
 	position: absolute;
 	transform: translateY(-50%);
-	transition: top 16ms linear;
 	left: 0.5rem;
-}
-slag-mark-ui > main [data-player] .Minion {
-	left: 1.5rem;
 }
 
 .Cursor {

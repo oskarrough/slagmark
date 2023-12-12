@@ -101,15 +101,13 @@ function MinionList(player) {
 function DeployedMinion(minion) {
 	const height = minion.Game.Board.height
 	const topPercentage = minion.deployed ? ((height - minion.y) / height) * 100 : 0
-
+	// const label = html`<span>${roundOne(minion.y)}/${roundOne(topPercentage)}%</span>`
 	return html`<li
 		class="Minion"
-		data-player-number=${minion.Player.number}
-		data-y=${minion.y}
 		style=${`top: ${topPercentage}%`}
+		data-player-number=${minion.Player.number}
 	>
 		${minionTypeToEmoji(minion.minionType)}
-		<span>${minion.y}</span>
 	</li>`
 }
 
