@@ -27,6 +27,7 @@ export class SlagMark extends HTMLElement {
 		if (this.game) this.game.stop()
 		this.game = GameLoop.new({element: this.uiEl, playerId: gamesSocket.id})
 		this.game?.start()
+		window.slagmark.game = this.game
 
 		if (this.hasAttribute('ai')) {
 			this.game.runAction({type: 'spawnAI'})

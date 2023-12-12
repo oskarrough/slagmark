@@ -24,8 +24,10 @@ export class LiveLobby extends HTMLElement {
 
 		const urlParams = new URLSearchParams(window.location.search)
 		if (urlParams.has('room')) {
+			console.log('auto-joining')
 			this.joinRoom(urlParams.get('room'))
 		} else if (this.hasAttribute('autocreate')) {
+			console.log('autocreate')
 			this.openNewGame()
 		}
 	}

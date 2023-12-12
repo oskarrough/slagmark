@@ -18,6 +18,8 @@ export class GameLoop extends Loop {
 
 	// Also known as the websocket connection id.
 	playerId = null
+	player1 = null
+	player2 = null
 
 	// Inidicator for the UI when to switch scene
 	gameOver = false
@@ -95,8 +97,8 @@ export class Player extends Task {
 	Minions = QueryAll(Minion)
 	Gold = Query(Gold)
 
-	health = 1
-	number = 0 // in the context of a single game
+	health = 3
+	number = 0 // used to determine who is above, who is below on the slagmark
 
 	afterCycle() {
 		if (this.health <= 0) {
@@ -107,7 +109,7 @@ export class Player extends Task {
 
 	serialize() {
 		const {id, number, health} = this
-		return {id,number,health, gold: this.Gold?.amount}
+		return {id, number, health, gold: this.Gold?.amount}
 	}
 }
 
@@ -289,7 +291,6 @@ export class GameCountdown extends Task {
 	}
 }
 
-
 class DeployRandomMinion extends Task {
 	Player = Closest(Player)
 	delay = 4000
@@ -298,9 +299,9 @@ class DeployRandomMinion extends Task {
 
 	tick() {
 		const gold = this.Player.Gold?.amount
-		const minions = this.Player.Minions
-			.filter((m) => m instanceof Minion)
-			.filter((m) => !m.deployed && m.cost <= gold)
+		const minions = this.Player.Minions.filter((m) => m instanceof Minion).filter(
+			(m) => !m.deployed && m.cost <= gold
+		)
 		const minion = random(minions)
 		if (minion) {
 			this.Player.Game.runAction({type: 'deployMinion', id: minion?.id})

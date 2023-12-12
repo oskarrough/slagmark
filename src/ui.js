@@ -1,5 +1,5 @@
+import {html} from 'uhtml/keyed'
 import {roundOne} from './stdlib/utils.js'
-import {html} from 'uhtml'
 import {GameCountdown, Player, Gold, AIPlayer} from './nodes.js'
 
 function addAi(game) {
@@ -12,8 +12,8 @@ export function UI(game) {
 	if (players.length < 1) return html`<p>Loading...</p>`
 
 	// decide who is "you" and who is the opponent
-	const player1 = players[0]
-	const player2 = players[1]
+	const player1 = players.find((p) => p.number === 1)
+	const player2 = players.find((p) => p.number === 2)
 
 	const countdown = game.query(GameCountdown)
 	const disabled = players.length < 2 || Boolean(countdown)
@@ -53,10 +53,10 @@ export function UI(game) {
 
 		<main>
 			<ul data-player2>
-				${MinionList(player2, true)}
+				${MinionList(player2)}
 			</ul>
 			<ul data-player1>
-				${MinionList(player1, true)}
+				${MinionList(player1)}
 			</ul>
 		</main>
 	`
@@ -93,7 +93,7 @@ function PlayerDisplay(player, game) {
 }
 
 function MinionList(player) {
-	let list = player?.Minions.filter((m) => m.deployed)
+	const list = player?.Minions.filter((m) => m.deployed)
 	if (!list?.length) return null
 	return html`${list.map((m) => DeployedMinion(m))}`
 }

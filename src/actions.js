@@ -28,9 +28,9 @@ import {Player, AIPlayer, Minion, GameCountdown} from './nodes.js'
  */
 export function playerConnected(game, action) {
 	for (const player of action.players) {
-		// If the player was already in the game, skip
+		// If already in game, skip
 		if (game.Players.find((p) => p.id === player.id)) continue
-		// Else create a new player, with minions.
+		// ...else create a new player, with minions.
 		const p = Player.new({id: player.id, number: player.number})
 		for (const {id, minionType} of player.minions) {
 			p.add(Minion.new({id, minionType}))
@@ -99,5 +99,6 @@ export function stop(game) {
 
 export function spawnAI(game) {
 	game.add(AIPlayer.new({number: 2}))
-	game.runAction({type: 'startGameCountdown'})
+	game.runAction({type: 'startGameCountdown', countFrom: 1})
+	// number: this.players.size + 1,
 }
