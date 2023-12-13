@@ -181,7 +181,7 @@ export class Minion extends Task {
 
 	id = null
 	minionType = ''
-	cost = 1
+	cost = 2
 	y = -1
 	defaultSpeed = 1.5
 	minionTypes = MINION_TYPES
@@ -290,9 +290,7 @@ export class Fight extends Task {
 		// console.log('fight afterCycle', this.Minion.y, this.Minion.minionType, 'vs', this.enemy?.minionType)
 		if (this.enemy) {
 			const loser = this.fight()
-			// this.Minion.Game.runAction({type: 'minionFightOver', loserId: loser.id, minionId: this.Minion.id, enemyId: this.enemy.id})
-			loser.shouldDisconnect = true
-			beep('bleep-30.wav')
+			this.Minion.Game.runAction({type: 'minionFight', loserId: loser.id, minionId: this.Minion.id, enemyId: this.enemy.id})
 		}
 	}
 

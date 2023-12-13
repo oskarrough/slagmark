@@ -80,17 +80,16 @@ export function startGameCountdown(game, action) {
 	game.add(countdown)
 }
 
-
 /**
  * @param {Game} game
  * @param {Action<{serializedPlayer: {id: string, number: number, health: number, gold: number}}>} action
  */
 export function gameOver(game, action) {
-	game.loser = action.serializedPlayer
-	const msg = `Player ${game.loser.number} (${game.loser.id}) lost!`
-	console.log(msg)
 	game.gameOver = true
+	game.loser = action.serializedPlayer
 	game.pause()
+	// const msg = `Player ${game.loser.number} (${game.loser.id}) lost!`
+	// console.log(msg)
 }
 
 // does this sync pauses?!
@@ -109,14 +108,21 @@ export function spawnAI(game) {
  * @param {Action<{minionId: string, opponentPlayerId: string}>} action
  */
 export function minionReachedEnd(game, action) {
-	const minion = game.Minions.find(m => m.id === action.minionId)
+	const minion = game.Minions.find((m) => m.id === action.minionId)
 	if (!minion) return //throw new Error('missing minion')
 
 	beep('bleep-28.wav')
 	minion.shouldDisconnect = true
 
-	const player = game.Players.find(p => p.id === action.opponentPlayerId)
+	const player = game.Players.find((p) => p.id === action.opponentPlayerId)
 	if (!player) throw new Error('missing player')
 	player.health--
 }
 
+export function minionFight(game, action) {
+	const loser = game.Minions.find((m) => m.id === action.loserId)
+	if (loser) {
+		loser.shouldDisconnect = true
+		beep('bleep-30.wav')
+	}
+}
