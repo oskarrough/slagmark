@@ -116,7 +116,7 @@ function MinionAvatar(minion) {
 	const canDeploy = !minion.deployed && minion.Player.query(Gold)?.amount >= minion.cost
 
 	const deploy = () => {
-		minion.Game.runAction({type: 'deployMinion', id: minion.id})
+		minion.Game.runAction({type: 'deployMinion', minionId: minion.id})
 	}
 
 	return html`<li class="Minion Minion--avatar" data-player-number=${minion.Player.number}>

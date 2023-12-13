@@ -1,4 +1,5 @@
 import {Player, AIPlayer, Minion, GameCountdown} from './nodes.js'
+import {beep} from './stdlib/audio.js'
 
 /**
  * All "action" functions exported here follow a few rules:
@@ -64,10 +65,10 @@ export function createMinion(game, action) {
 /**
  * Deploys a minion to the slagmark.
  * @param {Game} game
- * @param {Action<{id: string}>} action
+ * @param {Action<{minionId: string}>} action
  */
 export function deployMinion(game, action) {
-	const minion = game.Minions.find((m) => m.id === action.id)
+	const minion = game.Minions.find((m) => m.id === action.minionId)
 	minion?.deploy()
 }
 
@@ -101,3 +102,21 @@ export function spawnAI(game) {
 	game.add(AIPlayer.new({number: 2}))
 	game.runAction({type: 'startGameCountdown', countFrom: 1})
 }
+
+/**
+ * Deploys a minion to the slagmark.
+ * @param {Game} game
+ * @param {Action<{minionId: string, opponentPlayerId: string}>} action
+ */
+export function minionReachedEnd(game, action) {
+	const minion = game.Minions.find(m => m.id === action.minionId)
+	if (!minion) return //throw new Error('missing minion')
+
+	beep('bleep-28.wav')
+	minion.shouldDisconnect = true
+
+	const player = game.Players.find(p => p.id === action.opponentPlayerId)
+	if (!player) throw new Error('missing player')
+	player.health--
+}
+

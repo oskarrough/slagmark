@@ -9,7 +9,7 @@ import {GameLoop, AIPlayer} from '../nodes.js'
 export class SlagMark extends HTMLElement {
 	connectedCallback() {
 		window.slagmark.el = this
-		console.log('you can now debug window.slagmark', window.slagmark)
+		console.log('Slagmark! Debug with window.slagmark', window.slagmark)
 
 		// We require a child <live-lobby> element for now.
 		this.lobbyEl = this.querySelector('live-lobby')
