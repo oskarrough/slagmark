@@ -1,6 +1,6 @@
 import {html} from 'uhtml/keyed'
 import {roundOne} from './stdlib/utils.js'
-import {GameCountdown, Player, Gold, AIPlayer} from './nodes.js'
+import {GameCountdown, Player, Gold, AIPlayer, Fight} from './nodes.js'
 
 function addAi(game) {
 	game.runAction({type: 'spawnAI'})
@@ -105,8 +105,9 @@ function MinionList(player) {
 function DeployedMinion(minion) {
 	const height = minion.Game.Board.height
 	const topPercentage = minion.deployed ? ((height - minion.y) / height) * 100 : 0
+	const isFighting = minion.queryAll(Fight)?.length > 0
 	// const label = html`<span>${roundOne(minion.y)}/${roundOne(topPercentage)}%</span>`
-	return html`<li class="Minion" style=${`top: ${topPercentage}%`} data-player-number=${minion.Player.number}>
+	return html`<li class="Minion" ?fighting=${isFighting} style=${`top: ${topPercentage}%`} data-player-number=${minion.Player.number}>
 		${minionTypeToEmoji(minion.minionType)}
 	</li>`
 }
@@ -115,7 +116,7 @@ function MinionAvatar(minion) {
 	const canDeploy = !minion.deployed && minion.Player.query(Gold)?.amount >= minion.cost
 
 	const deploy = () => {
-		minion.Game.runAction({type: 'deployMinion', id: minion.id})
+		minion.Game.runAction({type: 'deployMinion', minionId: minion.id})
 	}
 
 	return html`<li class="Minion Minion--avatar" data-player-number=${minion.Player.number}>

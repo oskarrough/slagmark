@@ -1,4 +1,5 @@
 import {Player, AIPlayer, Minion, GameCountdown} from './nodes.js'
+import {beep} from './stdlib/audio.js'
 
 /**
  * All "action" functions exported here follow a few rules:
@@ -64,10 +65,10 @@ export function createMinion(game, action) {
 /**
  * Deploys a minion to the slagmark.
  * @param {Game} game
- * @param {Action<{id: string}>} action
+ * @param {Action<{minionId: string}>} action
  */
 export function deployMinion(game, action) {
-	const minion = game.Minions.find((m) => m.id === action.id)
+	const minion = game.Minions.find((m) => m.id === action.minionId)
 	minion?.deploy()
 }
 
@@ -79,17 +80,16 @@ export function startGameCountdown(game, action) {
 	game.add(countdown)
 }
 
-
 /**
  * @param {Game} game
  * @param {Action<{serializedPlayer: {id: string, number: number, health: number, gold: number}}>} action
  */
 export function gameOver(game, action) {
-	game.loser = action.serializedPlayer
-	const msg = `Player ${game.loser.number} (${game.loser.id}) lost!`
-	console.log(msg)
 	game.gameOver = true
+	game.loser = action.serializedPlayer
 	game.pause()
+	// const msg = `Player ${game.loser.number} (${game.loser.id}) lost!`
+	// console.log(msg)
 }
 
 // does this sync pauses?!
@@ -99,6 +99,30 @@ export function stop(game) {
 
 export function spawnAI(game) {
 	game.add(AIPlayer.new({number: 2}))
-	game.runAction({type: 'startGameCountdown', countFrom: 3})
-	// number: this.players.size + 1,
+	game.runAction({type: 'startGameCountdown', countFrom: 1})
+}
+
+/**
+ * Deploys a minion to the slagmark.
+ * @param {Game} game
+ * @param {Action<{minionId: string, opponentPlayerId: string}>} action
+ */
+export function minionReachedEnd(game, action) {
+	const minion = game.Minions.find((m) => m.id === action.minionId)
+	if (!minion) return //throw new Error('missing minion')
+
+	beep('bleep-28.wav')
+	minion.shouldDisconnect = true
+
+	const player = game.Players.find((p) => p.id === action.opponentPlayerId)
+	if (!player) throw new Error('missing player')
+	player.health--
+}
+
+export function minionFight(game, action) {
+	const loser = game.Minions.find((m) => m.id === action.loserId)
+	if (loser) {
+		loser.shouldDisconnect = true
+		beep('bleep-30.wav')
+	}
 }
