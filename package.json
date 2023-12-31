@@ -13,18 +13,17 @@
 	},
 	"dependencies": {
 		"concurrently": "^8.2.2",
-		"gsap": "^3.12.3",
+		"gsap": "^3.12.4",
 		"lodash": "^4.17.21",
-		"nanoid": "^5.0.4",
-		"partysocket": "^0.0.17",
+		"partysocket": "^0.0.18",
 		"prettier": "^3.1.1",
-		"uhtml": "^4.1.21",
+		"uhtml": "^4.2.0",
 		"usignal": "^0.9.0",
 		"vroum": "^0.6.12"
 	},
 	"devDependencies": {
-		"vite": "^5.0.7",
-		"partykit": "^0.0.43"
+		"vite": "^5.0.10",
+		"partykit": "^0.0.57"
 	},
 	"prettier": {
 		"bracketSpacing": false,
