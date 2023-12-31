@@ -10,7 +10,7 @@ import PartySocket from 'partysocket'
  */
 
 export const PARTYKIT_URL =
-	import.meta.env.MODE === 'production' ? 'https://rumble.oskarrough.partykit.dev' : 'http://localhost:1999'
+	import.meta.env.MODE === 'production' ? 'https://slagmark.oskarrough.partykit.dev' : 'http://localhost:1999'
 
 // https://docs.partykit.io/reference/partysocket-api/
 export const lobbySocket = new PartySocket({

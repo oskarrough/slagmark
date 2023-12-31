@@ -1,5 +1,5 @@
 {
-  "name": "rumble",
+  "name": "slagmark",
   "main": "server/lobby.js",
 	"parties": {
   	"games": "server/games.js"
