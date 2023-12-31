@@ -24,7 +24,7 @@ export class GameLoop extends Loop {
 
 	// Inidicator for the UI when to switch scene
 	gameOver = false
-	
+
 	// the "serialized" player that lost
 	loser = null
 
@@ -212,7 +212,6 @@ export class Minion extends Task {
 
 		// Decide if we need to go up or down.
 		const goingUp = this.Player.number === 1
-
 		const startY = goingUp ? 0 : this.Game.Board.height
 		const finalY = goingUp ? this.Game.Board.height : 0
 
@@ -228,6 +227,7 @@ export class Minion extends Task {
 		const reachedOppositeEnd = (goingUp && this.y >= finalY) || (!goingUp && this.y <= finalY)
 		const fighting = this.query(Fight)
 
+		// If not fighting or reached the end, we assume the minion is moving.
 		if (!fighting && !reachedOppositeEnd) {
 			this.move(goingUp ? 1 : -1)
 		} else if (reachedOppositeEnd) {
@@ -259,7 +259,7 @@ export class Minion extends Task {
 }
 
 export class Fight extends Task {
-	delay = 1000
+	delay = 0
 	duration = 0
 	// interval = 0
 	repeat = 1
@@ -270,27 +270,30 @@ export class Fight extends Task {
 	enemy = null
 
 	mount() {
-		// console.log('fight mount', this.Minion?.minionType, 'vs', this.enemy?.minionType, this)
-		// this.Minion.hold = true
-		// this.enemy.hold = true
+		console.log('fight mount', this.Minion?.minionType, 'vs', this.enemy?.minionType, this)
 		if (!this.parent) {
 			console.log('this should not happen', this)
 			this.disconnect()
 			return
 		}
-		if (this.enemy) this.enemy.add(Fight.new())
+		// if (this.enemy) this.enemy.add(Fight.new())
 		// beep('bleep-29.wav')
 	}
 
 	tick() {
-		// console.log('fight tick', this.Minion.y, this.Minion.minionType, 'vs', this.enemy?.minionType)
+		console.log('fight tick', this.Minion.y, this.Minion.minionType, 'vs', this.enemy?.minionType)
 	}
 
 	afterCycle() {
-		// console.log('fight afterCycle', this.Minion.y, this.Minion.minionType, 'vs', this.enemy?.minionType)
+		console.log('fight afterCycle', this.Minion.y, this.Minion.minionType, 'vs', this.enemy?.minionType)
 		if (this.enemy) {
 			const loser = this.fight()
-			this.Minion.Game.runAction({type: 'minionFight', loserId: loser.id, minionId: this.Minion.id, enemyId: this.enemy.id})
+			this.Minion.Game.runAction({
+				type: 'minionFight',
+				loserId: loser.id,
+				minionId: this.Minion.id,
+				enemyId: this.enemy.id,
+			})
 		}
 	}
 

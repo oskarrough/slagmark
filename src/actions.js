@@ -99,7 +99,7 @@ export function stop(game) {
 
 export function spawnAI(game) {
 	game.add(AIPlayer.new({number: 2}))
-	game.runAction({type: 'startGameCountdown', countFrom: 1})
+	game.runAction({type: 'startGameCountdown', countFrom: 3})
 }
 
 /**
