@@ -1,4 +1,4 @@
-import {GameLoop, AIPlayer} from '../nodes.js'
+import {GameLoop} from '../nodes.js'
 
 /**
  * Coordinates the communication between all our things:
