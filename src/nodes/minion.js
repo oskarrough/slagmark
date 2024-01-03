@@ -1,5 +1,5 @@
 import {Task, Closest} from 'vroum'
-import {GameLoop} from '../nodes.js'
+import {GameLoop} from './game-loop.js'
 import {beep} from '../stdlib/audio.js'
 import {uuid, random} from '../stdlib/utils.js'
 import {Player} from './player.js'

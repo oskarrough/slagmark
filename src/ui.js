@@ -1,11 +1,12 @@
 import {html} from 'uhtml/keyed'
 import {roundOne} from './stdlib/utils.js'
-import {GameStartCountdown} from './nodes.js'
+import {StartCountdown} from './nodes.js'
 import {Player, AIPlayer, Gold} from './nodes/player.js'
 import {Fight} from './nodes/minion.js'
 
 function addAi(game) {
 	game.runAction({type: 'spawnAI'})
+	game.runAction({type: 'startGameCountdown', countFrom: 3})
 }
 
 export function UI(game) {
@@ -17,7 +18,7 @@ export function UI(game) {
 	const player1 = players.find((p) => p.number === 1)
 	const player2 = players.find((p) => p.number === 2)
 
-	const countdown = game.query(GameStartCountdown)
+	const countdown = game.query(StartCountdown)
 	const disabled = players.length < 2 || Boolean(countdown)
 
 	if (game.gameOver)
