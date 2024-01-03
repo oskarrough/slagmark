@@ -1,9 +1,12 @@
 import {html} from 'uhtml/keyed'
 import {roundOne} from './stdlib/utils.js'
-import {GameCountdown, Player, Gold, AIPlayer, Fight} from './nodes.js'
+import {StartCountdown} from './nodes.js'
+import {Player, AIPlayer, Gold} from './nodes/player.js'
+import {Fight} from './nodes/minion.js'
 
 function addAi(game) {
 	game.runAction({type: 'spawnAI'})
+	game.runAction({type: 'startGameCountdown', countFrom: 3})
 }
 
 export function UI(game) {
@@ -15,7 +18,7 @@ export function UI(game) {
 	const player1 = players.find((p) => p.number === 1)
 	const player2 = players.find((p) => p.number === 2)
 
-	const countdown = game.query(GameCountdown)
+	const countdown = game.query(StartCountdown)
 	const disabled = players.length < 2 || Boolean(countdown)
 
 	if (game.gameOver)
@@ -32,7 +35,7 @@ export function UI(game) {
 		return html`<header>
 			<slag-box>
 				<h2>Waiting for one more player&hellip;</h2>
-				<br/>
+				<br />
 				<p>
 					<label
 						>Share this URL for someone to join: <input type="text" readonly value=${location.href}
@@ -107,7 +110,12 @@ function DeployedMinion(minion) {
 	const topPercentage = minion.deployed ? ((height - minion.y) / height) * 100 : 0
 	const isFighting = minion.queryAll(Fight)?.length > 0
 	// const label = html`<span>${roundOne(minion.y)}/${roundOne(topPercentage)}%</span>`
-	return html`<li class="Minion" ?fighting=${isFighting} style=${`top: ${topPercentage}%`} data-player-number=${minion.Player.number}>
+	return html`<li
+		class="Minion"
+		?fighting=${isFighting}
+		style=${`top: ${topPercentage}%`}
+		data-player-number=${minion.Player.number}
+	>
 		${minionTypeToEmoji(minion.minionType)}
 	</li>`
 }

@@ -1,4 +1,6 @@
-import {Player, AIPlayer, Minion, GameCountdown} from './nodes.js'
+import {StartCountdown} from './nodes.js'
+import {Player, AIPlayer} from './nodes/player.js'
+import {Minion} from './nodes/minion.js'
 import {beep} from './stdlib/audio.js'
 
 /**
@@ -76,7 +78,7 @@ export function deployMinion(game, action) {
  * @param {Game} game
  */
 export function startGameCountdown(game, action) {
-	const countdown = GameCountdown.new({repeat: action.countFrom || 4})
+	const countdown = StartCountdown.new({repeat: action.countFrom || 4})
 	game.add(countdown)
 }
 
@@ -99,7 +101,6 @@ export function stop(game) {
 
 export function spawnAI(game) {
 	game.add(AIPlayer.new({number: 2}))
-	game.runAction({type: 'startGameCountdown', countFrom: 3})
 }
 
 /**

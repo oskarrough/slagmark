@@ -1,4 +1,4 @@
-import {GameLoop, AIPlayer} from '../nodes.js'
+import {GameLoop} from '../nodes/game-loop.js'
 
 /**
  * Coordinates the communication between all our things:
@@ -31,6 +31,7 @@ export class SlagMark extends HTMLElement {
 
 		if (this.hasAttribute('ai')) {
 			this.game.runAction({type: 'spawnAI'})
+			this.game.runAction({type: 'startGameCountdown', countFrom: 3})
 		}
 
 		history.replaceState({room: roomId}, roomId, `?room=${roomId}`)
