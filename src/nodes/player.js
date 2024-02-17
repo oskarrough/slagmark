@@ -1,7 +1,8 @@
 import {Task, Query, QueryAll, Closest} from 'vroum'
 import {random, uuid} from '../stdlib/utils.js'
 import {GameLoop} from './game-loop.js'
-import {Minion, MINION_TYPES} from './minion.js'
+import {Minion} from './minion.js'
+import {MINION_TYPES} from '../minion-types.js'
 
 export class Player extends Task {
 	Game = Closest(GameLoop)

@@ -3,8 +3,7 @@ import {GameLoop} from './game-loop.js'
 import {beep} from '../stdlib/audio.js'
 import {uuid, random} from '../stdlib/utils.js'
 import {Player} from './player.js'
-
-export const MINION_TYPES = ['rock', 'paper', 'scissors']
+import { MINION_TYPES } from '../minion-types.js'
 
 export class Minion extends Task {
 	Game = Closest(GameLoop)

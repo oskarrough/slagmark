@@ -1,4 +1,5 @@
 import {random, uuid} from '../src/stdlib/utils'
+import {MINION_TYPES} from '../src/minion-types.js'
 
 /** @typedef {import('partykit/server').Server} Server */
 /** @typedef {import('partykit/server').Party} Party */
@@ -78,12 +79,12 @@ export default class PartyServer {
 		return {
 			id,
 			number: this.players.size + 1,
-			minions: Array(4)
+			minions: Array(2)
 				.fill()
 				.map((_) => {
 					return {
 						id: uuid(),
-						minionType: random(['rock', 'paper', 'scissors']),
+						minionType: random(MINION_TYPES),
 					}
 				}),
 		}
