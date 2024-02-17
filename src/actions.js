@@ -84,11 +84,11 @@ export function startGameCountdown(game, action) {
 
 /**
  * @param {Game} game
- * @param {Action<{serializedPlayer: {id: string, number: number, health: number, gold: number}}>} action
+ * @param {Action<{losingSerializedPlayer: {id: string, number: number, health: number, gold: number}}>} action
  */
 export function gameOver(game, action) {
 	game.gameOver = true
-	game.loser = action.serializedPlayer
+	game.loser = action.losingSerializedPlayer
 	game.pause()
 	// const msg = `Player ${game.loser.number} (${game.loser.id}) lost!`
 	// console.log(msg)

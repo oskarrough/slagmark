@@ -13,8 +13,7 @@ export class Player extends Task {
 
 	afterCycle() {
 		if (this.health <= 0) {
-			const gameOverAction = {type: 'gameOver', serializedPlayer: this.serialize()}
-			this.Game.runAction(gameOverAction)
+			this.Game.runAction({type: 'gameOver', losingSerializedPlayer: this.serialize()})
 		}
 	}
 
