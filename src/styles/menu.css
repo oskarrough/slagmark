@@ -4,7 +4,7 @@ menu {
 	border-top: 1px solid hsl(300deg 1% 13%);
 	border-left: 2px solid hsl(300deg 1% 10%);
 	border-right: 2px solid hsl(300deg 1% 10%);
-	border-bottom: 5px solid hsl(300deg 1% 6%);
+	border-bottom: 4px solid hsl(300deg 1% 8%);
 }
 
 slag-box {
@@ -14,25 +14,40 @@ slag-box {
 	padding: 1rem;
 }
 
+slag-box[split] {
+	& input {
+		width: 40ch;
+	}
+
+	> p {
+		font-size: 14px;
+		margin: 1.5rem 1rem 0.5rem;
+	}
+}
+
 menu {
-	margin: max(2rem, 5vh) auto 0;
 	display: flex;
 	flex-flow: column wrap;
 	gap: 0.2rem;
 	width: 100%;
 	max-width: 26rem;
+	/* margin: max(2rem, 5vh) auto 0; */
 	padding: 0.2rem;
 	background: var(--bg);
 }
 
+slag-box menu,
+slag-box input {
+	margin: 0.4em 0;
+}
+
 menu[horizontal] {
+	max-width: 70%;
 	flex-flow: row;
 }
-
 menu[horizontal] > * {
-	min-height: 1.5rem;
+	min-height: 2rem;
 }
-
 menu[horizontal] p {
 	display: flex;
 }
@@ -92,7 +107,7 @@ menu button:active {
 menu[tr] {
 	position: absolute;
 	top: 0.5rem;
-	left: 0.5rem;
+	right: 0.5rem;
 	z-index: 10;
 	width: auto;
 	margin: 0;

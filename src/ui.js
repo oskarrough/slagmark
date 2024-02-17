@@ -4,23 +4,12 @@ import {StartCountdown} from './nodes.js'
 import {Player, AIPlayer, Gold} from './nodes/player.js'
 import {Fight} from './nodes/minion.js'
 
-function addAi(game) {
+function startGameVersusAi(game) {
 	game.runAction({type: 'spawnAI'})
 	game.runAction({type: 'startGameCountdown', countFrom: 3})
 }
 
 export function UI(game) {
-	const players = game.queryAll(Player)
-
-	if (players.length < 1) return html`<p>Loading...</p>`
-
-	// decide who is "you" and who is the opponent
-	const player1 = players.find((p) => p.number === 1)
-	const player2 = players.find((p) => p.number === 2)
-
-	const countdown = game.query(StartCountdown)
-	const disabled = players.length < 2 || Boolean(countdown)
-
 	if (game.gameOver)
 		return html`
 			<article>
@@ -31,23 +20,34 @@ export function UI(game) {
 				<p>😊</p>
 			</article>
 		`
+	const players = game.queryAll(Player)
+	if (players.length < 1) return html`<p>Loading...</p>`
 	if (players.length < 2)
 		return html`<header>
-			<slag-box>
-				<h2>Waiting for one more player&hellip;</h2>
-				<br />
-				<p>
-					<label
-						>Share this URL for someone to join: <input type="text" readonly value=${location.href}
-					/></label>
-				</p>
-				<br />
-				<p>Or&hellip;</p>
-				<menu>
-					<button onclick=${() => addAi(game)} type="button">Play against the computer</button>
-				</menu>
+			<slag-box split>
+				<div>
+					<h2>Invite your opponent</h2>
+					<p>
+						<label><input type="text" readonly value=${location.href} /><br>
+<small>Share this URL &uarr;</small>
+						</label>
+					</p>
+				</div>
+				<p>OR &darr;</p>
+				<div>
+					<menu>
+						<button onclick=${() => startGameVersusAi(game)} type="button">Play vs AI</button>
+					</menu>
+				</div>
 			</slag-box>
 		</header>`
+
+
+	// decide who is "you" and who is the opponent
+	const player1 = players.find((p) => p.number === 1)
+	const player2 = players.find((p) => p.number === 2)
+	const countdown = game.query(StartCountdown)
+	const disabled = players.length < 2 || Boolean(countdown)
 
 	return html`
 		<header>
@@ -93,6 +93,7 @@ function PlayerDisplay(player, game) {
 			<h2>Player ${player.number} ${HealthBar(player.health)}</h2>
 			<ul class="MinionBar">
 				${player.Minions.filter((m) => !m.deployed).map((m) => MinionAvatar(m))}
+				${player.Minions.filter((m) => !m.deployed).length < 4 ? LoadingAvatar() : null}
 			</ul>
 			${GoldBar(player.Gold)}
 		</slag-player>
@@ -127,11 +128,18 @@ function MinionAvatar(minion) {
 		minion.Game.runAction({type: 'deployMinion', minionId: minion.id})
 	}
 
-	return html`<li class="Minion Minion--avatar" data-player-number=${minion.Player.number}>
+	return html`<li class="Minion" data-player-number=${minion.Player.number}>
 		<button type="button" ?disabled=${!canDeploy} onclick=${deploy}>
 			${minionTypeToEmoji(minion.minionType)}
 		</button>
 		<span>${minion.cost}</span>
+	</li>`
+}
+
+function LoadingAvatar() {
+	return html`<li class="Minion Minion--loading">
+		<button type="button" disabled></button>
+		<span>?</span>
 	</li>`
 }
 

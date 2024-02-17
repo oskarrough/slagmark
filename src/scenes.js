@@ -95,7 +95,7 @@ export class Multiplayer extends Scene {
 			.timeline()
 			.set('body', {opacity: 1})
 			.to('.Background', {autoAlpha: 0.2, scale: 1.2, duration: 1.5})
-			.to('h1', {y: '-10%', autoAlpha: 0, duration: 0.5, ease: 'power2.out'}, '<')
+			.to('h1', {y: '-10%', autoAlpha: 0, duration: 0.5, height: 0, ease: 'power2.out'}, '<')
 			.from('menu', {autoAlpha: 0, y: -20, duration: 0.4, ease: 'power2.out'}, '-=1.3')
 			.from('menu > *', {stagger: 0.05, y: -5, autoAlpha: 0, duration: 0.25, ease: 'power2.out'}, '-=1.2')
 	}

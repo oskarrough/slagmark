@@ -29,7 +29,6 @@ export class GameLoop extends Loop {
 	loser = null
 
 	build() {
-
 		return [
 			// You could insert new players here, but we do it via websockets once a client connects.
 			// Player.new({number: 1}),

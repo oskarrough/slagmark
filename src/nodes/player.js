@@ -24,23 +24,22 @@ export class Player extends Task {
 	}
 }
 
+/* Extends the regular player by deploying a new minion every X seconds */
 export class AIPlayer extends Player {
 	build() {
 		this.id = uuid()
-
 		return [
 			// Gold.new(),
-			// By letting this create the minions, it goes through websockets..
 			RefillMinions.new(),
-			DeployMinions.new(),
+			AutoDeployMinions.new(),
 		]
 	}
 }
 
-class DeployMinions extends Task {
+class AutoDeployMinions extends Task {
 	Player = Closest(Player)
 	delay = 0
-	interval = 2200
+	interval = 2500
 	duration = 0
 
 	tick() {

@@ -10,7 +10,7 @@ export class Renderer extends Task {
 	tick() {
 		if (!this.Game?.element) throw new Error('missing DOM element to render to')
 		// const start = performance.now()
-		render(this.Game.element, () => UI(this.root))
+		render(this.Game.element, () => UI(this.Game))
 		// const end = performance.now()
 		// console.log(`render time = ${end - start}ms`)
 	}

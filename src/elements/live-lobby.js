@@ -84,27 +84,29 @@ export class LiveLobby extends HTMLElement {
 		const totalConnections = Object.entries(this.rooms.value).reduce((acc, [id, count]) => acc + count, 0)
 		const tpl = html`
 			<slag-box>
+				${this.gamesSocket ? html`<p>You are in: <em>${this.gamesSocket?.room}</em></p>` : null}
 				<details ?open=${!Boolean(this.gamesSocket)}>
 					<summary>Lobby (<live-presence></live-presence> online, ${totalConnections} playing)</summary>
 					${this.renderRooms(rooms)}
 				</details>
+				${!this.gamesSocket
+					? html`<menu><button onclick=${() => this.openNewGame()}>Open New Game</button></menu>`
+					: null}
 			</slag-box>
-			${this.gamesSocket
-				? html`<p>You are in: <em>${this.gamesSocket?.room}</em></p>`
-				: html`<menu><button onclick=${() => this.openNewGame()}>Open New Game</button></menu>`}
 		`
 		render(this, tpl)
 	}
 
 	renderRooms(rooms) {
 		if (!rooms?.length) return html`<p>No active games at the moment. As far as we know.</p>`
-		return html`
-		<menu class="RoomList">${rooms.map(
-			(room) => html`
-				<button ?disabled=${room.id === this.gamesSocket?.room} onclick=${() => this.joinRoom(room.id)}>
-					Join ${room.id} <small>${room.count && html`(${room.count})`}</small>
-				</button>
-			`
-		)}</menu>`
+		return html` <menu class="RoomList">
+			${rooms.map(
+				(room) => html`
+					<button ?disabled=${room.id === this.gamesSocket?.room} onclick=${() => this.joinRoom(room.id)}>
+						Join ${room.id} <small>${room.count && html`(${room.count})`}</small>
+					</button>
+				`
+			)}
+		</menu>`
 	}
 }
