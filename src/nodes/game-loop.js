@@ -1,10 +1,10 @@
-import { Node, Loop, Query, QueryAll } from 'vroum'
+import {Loop, Query, QueryAll} from 'vroum'
 import * as actions from '../actions.js'
 import {Logger} from '../stdlib/logger.js'
 import {Renderer} from '../stdlib/renderer.js'
 import {Minion} from '../nodes/minion.js'
 import {Player} from '../nodes/player.js'
-import { Board } from './board.js'
+import {Board} from './board.js'
 
 /** @typedef {import('../actions.js').Action} Action */
 
@@ -13,7 +13,6 @@ export class GameLoop extends Loop {
 	Players = QueryAll(Player)
 	Minions = QueryAll(Minion)
 	Renderer = Query(Renderer)
-	Logger = Query(Logger)
 
 	// DOM element to render to
 	element = null
@@ -30,32 +29,33 @@ export class GameLoop extends Loop {
 	loser = null
 
 	build() {
+
 		return [
 			// You could insert new players here, but we do it via websockets once a client connects.
 			// Player.new({number: 1}),
 			Board.new(),
 			Renderer.new(),
-			Logger.new(),
 		]
 	}
 
 	mount() {
-		this.Logger.push({type: 'mount'})
+		this.logger = new Logger()
+		this.logger.push({type: 'gameCreated'})
 	}
 
 	// shortcut for this.subscribe('start', fn)
 	$start = () => {
-		this.Logger.push({type: 'start'})
+		this.logger.push({type: 'gameStart'})
 	}
 	$stop = () => {
-		this.Logger.push({type: 'stop'})
+		this.logger.push({type: 'gameStop'})
 		this.Renderer.tick()
 	}
 	$play = () => {
-		this.Logger.push({type: 'play'})
+		this.logger.push({type: 'gamePlay'})
 	}
 	$pause = () => {
-		this.Logger.push({type: 'pause'})
+		this.logger.push({type: 'gamePause'})
 		this.Renderer.tick()
 	}
 
@@ -74,7 +74,7 @@ export class GameLoop extends Loop {
 		// run locally
 		const handler = actions[action.type]
 		if (!handler) throw new Error(`Missing action: ${action.type}`)
-		handler(this, action)
+		const result = handler(this, action)
 
 		// Send to other parties
 		if (broadcast) {
@@ -87,6 +87,6 @@ export class GameLoop extends Loop {
 			}
 		}
 
-		this.Logger.push(action)
+		this.logger.push(action, result)
 	}
 }
